@@ -137,12 +137,13 @@ inline static float vec3_length(vec3_t v)
 
 inline static vec3_t vec3_normalize(vec3_t v)
 {
-  float l = vec3_length(v);
+  float length = vec3_length(v);
   
-  if (l == 0)
+  if (length < 0.001f) {
     return vec3_init(0.0f, 0.0f, 0.0f);
+  }
   
-  return vec3_mulf(v, 1.0 / l);
+  return vec3_mulf(v, 1.0 / length);
 }
 
 inline static vec4_t vec4_init(float x, float y, float z, float w)
@@ -278,6 +279,15 @@ inline static mat4x4_t mat4x4_mul(mat4x4_t a, mat4x4_t b)
   return m;
 }
 
+inline static vec3_t mat4x4_mul_vec3(mat4x4_t m, vec3_t v)
+{
+  return vec3_init(
+    v.x * m.m[0] + v.y * m.m[4] + v.z * m.m[8]  + 1.0 * m.m[12],
+    v.x * m.m[1] + v.y * m.m[5] + v.z * m.m[9]  + 1.0 * m.m[13],
+    v.x * m.m[2] + v.y * m.m[6] + v.z * m.m[10] + 1.0 * m.m[14]
+  );
+}
+
 inline static mat4x4_t mat4x4_init_transform(vec3_t translate, vec3_t scale)
 {
   mat4x4_t translation_matrix = mat4x4_init_translation(translate);
@@ -321,13 +331,24 @@ inline static mat4x4_t mat4x4_init_perspective(float aspect_ratio, float fov, fl
   return m;
 }
 
+inline static mat4x4_t mat4x4_init_isometric(float l, float r, float t, float b, float n, float f)
+{
+  mat4x4_t m;
+  m.m[0]	= 2 / (r - l);	m.m[4]	= 0;			      m.m[8]	= 0;			      m.m[12]	= -(r + l) / (r - l);
+  m.m[1]	= 0;			      m.m[5]	= 2 / (t - b);	m.m[9]	= -2 / (f - n); m.m[13]	= -(t + b) / (t - b);
+  m.m[2]	= 0;			      m.m[6]	= 0;			      m.m[10]	=  2 / (f - n);	m.m[14]	=  (f + n) / (f - n);
+  m.m[3]	= 0;			      m.m[7]	= 0;			      m.m[11]	= 0;			      m.m[15]	= 1;
+  
+  return m;
+}
+
 inline static mat4x4_t mat4x4_init_orthogonal(float l, float r, float t, float b, float n, float f)
 {
   mat4x4_t m;
-  m.m[0]	= 2 / (r - l);	m.m[1]	= 0;			      m.m[2]	= 0;			      m.m[3]	= -(r + l) / (r - l);
-  m.m[4]	= 0;			      m.m[5]	= 2 / (t - b);	m.m[6]	= 0;			      m.m[7]	= -(t + b) / (t - b);
-  m.m[8]	= 0;			      m.m[9]	= 0;			      m.m[10]	= 2 / (f - n);	m.m[11]	= (f + n) / (f - n);
-  m.m[12]	= 0;			      m.m[13]	= 0;			      m.m[14]	= 0;			      m.m[15]	= 1;
+  m.m[0]	= 2 / (r - l);	m.m[4]	= 0;			      m.m[8]	= 0;			      m.m[12]	= -(r + l) / (r - l);
+  m.m[1]	= 0;			      m.m[5]	= 2 / (t - b);	m.m[9]	= 0;            m.m[13]	= -(t + b) / (t - b);
+  m.m[2]	= 0;			      m.m[6]	= 0;			      m.m[10]	= -2 / (f - n);	m.m[14]	= -(f + n) / (f - n);
+  m.m[3]	= 0;			      m.m[7]	= 0;			      m.m[11]	= 0;			      m.m[15]	= 1;
   
   return m;
 }

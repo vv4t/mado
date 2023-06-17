@@ -15,7 +15,7 @@ typedef struct {
   mat4x4_t  view_proj_mat;
 } camera_t;
 
-void      camera_init_ortho(camera_t *camera, float width, float height);
+void      camera_init_iso(camera_t *camera, float width, float height);
 mat4x4_t  camera_setup_view(camera_t *camera);
 mat4x4_t  camera_calc_mvp(const camera_t *camera, mat4x4_t model);
 

@@ -1,8 +1,8 @@
 #include "camera.h"
 
-void camera_init_ortho(camera_t *camera, float width, float height)
+void camera_init_iso(camera_t *camera, float width, float height)
 {
-  camera->proj_mat = mat4x4_init_orthogonal(
+  camera->proj_mat = mat4x4_init_isometric(
     -width * camera->aspect_ratio,
     +width * camera->aspect_ratio,
     +height,
