@@ -76,6 +76,17 @@ inline static vec2_t vec2_mulf(vec2_t a, float b)
     a.y * b);
 }
 
+inline static vec2_t vec2_rotate(vec2_t v, float theta)
+{
+  float c = cos(theta);
+  float s = sin(theta);
+  
+  return vec2_init(
+    v.x * c - v.y * s,
+    v.x * s + v.y * c
+  );
+}
+
 inline static vec3_t vec3_init(float x, float y, float z)
 {
   return (vec3_t) {

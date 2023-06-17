@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "mesh.h"
 #include "camera.h"
+#include "../game/game.h"
 
 typedef struct {
   buffer_t buffer;
@@ -20,6 +21,6 @@ typedef struct {
 } renderer_t;
 
 bool renderer_init(renderer_t *renderer);
-void renderer_render(renderer_t *renderer);
+void renderer_render(renderer_t *renderer, const game_t *game);
 
 #endif

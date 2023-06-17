@@ -22,21 +22,23 @@ bool renderer_init(renderer_t *renderer)
   
   texture_load(&renderer->texture, "assets/texture/texture.png");
   
+  renderer->camera.pos = vec3_init(0.0, 0.0, 0.0);
   renderer->camera.rot = quat_init(0.0, 0.0, 0.0, 1.0);
   
   return true;
 }
 
-void renderer_render(renderer_t *renderer)
+void renderer_render(renderer_t *renderer, const game_t *game)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  renderer->camera.rot = quat_mul(quat_init_rotation(vec3_init(0.0, 0.0, 1.0), 0.01), renderer->camera.rot);
+  renderer->camera.pos.x = game->pos.x;
+  renderer->camera.pos.y = game->pos.y;
+  renderer->camera.rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), game->rot);
   
   camera_setup_view(&renderer->camera);
   
   glUniformMatrix4fv(renderer->ul_mvp, 1, GL_FALSE, renderer->camera.view_proj_mat.m);
-  
   glDrawArrays(GL_TRIANGLES, renderer->mesh.offset, renderer->mesh.count);
 }
 

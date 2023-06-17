@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "common/log.h"
+#include "game/usercmd.h"
+#include "game/game.h"
 #include "renderer/gl.h"
 #include "renderer/renderer.h"
 
@@ -9,15 +11,31 @@
   #include <emscripten.h>
 #endif
 
+typedef enum {
+  IN_LEFT,
+  IN_RIGHT,
+  IN_FORWARD,
+  IN_BACK,
+  IN_ROT_LEFT,
+  IN_ROT_RIGHT,
+  MAX_INPUT
+} input_t;
+
 static struct {
   SDL_Window *window;
   SDL_GLContext gl;
   
+  usercmd_t usercmd;
+  game_t game;
   renderer_t renderer;
+  
+  float input_state[MAX_INPUT];
 } nui;
 
 bool nui_init(void);
 void nui_update(void);
+void nui_base_move(void);
+void nui_key_event(int key, float action);
 
 bool sdl_poll(void);
 void sdl_quit(void);
@@ -59,13 +77,40 @@ bool nui_init(void)
     return false;
   }
   
+  game_init(&nui.game);
+  
   return true;
 }
 
 void nui_update(void)
 {
-  renderer_render(&nui.renderer);
+  nui_base_move();
+  game_update(&nui.game, &nui.usercmd);
+  renderer_render(&nui.renderer, &nui.game);
   SDL_GL_SwapWindow(nui.window);
+}
+
+void nui_base_move(void)
+{
+  nui.usercmd.forward = nui.input_state[IN_FORWARD] - nui.input_state[IN_BACK];
+  nui.usercmd.side = nui.input_state[IN_RIGHT] - nui.input_state[IN_LEFT];
+  nui.usercmd.rot = nui.input_state[IN_ROT_LEFT] - nui.input_state[IN_ROT_RIGHT];
+}
+
+void nui_key_event(int key, float action)
+{
+  if (key == 'a')
+    nui.input_state[IN_LEFT] = action;
+  if (key == 'd')
+    nui.input_state[IN_RIGHT] = action;
+  if (key == 'w')
+    nui.input_state[IN_FORWARD] = action;
+  if (key == 's')
+    nui.input_state[IN_BACK] = action;
+  if (key == 'q')
+    nui.input_state[IN_ROT_LEFT] = action;
+  if (key == 'e')
+    nui.input_state[IN_ROT_RIGHT] = action;
 }
 
 bool sdl_poll(void)
@@ -75,9 +120,11 @@ bool sdl_poll(void)
     switch (event.type) {
     case SDL_QUIT:
       return false;
-    case SDL_KEYUP:
-      break;
     case SDL_KEYDOWN:
+      nui_key_event(event.key.keysym.sym, 1);
+      break;
+    case SDL_KEYUP:
+      nui_key_event(event.key.keysym.sym, 0);
       break;
     case SDL_MOUSEMOTION:
       break;
