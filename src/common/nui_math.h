@@ -37,6 +37,10 @@ typedef struct {
 } plane_t;
 
 typedef struct {
+  float m[9];
+} mat3x3_t;
+
+typedef struct {
   float m[16];
 } mat4x4_t;
 
@@ -223,6 +227,65 @@ inline static vec3_t vec3_rotate(vec3_t v, quat_t q)
   return vec3_init(full_rot.x, full_rot.y, full_rot.z);
 }
 
+inline static mat3x3_t mat3x3_init(vec3_t a, vec3_t b, vec3_t c)
+{
+  mat3x3_t m;
+  m.m[0]  = a.x;  m.m[3]  = a.y;  m.m[6] = a.z;
+  m.m[1]  = b.x;  m.m[4]  = b.y;  m.m[7] = b.z;
+  m.m[2]  = c.x;  m.m[5]  = c.y;  m.m[8] = c.z;
+  return m;
+}
+
+inline static mat3x3_t mat3x3_init_identity()
+{
+  mat3x3_t m;
+  m.m[0]  = 1;  m.m[3]  = 0;  m.m[6] = 0;
+  m.m[1]  = 0;  m.m[4]  = 1;  m.m[7] = 0;
+  m.m[2]  = 0;  m.m[5]  = 0;  m.m[8] = 1;
+  return m;
+}
+
+inline static mat3x3_t mat3x3_init_scale(vec2_t v)
+{
+  mat3x3_t m;
+  m.m[0]  = v.x;  m.m[3]  = 0;    m.m[6] = 0;
+  m.m[1]  = 0;    m.m[4]  = v.y;  m.m[7] = 0;
+  m.m[2]  = 0;    m.m[5]  = 0;    m.m[8] = 1;
+  return m;
+}
+
+inline static mat3x3_t mat3x3_init_translation(vec2_t v)
+{
+  mat3x3_t m;
+  m.m[0]  = 1;  m.m[3]  = 0;  m.m[6] = v.x;
+  m.m[1]  = 0;  m.m[4]  = 1;  m.m[7] = v.y;
+  m.m[2]  = 0;  m.m[5]  = 0;  m.m[8] = 1;
+  return m;
+}
+
+inline static mat3x3_t mat3x3_mul(mat3x3_t a, mat3x3_t b)
+{
+  mat3x3_t m;
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      m.m[i * 3 + j] =  b.m[0 * 3 + j] * a.m[i * 3 + 0] +
+                        b.m[1 * 3 + j] * a.m[i * 3 + 1] +
+                        b.m[2 * 3 + j] * a.m[i * 3 + 2];
+                    
+    }
+  }
+  
+  return m;
+}
+
+inline static vec2_t mat3x3_mul_vec2(mat3x3_t m, vec2_t v)
+{
+  return vec2_init(
+    v.x * m.m[0] + v.y * m.m[3] + 1.0 * m.m[6],
+    v.x * m.m[1] + v.y * m.m[4] + 1.0 * m.m[7]
+  );
+}
+
 inline static mat4x4_t mat4x4_init(vec4_t a, vec4_t b, vec4_t c, vec4_t d)
 {
   mat4x4_t m;
@@ -370,6 +433,11 @@ inline static void mat4x4_print(mat4x4_t m)
   printf("         %f %f %f %f\n",  m.m[1], m.m[5], m.m[9],   m.m[13]);
   printf("         %f %f %f %f\n",  m.m[2], m.m[6], m.m[10],  m.m[14]);
   printf("         %f %f %f %f)\n", m.m[3], m.m[7], m.m[11],  m.m[15]);
+}
+
+inline static void vec2_print(vec2_t v)
+{
+  printf("vec2_t(%f %f)\n", v.x, v.y);
 }
 
 inline static void vec3_print(vec3_t v)
