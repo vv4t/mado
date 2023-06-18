@@ -5,41 +5,47 @@
 
 #define MAX_VERTICES 1024
 
-int put_tile(vertex_t vertices[], int offset, int max_vertices, vec3_t pos);
-int put_block(vertex_t vertices[], int offset, int max_vertices, vec3_t pos);
-int put_quad(vertex_t vertices[], int offset, int max_vertices, mat4x4_t transform);
+typedef struct {
+  vertex_t vertices[MAX_VERTICES];
+  int offset;
+  float size_uv;
+} quad_buf_t;
+
+void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
+void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
+void put_quad(quad_buf_t *quad_buf, mat4x4_t transform, mat3x3_t uv_mat);
 
 bool map_mesh_init(mesh_t *mesh, buffer_t *buffer)
 {
-  vertex_t vertices[MAX_VERTICES];
-  
-  int num_vertices = 0;
+  quad_buf_t quad_buf;
+  quad_buf.offset = 0;
+  quad_buf.size_uv = 1.0 / 2.0;
   
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 10; x++) {
       vec3_t pos = vec3_init(x, y, 0.0);
       
       if (rand() % 5 == 0) {
-        num_vertices = put_block(vertices, num_vertices, MAX_VERTICES, pos);
+        put_block(&quad_buf, pos, vec2_init(1, 0));
         pos.z -= 1.0;
       }
       
-      num_vertices = put_tile(vertices, num_vertices, MAX_VERTICES, pos);
+      put_tile(&quad_buf, pos, vec2_init(0, 0));
     }
   }
   
   if (!buffer_new_mesh(
     buffer,
     mesh,
-    vertices,
-    num_vertices
+    quad_buf.vertices,
+    quad_buf.offset
   )) {
     LOG_ERROR("failed to initialise mesh");
     return false;
   }
 }
 
-int put_block(vertex_t vertices[], int offset, int max_vertices, vec3_t pos)
+void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
 {
   mat4x4_t side1_mat = mat4x4_init(
     vec4_init(0.0, 0.0, 1.0, pos.x),
@@ -69,32 +75,29 @@ int put_block(vertex_t vertices[], int offset, int max_vertices, vec3_t pos)
     vec4_init(0.0, 0.0, 0.0, 1.0)
   );
   
-  offset = put_quad(vertices, offset, max_vertices, side1_mat);
-  offset = put_quad(vertices, offset, max_vertices, side2_mat);
-  offset = put_quad(vertices, offset, max_vertices, front1_mat);
-  offset = put_quad(vertices, offset, max_vertices, front2_mat);
-  
-  return offset;
-}
-
-int put_tile(vertex_t vertices[], int offset, int max_vertices, vec3_t pos)
-{
-  mat4x4_t transform = mat4x4_init_translation(pos);
-  
-  return put_quad(
-    vertices,
-    offset,
-    max_vertices,
-    transform
+  mat3x3_t uv_mat = mat3x3_init(
+    vec3_init(0.0, 1.0, 0.0 + uv.x),
+    vec3_init(1.0, 0.0, 0.0 + uv.y),
+    vec3_init(0.0, 0.0, 1.0)
   );
+  
+  put_quad(quad_buf, side1_mat, uv_mat);
+  put_quad(quad_buf, side2_mat, uv_mat);
+  put_quad(quad_buf, front1_mat, uv_mat);
+  put_quad(quad_buf, front2_mat, uv_mat);
 }
 
-int put_quad(vertex_t vertices[], int offset, int max_vertices, mat4x4_t transform)
+void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
 {
-  if (offset + 6 > max_vertices)
-    return 0;
+  return put_quad(quad_buf, mat4x4_init_translation(pos), mat3x3_init_translation(uv));
+}
+
+void put_quad(quad_buf_t *quad_buf, mat4x4_t pos_mat, mat3x3_t uv_mat)
+{
+  if (quad_buf->offset + 6 > MAX_VERTICES)
+    return;
   
-  vertex_t quad_vertices[] = {
+  vertex_t quad[] = {
     { .pos = {  0.0f,  0.0f, 0.0f }, .uv = { 0.0f, 0.0f } },
     { .pos = {  0.0f, +1.0f, 0.0f }, .uv = { 0.0f, 1.0f } },
     { .pos = { +1.0f,  0.0f, 0.0f }, .uv = { 1.0f, 0.0f } },
@@ -103,12 +106,15 @@ int put_quad(vertex_t vertices[], int offset, int max_vertices, mat4x4_t transfo
     { .pos = { +1.0f,  0.0f, 0.0f }, .uv = { 1.0f, 0.0f } }
   };
   
+  mat3x3_t size_uv = mat3x3_init_scale(vec2_init(quad_buf->size_uv, quad_buf->size_uv));
+  
   for (int i = 0; i < 6; i++) {
-    vec3_t pos = mat4x4_mul_vec3(transform, quad_vertices[i].pos);
+    vec3_t pos = mat4x4_mul_vec3(pos_mat, quad[i].pos);
+    vec2_t uv = mat3x3_mul_vec2(mat3x3_mul(uv_mat, size_uv), quad[i].uv);
     
-    vertices[offset + i].pos = pos;
-    vertices[offset + i].uv = quad_vertices[i].uv;
+    quad_buf->vertices[quad_buf->offset + i].pos = pos;
+    quad_buf->vertices[quad_buf->offset + i].uv = uv;
   }
   
-  return offset + 6;
+  quad_buf->offset += 6;
 }
