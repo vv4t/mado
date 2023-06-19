@@ -1,18 +1,30 @@
 #include "camera.h"
 
-void camera_init_iso(camera_t *camera, float width, float height)
+void camera_set_isometric(camera_t *camera)
 {
   camera->proj_mat = mat4x4_init_isometric(
-    -width * camera->aspect_ratio,
-    +width * camera->aspect_ratio,
-    +height,
-    -height,
+    -camera->width * camera->aspect_ratio,
+    +camera->width * camera->aspect_ratio,
+    +camera->height,
+    -camera->height,
     camera->near,
     camera->far
   );
 }
 
-mat4x4_t camera_setup_view(camera_t *camera)
+void camera_set_orthogonal(camera_t *camera)
+{
+  camera->proj_mat = mat4x4_init_orthogonal(
+    -camera->width * camera->aspect_ratio,
+    +camera->width * camera->aspect_ratio,
+    +camera->height,
+    -camera->height,
+    camera->near,
+    camera->far
+  );
+}
+
+void camera_setup_view(camera_t *camera)
 {
   vec3_t view_pos = vec3_mulf(camera->pos, -1.0f);
   quat_t view_rot = quat_conjugate(camera->rot);

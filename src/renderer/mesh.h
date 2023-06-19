@@ -29,4 +29,11 @@ bool buffer_new_mesh(
   int             num_vertices
 );
 
+bool mesh_sub_data(
+  mesh_t          *mesh,
+  const vertex_t  *vertices,
+  int             offset,
+  int             num_vertices
+);
+
 #endif

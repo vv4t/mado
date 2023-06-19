@@ -17,7 +17,8 @@ typedef struct {
   
   mat4x4_t proj_mat;
   
-  mesh_t mesh;
+  mesh_t map_mesh;
+  mesh_t sprite_mesh;
 } renderer_t;
 
 bool renderer_init(renderer_t *renderer);

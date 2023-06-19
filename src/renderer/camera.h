@@ -7,6 +7,8 @@ typedef struct {
   float     aspect_ratio;
   float     near;
   float     far;
+  float     width;
+  float     height;
   
   vec3_t    pos;
   quat_t    rot;
@@ -15,8 +17,9 @@ typedef struct {
   mat4x4_t  view_proj_mat;
 } camera_t;
 
-void      camera_init_iso(camera_t *camera, float width, float height);
-mat4x4_t  camera_setup_view(camera_t *camera);
+void      camera_set_orthogonal(camera_t *camera);
+void      camera_set_isometric(camera_t *camera);
+void      camera_setup_view(camera_t *camera);
 mat4x4_t  camera_calc_mvp(const camera_t *camera, mat4x4_t model);
 
 #endif
