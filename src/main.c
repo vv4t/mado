@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "common/log.h"
-#include "game/usercmd.h"
 #include "game/game.h"
 #include "renderer/gl.h"
 #include "renderer/renderer.h"

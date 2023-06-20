@@ -1,11 +1,16 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "usercmd.h"
 #include "../common/nui_math.h"
 #include <stdbool.h>
 
 #define MAX_SPRITES 8
+
+typedef struct {
+  float forward;
+  float side;
+  float rot;
+} usercmd_t;
 
 typedef struct {
   vec2_t pos;
