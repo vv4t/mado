@@ -7,6 +7,12 @@
 #define MAX_SPRITES 8
 
 typedef struct {
+  char *data;
+  int width;
+  int height;
+} map_t;
+
+typedef struct {
   float forward;
   float side;
   float rot;

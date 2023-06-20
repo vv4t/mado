@@ -22,6 +22,7 @@ typedef struct {
 } renderer_t;
 
 bool renderer_init(renderer_t *renderer);
+void renderer_load_map(renderer_t *renderer, const map_t *map);
 void renderer_render(renderer_t *renderer, const game_t *game);
 
 #endif

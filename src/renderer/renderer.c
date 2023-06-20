@@ -50,6 +50,11 @@ void renderer_render(renderer_t *renderer, const game_t *game)
   sprite_mesh_draw(&renderer->sprite_mesh, game->sprites, &renderer->camera);
 }
 
+void renderer_load_map(renderer_t *renderer, const map_t *map)
+{
+  map_mesh_init(&renderer->map_mesh, &renderer->buffer, map);
+}
+
 void renderer_init_camera(renderer_t *renderer)
 {
   renderer->camera.aspect_ratio = 1280.0 / 720.0;
@@ -61,7 +66,7 @@ void renderer_init_camera(renderer_t *renderer)
 
 void renderer_init_gl(renderer_t *renderer)
 {
-  glClearColor(0.0f, 0.4f, 1.0f, 1.0f);
+  glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   
@@ -75,7 +80,6 @@ void renderer_init_gl(renderer_t *renderer)
 
 bool renderer_init_mesh(renderer_t *renderer)
 {
-  map_mesh_init(&renderer->map_mesh, &renderer->buffer);
   sprite_mesh_init(&renderer->sprite_mesh, &renderer->buffer);
 }
 
@@ -93,7 +97,7 @@ bool renderer_init_shader(renderer_t *renderer)
   GLuint ul_size_uv= glGetUniformLocation(renderer->program, "u_size_uv");
   
   glUniform1i(ul_texture, 0);
-  glUniform2f(ul_size_uv, 1.0/4.0, 1.0/8.0);
+  glUniform2f(ul_size_uv, 1.0/8.0, 1.0/8.0);
   
   free(shader_vsh);
   free(shader_fsh);

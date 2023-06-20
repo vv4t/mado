@@ -14,21 +14,21 @@ void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_quad(quad_buf_t *quad_buf, mat4x4_t transform, mat3x3_t uv_mat);
 
-bool map_mesh_init(mesh_t *mesh, buffer_t *buffer)
+bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
 {
   quad_buf_t quad_buf;
   quad_buf.offset = 0;
   
-  for (int y = 0; y < 10; y++) {
-    for (int x = 0; x < 10; x++) {
+  for (int y = 0; y < map->height; y++) {
+    for (int x = 0; x < map->width; x++) {
       vec3_t pos = vec3_init(x, y, 0.0);
       
-      if (rand() % 5 == 0) {
-        put_block(&quad_buf, pos, vec2_init(1, 1));
+      if (map->data[x + y * map->width] > 0) {
+        put_block(&quad_buf, pos, vec2_init(5, 0));
         pos.z -= 1.0;
       }
       
-      put_tile(&quad_buf, pos, vec2_init(0, 1));
+      put_tile(&quad_buf, pos, vec2_init(4, 0));
     }
   }
   
