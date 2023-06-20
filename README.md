@@ -6,5 +6,7 @@ Reqiurements
 - GLEW
 
 Build Instructions
-> make
-> ./mado
+```
+make
+./mado
+```
