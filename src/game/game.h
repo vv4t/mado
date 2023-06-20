@@ -9,6 +9,7 @@
 
 typedef struct {
   vec2_t pos;
+  vec2_t uv;
   bool show;
   bool stand;
 } sprite_t;
@@ -20,6 +21,7 @@ typedef struct {
 } player_t;
 
 typedef struct {
+  float time;
   player_t player;
   sprite_t sprites[MAX_SPRITES];
 } game_t;

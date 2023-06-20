@@ -90,7 +90,10 @@ bool renderer_init_shader(renderer_t *renderer)
   renderer->ul_mvp = glGetUniformLocation(renderer->program, "u_mvp");
   
   GLuint ul_texture = glGetUniformLocation(renderer->program, "u_texture");
+  GLuint ul_size_uv= glGetUniformLocation(renderer->program, "u_size_uv");
+  
   glUniform1i(ul_texture, 0);
+  glUniform2f(ul_size_uv, 1.0/4.0, 1.0/8.0);
   
   free(shader_vsh);
   free(shader_fsh);

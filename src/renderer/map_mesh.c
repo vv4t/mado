@@ -8,7 +8,6 @@
 typedef struct {
   vertex_t vertices[MAX_VERTICES];
   int offset;
-  float size_uv;
 } quad_buf_t;
 
 void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
@@ -19,18 +18,17 @@ bool map_mesh_init(mesh_t *mesh, buffer_t *buffer)
 {
   quad_buf_t quad_buf;
   quad_buf.offset = 0;
-  quad_buf.size_uv = 1.0 / 2.0;
   
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 10; x++) {
       vec3_t pos = vec3_init(x, y, 0.0);
       
       if (rand() % 5 == 0) {
-        put_block(&quad_buf, pos, vec2_init(1, 0));
+        put_block(&quad_buf, pos, vec2_init(1, 1));
         pos.z -= 1.0;
       }
       
-      put_tile(&quad_buf, pos, vec2_init(0, 0));
+      put_tile(&quad_buf, pos, vec2_init(0, 1));
     }
   }
   
@@ -106,11 +104,9 @@ void put_quad(quad_buf_t *quad_buf, mat4x4_t pos_mat, mat3x3_t uv_mat)
     { .pos = { +1.0f,  0.0f, 0.0f }, .uv = { 1.0f, 0.0f } }
   };
   
-  mat3x3_t size_uv = mat3x3_init_scale(vec2_init(quad_buf->size_uv, quad_buf->size_uv));
-  
   for (int i = 0; i < 6; i++) {
     vec3_t pos = mat4x4_mul_vec3(pos_mat, quad[i].pos);
-    vec2_t uv = mat3x3_mul_vec2(mat3x3_mul(uv_mat, size_uv), quad[i].uv);
+    vec2_t uv = mat3x3_mul_vec2(uv_mat, quad[i].uv);
     
     quad_buf->vertices[quad_buf->offset + i].pos = pos;
     quad_buf->vertices[quad_buf->offset + i].uv = uv;
