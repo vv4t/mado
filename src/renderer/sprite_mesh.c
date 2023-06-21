@@ -11,7 +11,7 @@ static const vertex_t sprite_vertices[] = {
   { .pos = { +0.5, -0.5, 0.0 }, .uv = { 1.0f, 1.0f } }
 };
 
-static const int num_sprite_vertices = sizeof(sprite_vertices) / sizeof(vertex_t);
+#define MAX_VERTICES MAX_SPRITES * sizeof(sprite_vertices) / sizeof(vertex_t)
   
 bool sprite_mesh_init(mesh_t *mesh, buffer_t *buffer)
 {
@@ -19,7 +19,7 @@ bool sprite_mesh_init(mesh_t *mesh, buffer_t *buffer)
     buffer,
     mesh,
     NULL,
-    MAX_SPRITES * num_sprite_vertices
+    MAX_VERTICES
   )) {
     LOG_ERROR("failed to initialise mesh");
     return false;
@@ -28,7 +28,7 @@ bool sprite_mesh_init(mesh_t *mesh, buffer_t *buffer)
 
 void sprite_mesh_draw(mesh_t *sprite_mesh, const sprite_t sprites[MAX_SPRITES], const camera_t *camera)
 {
-  vertex_t vertices[MAX_SPRITES * num_sprite_vertices];
+  vertex_t vertices[MAX_VERTICES];
   
   for (int i = 0; i < MAX_SPRITES; i++) {
     if (!sprites[i].show)
@@ -50,7 +50,7 @@ void sprite_mesh_draw(mesh_t *sprite_mesh, const sprite_t sprites[MAX_SPRITES], 
     }
   }
   
-  mesh_sub_data(sprite_mesh, vertices, 0, 6);
+  mesh_sub_data(sprite_mesh, vertices, 0, MAX_VERTICES);
   
-  glDrawArrays(GL_TRIANGLES, sprite_mesh->offset, num_sprite_vertices);
+  glDrawArrays(GL_TRIANGLES, sprite_mesh->offset, MAX_VERTICES);
 }
