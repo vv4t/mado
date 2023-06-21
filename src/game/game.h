@@ -6,8 +6,19 @@
 
 #define MAX_SPRITES 8
 
+typedef enum {
+  TILE_DATA_EXISTS = (1 << 4)
+} tile_t;
+
 typedef struct {
-  char *data;
+  bool block;
+  bool solid;
+  int uv;
+} tile_data_t;
+
+typedef struct {
+  tile_t *data;
+  tile_data_t *tile_data;
   int width;
   int height;
 } map_t;

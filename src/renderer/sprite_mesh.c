@@ -1,6 +1,7 @@
 #include "sprite_mesh.h"
 
 #include "../common/log.h"
+#include <string.h>
 
 static const vertex_t sprite_vertices[] = {
   { .pos = { +0.5, +0.5, 2.0 }, .uv = { 1.0f, 0.0f } },
@@ -31,6 +32,7 @@ bool sprite_mesh_init(mesh_t *mesh, buffer_t *buffer)
 void sprite_mesh_draw(mesh_t *sprite_mesh, const sprite_t sprites[MAX_SPRITES], const camera_t *camera)
 {
   vertex_t vertices[MAX_VERTICES];
+  memset(vertices, 0, sizeof(vertices));
   
   for (int i = 0; i < MAX_SPRITES; i++) {
     if (!sprites[i].show)

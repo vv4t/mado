@@ -76,7 +76,7 @@ bool nui_init(void)
     return false;
   }
   
-  char map_data[] = {
+  tile_t map_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
