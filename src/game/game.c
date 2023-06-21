@@ -8,7 +8,7 @@ void game_init(game_t *game)
   *game = (game_t) { 0 };
   
   game->sprites[0].pos = vec2_init(0.0, 0.0);
-  game->sprites[0].uv = vec2_init(0, 0);
+  game->sprites[0].uv = vec2_init(0, 5);
   game->sprites[0].show = true;
   game->sprites[0].stand = true;
   

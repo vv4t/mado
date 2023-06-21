@@ -5,20 +5,29 @@
 #include <stdbool.h>
 
 #define MAX_SPRITES 8
+#define MAX_BLOCKS 4
 
 typedef enum {
-  TILE_DATA_EXISTS = (1 << 4)
+  TILE_DATA_EXISTS = (1 << 31)
 } tile_t;
 
 typedef struct {
-  bool block;
-  bool solid;
-  int uv;
+  tile_t block[MAX_BLOCKS];
+  int num_block;
 } tile_data_t;
 
 typedef struct {
-  tile_t *data;
+  const char *path;
   tile_data_t *tile_data;
+  int sprite_width;
+  int sprite_height;
+  int sheet_width;
+  int sheet_height;
+} sprite_sheet_t;
+
+typedef struct {
+  sprite_sheet_t *sprite_sheet;
+  tile_t *data;
   int width;
   int height;
 } map_t;

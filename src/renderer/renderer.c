@@ -21,8 +21,6 @@ bool renderer_init(renderer_t *renderer)
   renderer_init_mesh(renderer);
   renderer_init_gl(renderer);
   
-  texture_load(&renderer->texture, "assets/texture/texture.png");
-  
   renderer->camera.pos = vec3_init(0.0, 0.0, 0.0);
   renderer->camera.rot = quat_init(0.0, 0.0, 0.0, 1.0);
   
@@ -55,6 +53,17 @@ void renderer_load_map(renderer_t *renderer, const map_t *map)
   map_mesh_init(&renderer->map_mesh, &renderer->buffer, map);
 }
 
+void renderer_load_sheet(renderer_t *renderer, const sprite_sheet_t *sprite_sheet)
+{
+  texture_load(&renderer->sprite_sheet, "assets/texture/texture.png");
+  
+  glUniform2f(
+    renderer->ul_size_uv,
+    1.0 / sprite_sheet->sheet_width,
+    1.0 / sprite_sheet->sheet_height
+  );
+}
+
 void renderer_init_camera(renderer_t *renderer)
 {
   renderer->camera.aspect_ratio = 1280.0 / 720.0;
@@ -75,7 +84,7 @@ void renderer_init_gl(renderer_t *renderer)
   glUseProgram(renderer->program);
   
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, renderer->texture);
+  glBindTexture(GL_TEXTURE_2D, renderer->sprite_sheet);
 }
 
 bool renderer_init_mesh(renderer_t *renderer)
@@ -92,12 +101,11 @@ bool renderer_init_shader(renderer_t *renderer)
   glUseProgram(renderer->program);
   
   renderer->ul_mvp = glGetUniformLocation(renderer->program, "u_mvp");
+  renderer->ul_size_uv = glGetUniformLocation(renderer->program, "u_size_uv");
   
   GLuint ul_texture = glGetUniformLocation(renderer->program, "u_texture");
-  GLuint ul_size_uv= glGetUniformLocation(renderer->program, "u_size_uv");
   
   glUniform1i(ul_texture, 0);
-  glUniform2f(ul_size_uv, 1.0/8.0, 1.0/8.0);
   
   free(shader_vsh);
   free(shader_fsh);

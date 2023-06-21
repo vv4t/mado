@@ -76,27 +76,44 @@ bool nui_init(void)
     return false;
   }
   
+  tile_data_t tile_data[] = {
+    { .block = { 1, 0 }, .num_block = 2 }
+  };
+  
+  tile_t A = 0 | TILE_DATA_EXISTS;
+  
   tile_t map_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+    0, 0, 0, A, A, A, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, A, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, A, 0, 0, 0, 0,
+    0, 0, 0, A, A, A, A, A, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   };
   
+  sprite_sheet_t sprite_sheet = {
+    .path = "assets/texture/texture.png",
+    .tile_data = tile_data,
+    .sprite_width = 32,
+    .sprite_height = 32,
+    .sheet_width = 8,
+    .sheet_height = 8
+  };
+  
   map_t map = {
     .data = map_data,
+    .sprite_sheet = &sprite_sheet,
     .width = 10,
     .height = 10
   };
   
   game_init(&nui.game);
+  renderer_load_sheet(&nui.renderer, &sprite_sheet);
   renderer_load_map(&nui.renderer, &map);
   
   return true;

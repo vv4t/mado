@@ -12,16 +12,16 @@ typedef struct {
   
   GLuint program;
   GLuint ul_mvp;
+  GLuint ul_size_uv;
   
-  GLuint texture;
-  
-  mat4x4_t proj_mat;
+  GLuint sprite_sheet;
   
   mesh_t map_mesh;
   mesh_t sprite_mesh;
 } renderer_t;
 
 bool renderer_init(renderer_t *renderer);
+void renderer_load_sheet(renderer_t *renderer, const sprite_sheet_t *sprite_sheet);
 void renderer_load_map(renderer_t *renderer, const map_t *map);
 void renderer_render(renderer_t *renderer, const game_t *game);
 
