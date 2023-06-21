@@ -11,7 +11,9 @@ static const vertex_t sprite_vertices[] = {
   { .pos = { +0.5, -0.5, 0.0 }, .uv = { 1.0f, 1.0f } }
 };
 
-#define MAX_VERTICES MAX_SPRITES * sizeof(sprite_vertices) / sizeof(vertex_t)
+const int num_sprite_vertices = sizeof(sprite_vertices) / sizeof(vertex_t);
+
+#define MAX_VERTICES MAX_SPRITES * num_sprite_vertices
   
 bool sprite_mesh_init(mesh_t *mesh, buffer_t *buffer)
 {
