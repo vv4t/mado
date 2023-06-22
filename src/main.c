@@ -97,16 +97,20 @@ bool nui_init(void)
   
   static sprite_sheet_t sprite_sheet = {
     .path = "assets/texture/texture.png",
-    .tile_data = tile_data,
     .sprite_width = 32,
     .sprite_height = 32,
     .sheet_width = 8,
     .sheet_height = 8
   };
   
+  static tile_set_t tile_set = {
+    .sprite_sheet = &sprite_sheet,
+    .tile_data = tile_data
+  };
+  
   static map_t map = {
     .data = map_data,
-    .sprite_sheet = &sprite_sheet,
+    .tile_set = &tile_set,
     .border_tile = A,
     .width = 10,
     .height = 10

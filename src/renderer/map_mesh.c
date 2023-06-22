@@ -13,7 +13,6 @@ typedef struct {
 void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_quad(quad_buf_t *quad_buf, mat4x4_t transform, mat3x3_t uv_mat);
-vec2_t get_sprite_uv(const sprite_sheet_t *sprite_sheet, int id);
 
 bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
 {
@@ -26,18 +25,18 @@ bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
       tile_t tile = map->data[x + y * map->width];
       
       if (tile & TILE_DATA_EXISTS) {
-        tile_data_t *tile_data = &map->sprite_sheet->tile_data[tile & ~TILE_DATA_EXISTS];
+        tile_data_t *tile_data = &map->tile_set->tile_data[tile & ~TILE_DATA_EXISTS];
         
         tile = tile_data->block[0];
         
         for (int i = 0; i < tile_data->num_block - 1; i++) {
-          put_block(&quad_buf, pos, get_sprite_uv(map->sprite_sheet, tile));
+          put_block(&quad_buf, pos, tile_get_uv(map->tile_set, tile));
           pos.z -= 1.0;
           tile = tile_data->block[i + 1];
         }
       }
       
-      put_tile(&quad_buf, pos, get_sprite_uv(map->sprite_sheet, tile));
+      put_tile(&quad_buf, pos, tile_get_uv(map->tile_set, tile));
     }
   }
   
@@ -122,12 +121,4 @@ void put_quad(quad_buf_t *quad_buf, mat4x4_t pos_mat, mat3x3_t uv_mat)
   }
   
   quad_buf->offset += 6;
-}
-
-vec2_t get_sprite_uv(const sprite_sheet_t *sprite_sheet, int id)
-{
-  return vec2_init(
-    id % sprite_sheet->sheet_width,
-    id / sprite_sheet->sheet_height
-  );
 }
