@@ -14,6 +14,7 @@ typedef enum {
 typedef struct {
   tile_t block[MAX_BLOCKS];
   int num_block;
+  bool solid;
 } tile_data_t;
 
 typedef struct {
@@ -53,11 +54,13 @@ typedef struct {
 
 typedef struct {
   float time;
+  map_t *map;
   player_t player;
   sprite_t sprites[MAX_SPRITES];
 } game_t;
 
 void game_init(game_t *game);
+void game_load_map(game_t *game, map_t *map);
 void game_update(game_t *game, const usercmd_t *usercmd);
 
 #endif
