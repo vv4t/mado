@@ -77,7 +77,7 @@ bool nui_init(void)
   }
   
   static tile_data_t tile_data[] = {
-    { .block = { 1, 0 }, .num_block = 2, .solid = true }
+    { .block = { 1, 2 }, .num_block = 2, .solid = true }
   };
   
 #define A (0 | TILE_DATA_EXISTS)
@@ -87,9 +87,9 @@ bool nui_init(void)
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, A, A, A, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, A, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, A, 0, 0, 0, 0,
+    0, 0, 0, A, A, A, A, A, 0, 0,
+    0, 0, 0, 0, 0, A, 0, A, 0, 0,
+    0, 0, 0, A, 0, 0, 0, 0, 0, 0,
     0, 0, 0, A, A, A, A, A, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -107,6 +107,7 @@ bool nui_init(void)
   static map_t map = {
     .data = map_data,
     .sprite_sheet = &sprite_sheet,
+    .border_tile = A,
     .width = 10,
     .height = 10
   };

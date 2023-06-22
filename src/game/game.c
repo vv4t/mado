@@ -11,7 +11,7 @@ void game_init(game_t *game)
 {
   *game = (game_t) { 0 };
   
-  game->sprites[0].pos = vec2_init(2.0, 2.0);
+  game->sprites[0].pos = vec2_init(0.0, 0.0);
   game->sprites[0].uv = vec2_init(0, 5);
   game->sprites[0].show = true;
   game->sprites[0].stand = true;
@@ -32,7 +32,7 @@ void game_load_map(game_t *game, map_t *map)
 
 void player_init(player_t *player, sprite_t *sprite)
 {
-  player->pos = vec2_init(0.0, 0.0);
+  player->pos = vec2_init(2.0, 2.0);
   player->sprite = sprite;
 }
 
@@ -66,7 +66,10 @@ void player_move(player_t *player, map_t *map, float time, const usercmd_t *user
 
 tile_t map_get(map_t *map, int x, int y)
 {
-  return map->data[x + y * map->width];
+  if (x < 0 || y < 0 || x >= map->width || y >= map->height)
+    return map->border_tile;
+  else
+    return map->data[x + y * map->width];
 }
 
 bool map_solid(map_t *map, int x, int y)

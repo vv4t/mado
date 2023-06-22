@@ -29,6 +29,7 @@ typedef struct {
 typedef struct {
   sprite_sheet_t *sprite_sheet;
   tile_t *data;
+  tile_t border_tile;
   int width;
   int height;
 } map_t;
