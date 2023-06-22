@@ -1,6 +1,6 @@
 #include "map.h"
 
-tile_t map_get(map_t *map, int x, int y)
+tile_t map_get(const map_t *map, int x, int y)
 {
   if (x < 0 || y < 0 || x >= map->width || y >= map->height)
     return map->border_tile;
@@ -8,7 +8,7 @@ tile_t map_get(map_t *map, int x, int y)
     return map->data[x + y * map->width];
 }
 
-bool map_solid(map_t *map, int x, int y)
+bool map_solid(const map_t *map, int x, int y)
 {
   tile_t tile = map_get(map, x, y);
   
@@ -20,7 +20,7 @@ bool map_solid(map_t *map, int x, int y)
   return false;
 }
 
-bool map_collide(map_t *map, vec2_t pos, vec2_t box)
+bool map_collide(const map_t *map, vec2_t pos, vec2_t box)
 {
   int x0 = floor(pos.x - box.x);
   int y0 = floor(pos.y - box.y);
@@ -33,6 +33,15 @@ bool map_collide(map_t *map, vec2_t pos, vec2_t box)
   if (map_solid(map, x1, y1)) return true;
   
   return false;
+}
+
+tile_data_t *tile_get_data(tile_set_t *tile_set, tile_t tile)
+{
+  if (tile & TILE_DATA_EXISTS) {
+    return &tile_set->tile_data[tile & ~TILE_DATA_EXISTS];
+  }
+  
+  return NULL;
 }
 
 vec2_t tile_get_uv(const tile_set_t *tile_set, tile_t tile)

@@ -10,7 +10,8 @@ typedef struct {
   int offset;
 } quad_buf_t;
 
-void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
+void put_tile(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, tile_t tile);
+void put_floor(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
 void put_quad(quad_buf_t *quad_buf, mat4x4_t transform, mat3x3_t uv_mat);
 
@@ -21,22 +22,10 @@ bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
   
   for (int y = 0; y < map->height; y++) {
     for (int x = 0; x < map->width; x++) {
+      tile_t tile = map_get(map, x, y);
       vec3_t pos = vec3_init(x, y, 0.0);
-      tile_t tile = map->data[x + y * map->width];
       
-      if (tile & TILE_DATA_EXISTS) {
-        tile_data_t *tile_data = &map->tile_set->tile_data[tile & ~TILE_DATA_EXISTS];
-        
-        tile = tile_data->block[0];
-        
-        for (int i = 0; i < tile_data->num_block - 1; i++) {
-          put_block(&quad_buf, pos, tile_get_uv(map->tile_set, tile));
-          pos.z -= 1.0;
-          tile = tile_data->block[i + 1];
-        }
-      }
-      
-      put_tile(&quad_buf, pos, tile_get_uv(map->tile_set, tile));
+      put_tile(&quad_buf, map, pos, tile);
     }
   }
   
@@ -49,6 +38,23 @@ bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
     LOG_ERROR("failed to initialise mesh");
     return false;
   }
+}
+
+void put_tile(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, tile_t tile)
+{
+  tile_data_t *tile_data = tile_get_data(map->tile_set, tile);
+  
+  if (tile_data) {
+    tile = tile_data->block[0];
+    
+    for (int i = 0; i < tile_data->num_block - 1; i++) {
+      put_block(quad_buf, pos, tile_get_uv(map->tile_set, tile));
+      pos.z -= 1.0;
+      tile = tile_data->block[i + 1];
+    }
+  }
+  
+  put_floor(quad_buf, pos, tile_get_uv(map->tile_set, tile));
 }
 
 void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
@@ -93,7 +99,7 @@ void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
   put_quad(quad_buf, front2_mat, uv_mat);
 }
 
-void put_tile(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
+void put_floor(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
 {
   return put_quad(quad_buf, mat4x4_init_translation(pos), mat3x3_init_translation(uv));
 }
