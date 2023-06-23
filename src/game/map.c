@@ -20,12 +20,12 @@ bool map_solid(const map_t *map, int x, int y)
   return false;
 }
 
-bool map_collide(const map_t *map, vec2_t pos, vec2_t box)
+bool map_collide(const map_t *map, float x, float y, vec2_t box)
 {
-  int x0 = floor(pos.x - box.x);
-  int y0 = floor(pos.y - box.y);
-  int x1 = floor(pos.x + box.x);
-  int y1 = floor(pos.y + box.y);
+  int x0 = floor(x - box.x);
+  int y0 = floor(y - box.y);
+  int x1 = floor(x + box.x);
+  int y1 = floor(y + box.y);
   
   if (map_solid(map, x0, y0)) return true;
   if (map_solid(map, x1, y0)) return true;

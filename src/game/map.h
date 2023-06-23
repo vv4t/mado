@@ -30,7 +30,7 @@ typedef struct {
 
 tile_t map_get(const map_t *map, int x, int y);
 bool map_solid(const map_t *map, int x, int y);
-bool map_collide(const map_t *map, vec2_t pos, vec2_t box);
+bool map_collide(const map_t *map, float x, float y, vec2_t box);
 
 tile_data_t *tile_get_data(tile_set_t *tile_set, tile_t tile);
 vec2_t tile_get_uv(const tile_set_t *tile_set, tile_t tile);
