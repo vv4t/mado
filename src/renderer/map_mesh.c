@@ -12,7 +12,7 @@ typedef struct {
 
 void put_tile(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, tile_t tile);
 void put_floor(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
-void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv);
+void put_block(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, vec2_t uv);
 void put_quad(quad_buf_t *quad_buf, mat4x4_t transform, mat3x3_t uv_mat);
 
 bool map_mesh_init(mesh_t *mesh, buffer_t *buffer, const map_t *map)
@@ -48,7 +48,7 @@ void put_tile(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, tile_t tile)
     tile = tile_data->block[0];
     
     for (int i = 0; i < tile_data->num_block - 1; i++) {
-      put_block(quad_buf, pos, tile_get_uv(map->tile_set, tile));
+      put_block(quad_buf, map, pos, tile_get_uv(map->tile_set, tile));
       pos.z -= 1.0;
       tile = tile_data->block[i + 1];
     }
@@ -57,7 +57,7 @@ void put_tile(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, tile_t tile)
   put_floor(quad_buf, pos, tile_get_uv(map->tile_set, tile));
 }
 
-void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
+void put_block(quad_buf_t *quad_buf, const map_t *map, vec3_t pos, vec2_t uv)
 {
   mat4x4_t side1_mat = mat4x4_init(
     vec4_init(0.0, 0.0, 1.0, pos.x),
@@ -93,10 +93,24 @@ void put_block(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
     vec3_init(0.0, 0.0, 1.0)
   );
   
-  put_quad(quad_buf, side1_mat, uv_mat);
-  put_quad(quad_buf, side2_mat, uv_mat);
-  put_quad(quad_buf, front1_mat, uv_mat);
-  put_quad(quad_buf, front2_mat, uv_mat);
+  tile_data_t *d = tile_get_data(map->tile_set, map_get(map, pos.x, pos.y - 1));
+  tile_data_t *u = tile_get_data(map->tile_set, map_get(map, pos.x, pos.y + 1));
+  tile_data_t *l = tile_get_data(map->tile_set, map_get(map, pos.x - 1, pos.y));
+  tile_data_t *r = tile_get_data(map->tile_set, map_get(map, pos.x + 1, pos.y));
+  
+  int num_block = abs(pos.z) + 2;
+  
+  if (!u || u->num_block < num_block)
+    put_quad(quad_buf, front2_mat, uv_mat);
+  
+  if (!d || d->num_block < num_block)
+    put_quad(quad_buf, front1_mat, uv_mat);
+  
+  if (!l || l->num_block < num_block)
+    put_quad(quad_buf, side1_mat, uv_mat);
+  
+  if (!r || r->num_block < num_block)
+    put_quad(quad_buf, side2_mat, uv_mat);
 }
 
 void put_floor(quad_buf_t *quad_buf, vec3_t pos, vec2_t uv)
