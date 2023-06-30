@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 typedef struct {
+  bool used;
   vec2_t pos;
   vec2_t uv;
   bool show;

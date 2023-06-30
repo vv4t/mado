@@ -1,4 +1,6 @@
 #include "player.h"
+#include "bullet.h"
+#include "game.h"
 
 void player_init(player_t *player, sprite_t *sprite)
 {
@@ -32,4 +34,26 @@ void player_move(player_t *player, map_t *map, float time, const usercmd_t *user
     player->sprite->uv.x = floor(cos(time * 8) * cos(time * 8) * 2);
   
   player->sprite->pos = player->pos;
+}
+
+void player_shoot(
+  player_t *player, 
+  bullet_t bullets[MAX_BULLETS], 
+  sprite_t sprites[MAX_SPRITES], 
+  const usercmd_t *usercmd
+) {
+  if (usercmd->mouse_down) {
+    float shootAngle = atan2(
+      usercmd->relative_cursor_y, 
+      usercmd->relative_cursor_x
+    );
+    bullet_t *new_bullet = bullet_new(bullets);
+    new_bullet->sprite = sprite_new(sprites);
+
+    new_bullet->sprite->pos = vec2_init(player->pos.x, player->pos.y);
+    new_bullet->sprite->uv = vec2_init(0, 5);
+    new_bullet->sprite->show = true;
+    new_bullet->sprite->stand = true;
+    new_bullet->sprite->used = true;
+  }
 }

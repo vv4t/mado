@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "usercmd.h": "c",
+        "game.h": "c"
+    }
+}
