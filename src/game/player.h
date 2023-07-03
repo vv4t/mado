@@ -9,7 +9,6 @@
 typedef struct {
   vec2_t pos;
   float rot;
-  float sprite_rot;
   sprite_t *sprite;
 } player_t;
 

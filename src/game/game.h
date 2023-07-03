@@ -5,14 +5,17 @@
 #include "sprite.h"
 #include "usercmd.h"
 #include "map.h"
+#include "orb.h"
 #include "../common/nui_math.h"
 
 #define MAX_SPRITES 8
+#define MAX_ORBS 8
 
 typedef struct {
   float time;
   map_t *map;
   player_t player;
+  orb_t orbs[MAX_ORBS];
   sprite_t sprites[MAX_SPRITES];
 } game_t;
 

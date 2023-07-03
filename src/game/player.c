@@ -7,6 +7,11 @@ float rad_diff(float beta, float alpha);
 
 void player_init(player_t *player, sprite_t *sprite)
 {
+  sprite->pos = vec2_init(0.0, 0.0);
+  sprite->uv = vec2_init(0, 5);
+  sprite->show = true;
+  sprite->stand = true;
+  
   player->pos = vec2_init(2.0, 2.0);
   player->sprite = sprite;
 }
@@ -22,11 +27,7 @@ void player_move(player_t *player, const map_t *map, float time, const usercmd_t
 
 void player_sprite_animate(player_t *player, float time, vec2_t move_dir)
 {
-  float sprite_angle = rad_diff(player->rot, player->sprite_rot - M_PI / 4);
-  int sprite_state = floor(sprite_angle / (M_PI / 2));
-  
   if (fabs(move_dir.x) + fabs(move_dir.y) > 0.04) {
-    player->sprite_rot = atan2(move_dir.y, move_dir.x);
     player->sprite->uv.x = floor(cos(time * 8) * cos(time * 8) * 2);
   }
   
@@ -59,12 +60,4 @@ void player_collide_move(player_t *player, const map_t *map, vec2_t move_dir)
   } else {
     player->pos = new_pos;
   }
-}
-
-float rad_diff(float a, float b)
-{
-  float d = fmod(fabs(b - a), 2 * M_PI);
-  float r = d > M_PI ? 2 * M_PI - d : d;
-  float sign = (a - b >= 0 && a - b <= M_PI) || (a - b <= -M_PI && a - b>= -M_PI) ? 1 : -1;
-  return sign < 0 ? 2 * M_PI - r : r;
 }
