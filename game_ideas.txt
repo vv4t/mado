@@ -1,0 +1,45 @@
+
+story:
+  inspiration
+  - https://www.youtube.com/watch?v=0xN2dPuL4uA
+  - https://knowyourmeme.com/memes/immortal-snail
+
+  - a mage does a ritual makes him the strongest being
+  - but it summons an immortal revenant which hunts him down
+  - you plays as the revenant overcoming the obstacles the mage has prepared
+
+player attacks:
+  rotating knives:
+  - u have a circle of knives which rotate around u
+  - passive damage to enemies around you
+  - LMB to throw a knife which depletes one of them
+  - knives depleted spawn back every 1 second 2
+  - hold RMB to make it rotate faster (charge them up) for more damage and speed
+  - if u charge spin knives dont spawn back
+ 
+  dash
+  - dash and deal damage to enemies u pass
+  
+  tp mark
+  - spend a knife to mark current position
+  - you can then activate to dash back to last mark
+  - this also deals damage to enemies u pass
+  - you can have multiple marks
+  - u dash back to the last one u placed
+  - u can them do setups and spam dash back multiples times
+  
+  chain
+  - when u throw a knife it has a chain which is like rope/hook
+  - if u can then hold space to swing around: https://vv4t.github.io/demo/floating_pain
+  - chains that pass through enemies deal damage
+  
+  kinetic blast:
+  - shoot out all knives in every direction
+  - damage and speed is scaled on player velocity
+
+enemies:
+  fire orb
+  - floating fire thing
+  - shoots bursts of 3 projectiles
+  
+  TODO
