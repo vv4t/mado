@@ -10,6 +10,11 @@ typedef struct {
   vec2_t pos;
   float rot;
   sprite_t *sprite;
+  play_anim_t play_anim;
+  anim_t anim_move_left;
+  anim_t anim_move_right;
+  anim_t anim_move_forward;
+  anim_t anim_move_back;
 } player_t;
 
 void player_init(player_t *player, sprite_t *sprite);

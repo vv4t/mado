@@ -14,6 +14,9 @@ void play_anim_play(play_anim_t *play_anim, const anim_t *anim, float time)
 
 void sprite_play_anim(sprite_t *sprite, const play_anim_t *play_anim)
 {
+  if (!play_anim->anim)
+    return;
+  
   sprite->uv.x = play_anim->anim->start_uv.x + play_anim->frame_id;
   sprite->uv.y = play_anim->anim->start_uv.y;
 }

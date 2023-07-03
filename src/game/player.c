@@ -2,7 +2,7 @@
 
 vec2_t player_cmd_move(player_t *player, const usercmd_t *usercmd);
 void player_collide_move(player_t *player, const map_t *map, vec2_t move_dir);
-void player_sprite_animate(player_t *player, float time, vec2_t move_dir);
+void player_sprite_anim(player_t *player, float time, const usercmd_t *usercmd);
 float rad_diff(float beta, float alpha);
 
 void player_init(player_t *player, sprite_t *sprite)
@@ -14,6 +14,11 @@ void player_init(player_t *player, sprite_t *sprite)
   
   player->pos = vec2_init(2.0, 2.0);
   player->sprite = sprite;
+  
+  player->anim_move_right   = (anim_t) { .start_uv = {0,5}, .frame_count = 2, .frame_time = 0.2 };
+  player->anim_move_left    = (anim_t) { .start_uv = {2,5}, .frame_count = 2, .frame_time = 0.2 };
+  player->anim_move_forward = (anim_t) { .start_uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
+  player->anim_move_back    = (anim_t) { .start_uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
 }
 
 void player_move(player_t *player, const map_t *map, float time, const usercmd_t *usercmd)
@@ -22,15 +27,24 @@ void player_move(player_t *player, const map_t *map, float time, const usercmd_t
   
   vec2_t move_dir = player_cmd_move(player, usercmd);
   player_collide_move(player, map, move_dir);
-  player_sprite_animate(player, time, move_dir);
+  player_sprite_anim(player, time, usercmd);
 }
 
-void player_sprite_animate(player_t *player, float time, vec2_t move_dir)
+void player_sprite_anim(player_t *player, float time, const usercmd_t *usercmd)
 {
-  if (fabs(move_dir.x) + fabs(move_dir.y) > 0.04) {
-    player->sprite->uv.x = floor(cos(time * 8) * cos(time * 8) * 2);
+  if (usercmd->side < 0) {
+    play_anim_play(&player->play_anim, &player->anim_move_left, time);
+  } else if (usercmd->side > 0) {
+    play_anim_play(&player->play_anim, &player->anim_move_right, time);
+  } else if (usercmd->forward > 0) {
+    play_anim_play(&player->play_anim, &player->anim_move_forward, time);
+  } else if (usercmd->forward < 0) {
+    play_anim_play(&player->play_anim, &player->anim_move_back, time);
+  } else {
+    
   }
   
+  sprite_play_anim(player->sprite, &player->play_anim);
   player->sprite->pos = player->pos;
 }
 
