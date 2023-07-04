@@ -1,19 +1,19 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "bullet.h"
 #include "player.h"
 #include "sprite.h"
 #include "usercmd.h"
 #include "map.h"
 #include "../common/nui_math.h"
 
-#define MAX_SPRITES 8
-
 typedef struct {
   float time;
   map_t *map;
   player_t player;
   sprite_t sprites[MAX_SPRITES];
+  bullet_t bullets[MAX_BULLETS];
 } game_t;
 
 void game_init(game_t *game);

@@ -1,4 +1,6 @@
 #include "player.h"
+#include "bullet.h"
+#include "game.h"
 
 vec2_t player_cmd_move(player_t *player, const usercmd_t *usercmd);
 void player_collide_move(player_t *player, const map_t *map, vec2_t move_dir);
@@ -9,6 +11,10 @@ void player_init(player_t *player, sprite_t *sprite)
 {
   player->pos = vec2_init(2.0, 2.0);
   player->sprite = sprite;
+  player->shoot_cooldown = 0;
+
+  player->max_shoot_cooldown = 100;
+  player->shoot_cooldown_decay = 5;
 }
 
 void player_move(player_t *player, const map_t *map, float time, const usercmd_t *usercmd)
@@ -67,4 +73,35 @@ float rad_diff(float a, float b)
   float r = d > M_PI ? 2 * M_PI - d : d;
   float sign = (a - b >= 0 && a - b <= M_PI) || (a - b <= -M_PI && a - b>= -M_PI) ? 1 : -1;
   return sign < 0 ? 2 * M_PI - r : r;
+}
+
+void player_shoot(
+  player_t *player, 
+  bullet_t bullets[MAX_BULLETS], 
+  sprite_t sprites[MAX_SPRITES], 
+  const usercmd_t *usercmd
+) {
+  if (player->shoot_cooldown > 0) {
+    player->shoot_cooldown -= player->shoot_cooldown_decay;
+  }
+
+  if (!usercmd->mouse_down) {
+    return;
+  }
+
+  if (player->shoot_cooldown <= 0) {
+    player->shoot_cooldown = player->max_shoot_cooldown;
+
+    float shoot_angle = -atan2(
+      usercmd->relative_cursor_y, 
+      usercmd->relative_cursor_x
+    ) + player->rot;
+
+    bullet_t *new_bullet = bullet_new(
+      bullets, sprites,
+      vec2_init(0,5),
+      player->pos, shoot_angle, 
+      100, 5
+    );
+  }
 }

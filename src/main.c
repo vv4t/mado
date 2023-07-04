@@ -10,6 +10,9 @@
   #include <emscripten.h>
 #endif
 
+#define WIN_WIDTH 1280
+#define WIN_HEIGHT 720
+
 typedef enum {
   IN_LEFT,
   IN_RIGHT,
@@ -17,6 +20,7 @@ typedef enum {
   IN_BACK,
   IN_ROT_LEFT,
   IN_ROT_RIGHT,
+  IN_MOUSE_DOWN,
   MAX_INPUT
 } input_t;
 
@@ -27,7 +31,10 @@ static struct {
   usercmd_t usercmd;
   game_t game;
   renderer_t renderer;
-  
+
+  int cursor_x;
+  int cursor_y;
+
   float input_state[MAX_INPUT];
 } nui;
 
@@ -35,6 +42,8 @@ bool nui_init(void);
 void nui_update(void);
 void nui_base_move(void);
 void nui_key_event(int key, float action);
+void nui_mouse_click_event(int button_type, bool state);
+void nui_mouse_move_event(int x, int y);
 
 bool sdl_poll(void);
 void sdl_quit(void);
@@ -61,7 +70,7 @@ int main(int argc, char *argv[])
 
 bool nui_init(void)
 {
-  if (!sdl_init(1280, 720, "nui")) {
+  if (!sdl_init(WIN_WIDTH, WIN_HEIGHT, "nui")) {
     LOG_ERROR("failed to initialise SDL");
     return false;
   }
@@ -139,6 +148,9 @@ void nui_base_move(void)
   nui.usercmd.forward = nui.input_state[IN_FORWARD] - nui.input_state[IN_BACK];
   nui.usercmd.side = nui.input_state[IN_RIGHT] - nui.input_state[IN_LEFT];
   nui.usercmd.rot = nui.input_state[IN_ROT_LEFT] - nui.input_state[IN_ROT_RIGHT];
+  nui.usercmd.relative_cursor_x = nui.cursor_x - WIN_WIDTH / 2;
+  nui.usercmd.relative_cursor_y = nui.cursor_y - WIN_HEIGHT / 2;
+  nui.usercmd.mouse_down = nui.input_state[IN_MOUSE_DOWN];
 }
 
 void nui_key_event(int key, float action)
@@ -157,6 +169,19 @@ void nui_key_event(int key, float action)
     nui.input_state[IN_ROT_RIGHT] = action;
 }
 
+void nui_mouse_click_event(int button_type, bool state)
+{
+  if (button_type == SDL_BUTTON_LEFT) {
+    nui.input_state[IN_MOUSE_DOWN] = state;
+  }
+}
+
+void nui_mouse_move_event(int x, int y)
+{
+  nui.cursor_x = x;
+  nui.cursor_y = y;
+}
+
 bool sdl_poll(void)
 {
   SDL_Event event;
@@ -171,6 +196,13 @@ bool sdl_poll(void)
       nui_key_event(event.key.keysym.sym, 0);
       break;
     case SDL_MOUSEMOTION:
+      nui_mouse_move_event(event.motion.x, event.motion.y);
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      nui_mouse_click_event(event.button.button, true);
+      break;
+    case SDL_MOUSEBUTTONUP:
+      nui_mouse_click_event(event.button.button, false);
       break;
     }
   }
