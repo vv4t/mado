@@ -9,6 +9,7 @@
 
 typedef struct {
   sprite_t *sprite;
+  float sprite_rot;
   vec2_t pos;
   float rot;
   float shoot_cooldown;
@@ -17,7 +18,7 @@ typedef struct {
 } player_t;
 
 void player_init(player_t *player, sprite_t *sprite);
-void player_move(player_t *player, map_t *map, float time, const usercmd_t *usercmd);
+void player_move(player_t *player, const map_t *map, float time, const usercmd_t *usercmd);
 void player_shoot(
   player_t *player, 
   bullet_t bullets[MAX_BULLETS], 

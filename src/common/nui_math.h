@@ -91,6 +91,27 @@ inline static vec2_t vec2_rotate(vec2_t v, float theta)
   );
 }
 
+inline static float vec2_dot(vec2_t a, vec2_t b)
+{
+  return a.x * b.x + a.y * b.y;
+}
+
+inline static float vec2_length(vec2_t v)
+{
+  return sqrt(vec2_dot(v, v));
+}
+
+inline static vec2_t vec2_normalize(vec2_t v)
+{
+  float length = vec2_length(v);
+
+  if (length < 0.001f) {
+    return vec2_init(0.0f, 0.0f);
+  }
+
+  return vec2_mulf(v, 1.0 / length);
+}
+
 inline static vec3_t vec3_init(float x, float y, float z)
 {
   return (vec3_t) {
