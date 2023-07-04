@@ -20,3 +20,13 @@ void sprite_play_anim(sprite_t *sprite, const play_anim_t *play_anim)
   sprite->uv.x = play_anim->anim->start_uv.x + play_anim->frame_id;
   sprite->uv.y = play_anim->anim->start_uv.y;
 }
+
+sprite_t *sprite_alloc(sprite_t sprites[MAX_SPRITES]) {
+    for (int i = 0; i < MAX_SPRITES; i ++) {
+        if (!sprites[i].used) {
+            sprites[i].used = true;
+            return &sprites[i];
+        }
+    }
+    return NULL;
+}

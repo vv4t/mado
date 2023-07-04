@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "*.json.liquid": "json",
+        "*.yaml.liquid": "yaml",
+        "*.md.liquid": "markdown",
+        "*.js.liquid": "liquid-javascript",
+        "*.css.liquid": "liquid-css",
+        "*.scss.liquid": "liquid-scss",
+        "usercmd.h": "c",
+        "game.h": "c",
+        "nui_math.h": "c",
+        "map.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

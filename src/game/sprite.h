@@ -4,6 +4,8 @@
 #include "../common/nui_math.h"
 #include <stdbool.h>
 
+#define MAX_SPRITES 100
+
 typedef struct {
   vec2_t start_uv;
   int frame_count;
@@ -17,6 +19,7 @@ typedef struct {
 } play_anim_t;
 
 typedef struct {
+  bool used;
   vec2_t pos;
   vec2_t uv;
   bool stand;
@@ -33,5 +36,7 @@ typedef struct {
 
 void play_anim_play(play_anim_t *play_anim, const anim_t *anim, float time);
 void sprite_play_anim(sprite_t *sprite, const play_anim_t *play_anim);
+
+sprite_t *sprite_alloc(sprite_t sprites[MAX_SPRITES]);
 
 #endif
