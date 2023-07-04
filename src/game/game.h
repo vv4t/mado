@@ -8,8 +8,6 @@
 #include "map.h"
 #include "../common/nui_math.h"
 
-#define MAX_SPRITES 8
-
 typedef struct {
   float time;
   map_t *map;

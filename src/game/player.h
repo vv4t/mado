@@ -5,13 +5,15 @@
 #include "bullet.h"
 #include "map.h"
 #include "usercmd.h"
-#include "game.h"
 #include "../common/nui_math.h"
 
 typedef struct {
+  sprite_t *sprite;
   vec2_t pos;
   float rot;
-  sprite_t *sprite;
+  float shoot_cooldown;
+  float max_shoot_cooldown;
+  float shoot_cooldown_decay;
 } player_t;
 
 void player_init(player_t *player, sprite_t *sprite);

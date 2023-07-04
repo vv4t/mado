@@ -6,6 +6,10 @@ void player_init(player_t *player, sprite_t *sprite)
 {
   player->pos = vec2_init(2.0, 2.0);
   player->sprite = sprite;
+  player->shoot_cooldown = 0;
+
+  player->max_shoot_cooldown = 100;
+  player->shoot_cooldown_decay = 5;
 }
 
 void player_move(player_t *player, map_t *map, float time, const usercmd_t *usercmd)
@@ -42,18 +46,27 @@ void player_shoot(
   sprite_t sprites[MAX_SPRITES], 
   const usercmd_t *usercmd
 ) {
-  if (usercmd->mouse_down) {
-    float shootAngle = atan2(
+  if (player->shoot_cooldown > 0) {
+    player->shoot_cooldown -= player->shoot_cooldown_decay;
+  }
+
+  if (!usercmd->mouse_down) {
+    return;
+  }
+
+  if (player->shoot_cooldown <= 0) {
+    player->shoot_cooldown = player->max_shoot_cooldown;
+
+    float shoot_angle = -atan2(
       usercmd->relative_cursor_y, 
       usercmd->relative_cursor_x
-    );
-    bullet_t *new_bullet = bullet_new(bullets);
-    new_bullet->sprite = sprite_new(sprites);
+    ) + player->rot;
 
-    new_bullet->sprite->pos = vec2_init(player->pos.x, player->pos.y);
-    new_bullet->sprite->uv = vec2_init(0, 5);
-    new_bullet->sprite->show = true;
-    new_bullet->sprite->stand = true;
-    new_bullet->sprite->used = true;
+    bullet_t *new_bullet = bullet_new(
+      bullets, sprites,
+      vec2_init(0,5),
+      player->pos, shoot_angle, 
+      100, 5
+    );
   }
 }

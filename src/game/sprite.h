@@ -4,6 +4,8 @@
 #include "../common/nui_math.h"
 #include <stdbool.h>
 
+#define MAX_SPRITES 100
+
 typedef struct {
   bool used;
   vec2_t pos;
@@ -19,5 +21,7 @@ typedef struct {
   int sheet_width;
   int sheet_height;
 } sprite_sheet_t;
+
+sprite_t *sprite_alloc(sprite_t sprites[MAX_SPRITES]);
 
 #endif
