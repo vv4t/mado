@@ -25,9 +25,9 @@ void player_init(player_t *player, edict_t *edict)
   player->anim_move_left    = (animation_t) { .uv = {2,5}, .frame_count = 2, .frame_time = 0.2 };
   player->anim_move_forward = (animation_t) { .uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
   player->anim_move_back    = (animation_t) { .uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
-  
+
   player->shoot_cooldown = 0;
-  player->max_shoot_cooldown = 100;
+  player->max_shoot_cooldown = 5;
   player->shoot_cooldown_decay = 5;
 }
 
@@ -65,7 +65,7 @@ void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 
 void player_shoot(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
   if (player->shoot_cooldown > 0) {
-    player->shoot_cooldown -= player->shoot_cooldown_decay;
+    player->shoot_cooldown -= player->shoot_cooldown_decay * DELTA_TIME;
   }
 
   if (!usercmd->mouse_down) {

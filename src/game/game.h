@@ -7,9 +7,12 @@
 #include "usercmd.h"
 #include "map.h"
 #include "../common/nui_math.h"
+#include <time.h>
 
 typedef struct {
-  float time;
+  long int time;
+  float delta_time;
+  float animation_time;
   map_t *map;
   edict_t edict;
   player_t player;

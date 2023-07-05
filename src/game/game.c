@@ -1,4 +1,5 @@
 #include "game.h"
+#include "../common/time.h"
 
 void game_init(game_t *game)
 {
@@ -9,7 +10,10 @@ void game_init(game_t *game)
 
 void game_update(game_t *game, const usercmd_t *usercmd)
 {
-  game->time += 0.015;
+  game->delta_time = (time_ms_since_epoch() - game->time) / 1000.0;
+  game->time = time_ms_since_epoch();
+
+  game->animation_time += 0.015;
   
   player_update(&game->player, &game->edict, usercmd);
   
