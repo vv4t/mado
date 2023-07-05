@@ -1,63 +1,34 @@
-#include "bullet.h"
+#include "system.h"
 
-bullet_t *bullet_new(
-    bullet_t bullets[MAX_BULLETS],
-    sprite_t sprites[MAX_SPRITES],
-    vec2_t sprite_uv,
-    vec2_t pos,
-    float rot,
-    float lifetime,
-    float decay_rate
-) {
-  bullet_t *new_bullet = bullet_alloc(bullets);
-  sprite_t *new_sprite = sprite_alloc(sprites);
+void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time) {
+  entity_t entity = edict_spawn(edict);
+  edict->field[entity] |= COMPONENT_TRANSFORM;
+  edict->field[entity] |= COMPONENT_MOTION;
+  edict->field[entity] |= COMPONENT_SPRITE;
+  edict->field[entity] |= COMPONENT_BULLET;
   
-  if (new_bullet && new_sprite) {
-    new_bullet->pos = pos;
-    new_bullet->rot = rot;
-    new_bullet->lifetime = lifetime;
-    new_bullet->decay_rate = decay_rate;
+  edict->transform[entity].position = pos;
+  edict->transform[entity].rotation = angle;
   
-    new_bullet->sprite = new_sprite;
-    new_bullet->sprite->pos = pos;
-    new_bullet->sprite->uv = sprite_uv;
-    new_bullet->sprite->show = true;
-  } else {
-    if (new_sprite) {
-      new_sprite->used = false;
-    }
-    if (new_bullet) {
-      new_bullet->used = false;
-    }
-    return NULL;
-  }
+  edict->sprite[entity].uv = vec2_init(0, 7);
+  edict->sprite[entity].rotation = angle - M_PI/2.0;
+  edict->sprite[entity].orient = false;
+  
+  edict->motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
+  edict->bullet[entity].live_time = live_time;
 }
 
-bullet_t *bullet_alloc(bullet_t bullets[MAX_BULLETS]) {
-  for (int i = 0; i < MAX_BULLETS; i++) {
-    if (!bullets[i].used) {
-      bullets[i].used = true;
-      return &bullets[i];
+void decay_bullet(edict_t *edict) {
+  const component_t mask = COMPONENT_BULLET;
+  
+  for (int i = 0; i < MAX_ENTITIES; i++) {
+    if ((edict->field[i] & mask) != mask)
+      continue;
+    
+    edict->bullet[i].live_time -= 0.015;
+    
+    if (edict->bullet[i].live_time <= 0) {
+      edict_kill(edict, i);
     }
   }
-  return NULL;
-}
-
-void bullet_kill(bullet_t *bullet) {
-  bullet->used = false;
-  bullet->sprite->used = false;
-  bullet->sprite->show = false;
-}
-
-void bullet_update(bullet_t *bullet) {
-  bullet->lifetime -= bullet->decay_rate;
-
-  if (bullet->lifetime <= 0) {
-    bullet_kill(bullet);
-  }
-
-  bullet->pos.x += cos(bullet->rot);
-  bullet->pos.y += sin(bullet->rot);
-
-  bullet->sprite->pos = bullet->pos; 
 }

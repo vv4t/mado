@@ -6,6 +6,6 @@
 #include "../game/game.h"
 
 bool sprite_mesh_init(mesh_t *sprite_mesh, buffer_t *buffer);
-void sprite_mesh_draw(mesh_t *sprite_mesh, const sprite_t sprite[MAX_SPRITES], const camera_t *camera);
+void sprite_mesh_draw(mesh_t *sprite_mesh, const game_t *game, const camera_t *camera);
 
 #endif
