@@ -2,7 +2,7 @@
 #include "bullet.h"
 #include "game.h"
 
-vec2_t player_cmd_move(player_t *player, const usercmd_t *usercmd);
+vec2_t player_cmd_move(player_t *player, float delta_time, const usercmd_t *usercmd);
 void player_collide_move(player_t *player, const map_t *map, vec2_t move_dir);
 void player_sprite_anim(player_t *player, float time, const usercmd_t *usercmd);
 
@@ -21,16 +21,23 @@ void player_init(player_t *player, sprite_t *sprite)
   player->anim_move_forward = (anim_t) { .start_uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
   player->anim_move_back    = (anim_t) { .start_uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
   
+  player->speed = 7.5;
+
   player->shoot_cooldown = 0;
-  player->max_shoot_cooldown = 100;
+  player->max_shoot_cooldown = 5;
   player->shoot_cooldown_decay = 5;
 }
 
-void player_move(player_t *player, const map_t *map, float time, const usercmd_t *usercmd)
-{
-  player->rot += usercmd->rot * 0.05;
-  
-  vec2_t move_dir = player_cmd_move(player, usercmd);
+void player_move(
+  player_t *player, 
+  const map_t *map, 
+  float time, 
+  float delta_time,
+  const usercmd_t *usercmd
+) {
+  player->rot += usercmd->rot * delta_time * 5;
+
+  vec2_t move_dir = player_cmd_move(player, delta_time, usercmd);
   player_collide_move(player, map, move_dir);
   player_sprite_anim(player, time, usercmd);
 }
@@ -53,12 +60,12 @@ void player_sprite_anim(player_t *player, float time, const usercmd_t *usercmd)
   player->sprite->pos = player->pos;
 }
 
-vec2_t player_cmd_move(player_t *player, const usercmd_t *usercmd)
+vec2_t player_cmd_move(player_t *player, float delta_time, const usercmd_t *usercmd)
 {
   vec2_t cmd_dir = vec2_init(usercmd->side, usercmd->forward);
   vec2_t wish_dir = vec2_normalize(cmd_dir);
   vec2_t rot_dir = vec2_rotate(wish_dir, player->rot);
-  vec2_t move_dir = vec2_mulf(rot_dir, 0.05);
+  vec2_t move_dir = vec2_mulf(rot_dir, player->speed * delta_time);
   
   return move_dir;
 }
@@ -84,11 +91,12 @@ void player_collide_move(player_t *player, const map_t *map, vec2_t move_dir)
 void player_shoot(
   player_t *player, 
   bullet_t bullets[MAX_BULLETS], 
-  sprite_t sprites[MAX_SPRITES], 
+  sprite_t sprites[MAX_SPRITES],
+  float delta_time,
   const usercmd_t *usercmd
 ) {
   if (player->shoot_cooldown > 0) {
-    player->shoot_cooldown -= player->shoot_cooldown_decay;
+    player->shoot_cooldown -= player->shoot_cooldown_decay * (delta_time * 10);
   }
 
   if (!usercmd->mouse_down) {
@@ -107,7 +115,7 @@ void player_shoot(
       bullets, sprites,
       vec2_init(0,5),
       player->pos, shoot_angle, 
-      100, 5
+      10, 50, 5
     );
   }
 }

@@ -6,6 +6,7 @@ bullet_t *bullet_new(
     vec2_t sprite_uv,
     vec2_t pos,
     float rot,
+    float speed,
     float lifetime,
     float decay_rate
 ) {
@@ -15,6 +16,8 @@ bullet_t *bullet_new(
   if (new_bullet && new_sprite) {
     new_bullet->pos = pos;
     new_bullet->rot = rot;
+
+    new_bullet->speed = speed;
     new_bullet->lifetime = lifetime;
     new_bullet->decay_rate = decay_rate;
   
@@ -49,15 +52,17 @@ void bullet_kill(bullet_t *bullet) {
   bullet->sprite->show = false;
 }
 
-void bullet_update(bullet_t *bullet) {
-  bullet->lifetime -= bullet->decay_rate;
+void bullet_update(bullet_t *bullet, float delta_time) {
+  bullet->lifetime -= bullet->decay_rate * (delta_time * 10);
 
   if (bullet->lifetime <= 0) {
     bullet_kill(bullet);
   }
 
-  bullet->pos.x += cos(bullet->rot);
-  bullet->pos.y += sin(bullet->rot);
+  vec2_t mag_dir = vec2_init(0, bullet->speed * delta_time);
+  vec2_t rot_dir = vec2_rotate(mag_dir, bullet->rot - M_PI_2);
+
+  bullet->pos = vec2_add(bullet->pos, rot_dir);
 
   bullet->sprite->pos = bullet->pos; 
 }

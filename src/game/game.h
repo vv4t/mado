@@ -8,9 +8,12 @@
 #include "map.h"
 #include "orb.h"
 #include "../common/nui_math.h"
+#include <time.h>
 
 typedef struct {
-  float time;
+  long int time;
+  float delta_time;
+  float animation_time;
   map_t *map;
   player_t player;
   sprite_t sprites[MAX_SPRITES];
