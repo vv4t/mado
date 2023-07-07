@@ -6,10 +6,10 @@ typedef struct {
   float side;
   float rot;
   
-  int relative_cursor_x;
-  int relative_cursor_y;
+  float aim_x;
+  float aim_y;
 
-  bool mouse_down;
+  bool attack;
 } usercmd_t;
 
 #endif

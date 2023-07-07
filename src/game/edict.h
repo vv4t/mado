@@ -25,6 +25,7 @@ typedef struct {
 typedef struct {
   vec2_t velocity;
   float angular_velocity;
+  bool hit_map;
 } motion_t;
 
 typedef struct {

@@ -17,9 +17,9 @@ void game_update(game_t *game, const usercmd_t *usercmd)
   
   player_update(&game->player, &game->edict, usercmd);
   
-  decay_bullet(&game->edict);
   clip_motion(&game->edict, game->map);
   integrate_motion(&game->edict);
+  decay_bullet(&game->edict);
   animate_sprite(&game->edict);
 }
 

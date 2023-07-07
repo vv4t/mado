@@ -27,8 +27,6 @@ void player_init(player_t *player, edict_t *edict)
   player->anim_move_back    = (animation_t) { .uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
 
   player->shoot_cooldown = 0;
-  player->max_shoot_cooldown = 5;
-  player->shoot_cooldown_decay = 5;
 }
 
 void player_update(player_t *player, edict_t *edict, const usercmd_t *usercmd)
@@ -65,16 +63,12 @@ void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 
 void player_shoot(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
   if (player->shoot_cooldown > 0) {
-    player->shoot_cooldown -= player->shoot_cooldown_decay * DELTA_TIME;
+    player->shoot_cooldown -= DELTA_TIME;
   }
 
-  if (!usercmd->mouse_down) {
-    return;
-  }
-
-  if (player->shoot_cooldown <= 0) {
-    player->shoot_cooldown = player->max_shoot_cooldown;
-    float shoot_angle = edict->transform[player->entity].rotation - atan2(usercmd->relative_cursor_y, usercmd->relative_cursor_x);
+  if (usercmd->attack && player->shoot_cooldown <= 0) {
+    player->shoot_cooldown = 0.25;
+    float shoot_angle = edict->transform[player->entity].rotation - atan2(usercmd->aim_y, usercmd->aim_x);
     
     shoot_bullet(edict, edict->transform[player->entity].position, shoot_angle, 1.0);
   }

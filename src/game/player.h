@@ -13,10 +13,8 @@ typedef struct {
   animation_t anim_move_right;
   animation_t anim_move_forward;
   animation_t anim_move_back;
-
+  
   float shoot_cooldown;
-  float max_shoot_cooldown;
-  float shoot_cooldown_decay;
 } player_t;
 
 void player_init(player_t *player, edict_t *edict);

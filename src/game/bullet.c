@@ -30,5 +30,9 @@ void decay_bullet(edict_t *edict) {
     if (edict->bullet[i].live_time <= 0) {
       edict_kill(edict, i);
     }
+    
+    if (edict->motion[i].hit_map) {
+      edict_kill(edict, i);
+    }
   }
 }

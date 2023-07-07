@@ -33,6 +33,8 @@ void clip_motion(edict_t *edict, const map_t *map)
     vec2_t new_pos_y = vec2_add(old_pos, vec2_init(0.0, edict->motion[i].velocity.y));
     vec2_t box = vec2_init(0.2, 0.2);
     
+    edict->motion[i].hit_map = false;
+    
     if (map_collide(map, new_pos.x, new_pos.y, box)) {
       if (!map_collide(map, edict->transform[i].position.x, new_pos.y, box)) {
         edict->motion[i].velocity.x = 0.0;
@@ -42,6 +44,8 @@ void clip_motion(edict_t *edict, const map_t *map)
         edict->motion[i].velocity.x = 0.0;
         edict->motion[i].velocity.y = 0.0;
       }
+      
+      edict->motion[i].hit_map = true;
     }
   }
 }
