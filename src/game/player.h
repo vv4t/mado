@@ -9,11 +9,6 @@
 typedef struct {
   entity_t entity;
   
-  animation_t anim_move_left;
-  animation_t anim_move_right;
-  animation_t anim_move_forward;
-  animation_t anim_move_back;
-  
   float shoot_cooldown;
 } player_t;
 

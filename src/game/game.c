@@ -6,6 +6,7 @@ void game_init(game_t *game)
   *game = (game_t) {0};
   
   player_init(&game->player, &game->edict);
+  orb_spawn(&game->edict, vec2_init(3, 3));
 }
 
 void game_update(game_t *game, const usercmd_t *usercmd)
@@ -17,6 +18,7 @@ void game_update(game_t *game, const usercmd_t *usercmd)
   
   player_update(&game->player, &game->edict, usercmd);
   
+  perform_attack(&game->edict);
   clip_motion(&game->edict, game->map);
   integrate_motion(&game->edict);
   decay_bullet(&game->edict);

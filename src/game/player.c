@@ -2,9 +2,15 @@
 
 #include "system.h"
 
-void player_move(player_t *player, edict_t *edict, const usercmd_t *usercmd);
-void player_shoot(player_t *player, edict_t *edict, const usercmd_t *usercmd);
-void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd);
+static void player_move(player_t *player, edict_t *edict, const usercmd_t *usercmd);
+static void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd);
+static void player_aim(player_t *player, edict_t *edict, const usercmd_t *usercmd);
+static void player_attack(entity_t entity, edict_t *edict);
+
+static animation_t player_anim_move_right   = (animation_t) { .uv = {0,5}, .frame_count = 2, .frame_time = 0.2 };
+static animation_t player_anim_move_left    = (animation_t) { .uv = {2,5}, .frame_count = 2, .frame_time = 0.2 };
+static animation_t player_anim_move_forward = (animation_t) { .uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
+static animation_t player_anim_move_back    = (animation_t) { .uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
 
 void player_init(player_t *player, edict_t *edict)
 {
@@ -13,25 +19,26 @@ void player_init(player_t *player, edict_t *edict)
   edict->field[player->entity] |= COMPONENT_MOTION;
   edict->field[player->entity] |= COMPONENT_SPRITE;
   edict->field[player->entity] |= COMPONENT_ANIMATOR;
+  edict->field[player->entity] |= COMPONENT_ACTION;
+  
+  edict->transform[player->entity].position = vec2_init(2.0, 2.0);
   
   edict->sprite[player->entity].stand = true;
   edict->sprite[player->entity].orient = true;
   edict->sprite[player->entity].rotation = 0.0;
-  play_animation(&edict->animator[player->entity], &player->anim_move_left);
+  play_animation(&edict->animator[player->entity], &player_anim_move_left);
   
-  edict->transform[player->entity].position = vec2_init(2.0, 2.0);
-  
-  player->anim_move_right   = (animation_t) { .uv = {0,5}, .frame_count = 2, .frame_time = 0.2 };
-  player->anim_move_left    = (animation_t) { .uv = {2,5}, .frame_count = 2, .frame_time = 0.2 };
-  player->anim_move_forward = (animation_t) { .uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
-  player->anim_move_back    = (animation_t) { .uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
-
-  player->shoot_cooldown = 0;
+  edict->action[player->entity].attack[0].xaction = player_attack;
+  edict->action[player->entity].attack[0].time = 0.0;
+  edict->action[player->entity].attack[0].cooldown = 0.25;
+  edict->action[player->entity].attack[0].active = false;
+  edict->action[player->entity].attack[0].count = 0;
+  edict->action[player->entity].num_attack = 1;
 }
 
 void player_update(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 {
-  player_shoot(player, edict, usercmd);
+  player_aim(player, edict, usercmd);
   player_move(player, edict, usercmd);
   player_animate(player, edict, usercmd);
 }
@@ -51,25 +58,25 @@ void player_move(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 {
   if (usercmd->side < 0) {
-    play_animation(&edict->animator[player->entity], &player->anim_move_left);
+    play_animation(&edict->animator[player->entity], &player_anim_move_left);
   } else if (usercmd->side > 0) {
-    play_animation(&edict->animator[player->entity], &player->anim_move_right);
+    play_animation(&edict->animator[player->entity], &player_anim_move_right);
   } else if (usercmd->forward > 0) {
-    play_animation(&edict->animator[player->entity], &player->anim_move_forward);
+    play_animation(&edict->animator[player->entity], &player_anim_move_forward);
   } else if (usercmd->forward < 0) {
-    play_animation(&edict->animator[player->entity], &player->anim_move_back);
+    play_animation(&edict->animator[player->entity], &player_anim_move_back);
   }
 }
 
-void player_shoot(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
-  if (player->shoot_cooldown > 0) {
-    player->shoot_cooldown -= DELTA_TIME;
-  }
+void player_aim(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
+  float player_angle = edict->transform[player->entity].rotation; 
+  float shoot_angle = player_angle - atan2(usercmd->aim_y, usercmd->aim_x);
+  
+  edict->action[player->entity].angle = shoot_angle;
+  edict->action[player->entity].attack[0].active = usercmd->attack;
+}
 
-  if (usercmd->attack && player->shoot_cooldown <= 0) {
-    player->shoot_cooldown = 0.25;
-    float shoot_angle = edict->transform[player->entity].rotation - atan2(usercmd->aim_y, usercmd->aim_x);
-    
-    shoot_bullet(edict, edict->transform[player->entity].position, shoot_angle, 1.0);
-  }
+void player_attack(entity_t entity, edict_t *edict)
+{
+  shoot_bullet(edict, edict->transform[entity].position, edict->action[entity].angle, 1.0);
 }

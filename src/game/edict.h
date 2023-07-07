@@ -1,9 +1,16 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#define MAX_ENTITIES 8
+#define MAX_ENTITIES 16
+#define MAX_ATTACK 4
 
 #include "sprite.h"
+
+typedef struct edict edict_t;
+
+typedef enum {
+  ENTITY_INVALID = -1
+} entity_t;
 
 typedef struct {
   vec2_t position;
@@ -28,6 +35,23 @@ typedef struct {
   bool hit_map;
 } motion_t;
 
+// TODO: ATTACK STUFF NEEDS BETTER NAMES; SHOULD HANDLE TIMED ACTIONS IN GENERAL
+typedef void (*xaction_t)(entity_t entity, edict_t *edict);
+
+typedef struct {
+  xaction_t xaction;
+  float time;
+  float cooldown;
+  int count;
+  bool active;
+} attack_t;
+
+typedef struct {
+  attack_t attack[MAX_ATTACK];
+  int num_attack;
+  float angle;
+} action_t;
+
 typedef struct {
   float live_time;
 } bullet_t;
@@ -37,22 +61,20 @@ typedef enum {
   COMPONENT_SPRITE    = (1 << 1),
   COMPONENT_ANIMATOR  = (1 << 2),
   COMPONENT_MOTION    = (1 << 3),
-  COMPONENT_BULLET    = (1 << 4)
+  COMPONENT_BULLET    = (1 << 4),
+  COMPONENT_ACTION    = (1 << 5)
 } component_t;
 
-typedef struct {
+struct edict {
   component_t field[MAX_ENTITIES];
   
   transform_t transform[MAX_ENTITIES];
   motion_t motion[MAX_ENTITIES];
   sprite_t sprite[MAX_ENTITIES];
   bullet_t bullet[MAX_ENTITIES];
+  action_t action[MAX_ENTITIES];
   animator_t animator[MAX_ENTITIES];
-} edict_t;
-
-typedef enum {
-  ENTITY_INVALID = -1
-} entity_t;
+};
 
 entity_t edict_spawn(edict_t *edict);
 void edict_kill(edict_t *edict, entity_t entity);
