@@ -35,7 +35,6 @@ typedef struct {
   bool hit_map;
 } motion_t;
 
-// TODO: ATTACK STUFF NEEDS BETTER NAMES; SHOULD HANDLE TIMED ACTIONS IN GENERAL
 typedef void (*xaction_t)(entity_t entity, edict_t *edict);
 
 typedef struct {
@@ -44,13 +43,13 @@ typedef struct {
   float cooldown;
   int count;
   bool active;
-} attack_t;
+} act_t;
 
 typedef struct {
-  attack_t attack[MAX_ATTACK];
-  int num_attack;
+  act_t act[MAX_ATTACK];
+  int num_act;
   float angle;
-} action_t;
+} actor_t;
 
 typedef struct {
   float live_time;
@@ -62,18 +61,18 @@ typedef enum {
   COMPONENT_ANIMATOR  = (1 << 2),
   COMPONENT_MOTION    = (1 << 3),
   COMPONENT_BULLET    = (1 << 4),
-  COMPONENT_ACTION    = (1 << 5)
+  COMPONENT_ACTOR     = (1 << 5)
 } component_t;
 
 struct edict {
   component_t field[MAX_ENTITIES];
   
-  transform_t transform[MAX_ENTITIES];
+  actor_t actor[MAX_ENTITIES];
   motion_t motion[MAX_ENTITIES];
   sprite_t sprite[MAX_ENTITIES];
   bullet_t bullet[MAX_ENTITIES];
-  action_t action[MAX_ENTITIES];
   animator_t animator[MAX_ENTITIES];
+  transform_t transform[MAX_ENTITIES];
 };
 
 entity_t edict_spawn(edict_t *edict);

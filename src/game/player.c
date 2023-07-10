@@ -19,7 +19,7 @@ void player_init(player_t *player, edict_t *edict)
   edict->field[player->entity] |= COMPONENT_MOTION;
   edict->field[player->entity] |= COMPONENT_SPRITE;
   edict->field[player->entity] |= COMPONENT_ANIMATOR;
-  edict->field[player->entity] |= COMPONENT_ACTION;
+  edict->field[player->entity] |= COMPONENT_ACTOR;
   
   edict->transform[player->entity].position = vec2_init(2.0, 2.0);
   
@@ -28,12 +28,12 @@ void player_init(player_t *player, edict_t *edict)
   edict->sprite[player->entity].rotation = 0.0;
   play_animation(&edict->animator[player->entity], &player_anim_move_left);
   
-  edict->action[player->entity].attack[0].xaction = player_attack;
-  edict->action[player->entity].attack[0].time = 0.0;
-  edict->action[player->entity].attack[0].cooldown = 0.25;
-  edict->action[player->entity].attack[0].active = false;
-  edict->action[player->entity].attack[0].count = 0;
-  edict->action[player->entity].num_attack = 1;
+  edict->actor[player->entity].act[0].xaction = player_attack;
+  edict->actor[player->entity].act[0].time = 0.0;
+  edict->actor[player->entity].act[0].cooldown = 0.25;
+  edict->actor[player->entity].act[0].active = false;
+  edict->actor[player->entity].act[0].count = 0;
+  edict->actor[player->entity].num_act = 1;
 }
 
 void player_update(player_t *player, edict_t *edict, const usercmd_t *usercmd)
@@ -72,11 +72,11 @@ void player_aim(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
   float player_angle = edict->transform[player->entity].rotation; 
   float shoot_angle = player_angle - atan2(usercmd->aim_y, usercmd->aim_x);
   
-  edict->action[player->entity].angle = shoot_angle;
-  edict->action[player->entity].attack[0].active = usercmd->attack;
+  edict->actor[player->entity].angle = shoot_angle;
+  edict->actor[player->entity].act[0].active = usercmd->attack;
 }
 
 void player_attack(entity_t entity, edict_t *edict)
 {
-  shoot_bullet(edict, edict->transform[entity].position, edict->action[entity].angle, 1.0);
+  shoot_bullet(edict, edict->transform[entity].position, edict->actor[entity].angle, 1.0);
 }

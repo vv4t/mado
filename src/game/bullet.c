@@ -21,22 +21,22 @@ void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time) {
 
 void perform_attack(edict_t *edict)
 {
-  const component_t mask = COMPONENT_ACTION;
+  const component_t mask = COMPONENT_ACTOR;
   
   for (int i = 0; i < MAX_ENTITIES; i++) {
     if ((edict->field[i] & mask) != mask)
       continue;
     
-    for (int j = 0; j < edict->action[i].num_attack; j++) {
-      if (!edict->action[i].attack[j].active)
+    for (int j = 0; j < edict->actor[i].num_act; j++) {
+      if (!edict->actor[i].act[j].active)
         continue;
       
-      edict->action[i].attack[j].time -= DELTA_TIME;
+      edict->actor[i].act[j].time -= DELTA_TIME;
       
-      if (edict->action[i].attack[j].time <= 0) {
-        edict->action[i].attack[j].time = edict->action[i].attack[j].cooldown;
-        edict->action[i].attack[j].xaction(i, edict);
-        edict->action[i].attack[j].count++;
+      if (edict->actor[i].act[j].time <= 0) {
+        edict->actor[i].act[j].time = edict->actor[i].act[j].cooldown;
+        edict->actor[i].act[j].xaction(i, edict);
+        edict->actor[i].act[j].count++;
       }
     }
   }
