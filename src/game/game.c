@@ -18,9 +18,14 @@ void game_update(game_t *game, const usercmd_t *usercmd)
   
   player_update(&game->player, &game->edict, usercmd);
   
-  perform_attack(&game->edict);
-  clip_motion(&game->edict, game->map);
+  perform_act(&game->edict);
+  
+  predict_motion(&game->edict);
+  box_hit_map(&game->edict, game->map);
+  box_hit_box(&game->edict);
+  predict_motion(&game->edict);
   integrate_motion(&game->edict);
+  
   decay_bullet(&game->edict);
   animate_sprite(&game->edict);
 }

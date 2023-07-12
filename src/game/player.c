@@ -20,6 +20,7 @@ void player_init(player_t *player, edict_t *edict)
   edict->field[player->entity] |= COMPONENT_SPRITE;
   edict->field[player->entity] |= COMPONENT_ANIMATOR;
   edict->field[player->entity] |= COMPONENT_ACTOR;
+  edict->field[player->entity] |= COMPONENT_BOX;
   
   edict->transform[player->entity].position = vec2_init(2.0, 2.0);
   
@@ -34,6 +35,9 @@ void player_init(player_t *player, edict_t *edict)
   edict->actor[player->entity].act[0].active = false;
   edict->actor[player->entity].act[0].count = 0;
   edict->actor[player->entity].num_act = 1;
+  
+  edict->box[player->entity].min = vec2_init(-0.2, -0.2);
+  edict->box[player->entity].max = vec2_init(+0.2, +0.2);
 }
 
 void player_update(player_t *player, edict_t *edict, const usercmd_t *usercmd)

@@ -1,11 +1,18 @@
 #include "system.h"
 
-void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time) {
+void xhit_bullet(entity_t entity, edict_t *edict, entity_t hit)
+{
+  edict_kill(edict, entity);
+}
+
+void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time)
+{
   entity_t entity = edict_spawn(edict);
   edict->field[entity] |= COMPONENT_TRANSFORM;
   edict->field[entity] |= COMPONENT_MOTION;
   edict->field[entity] |= COMPONENT_SPRITE;
   edict->field[entity] |= COMPONENT_BULLET;
+  edict->field[entity] |= COMPONENT_BOX;
   
   edict->transform[entity].position = pos;
   edict->transform[entity].rotation = angle;
@@ -16,10 +23,14 @@ void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time) {
   edict->sprite[entity].stand = false;
   
   edict->motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
+  edict->box[entity].min = vec2_init(-0.2, -0.2);
+  edict->box[entity].max = vec2_init(+0.2, +0.2);
+  edict->box[entity].xhit = xhit_bullet;
+  
   edict->bullet[entity].live_time = live_time;
 }
 
-void perform_attack(edict_t *edict)
+void perform_act(edict_t *edict)
 {
   const component_t mask = COMPONENT_ACTOR;
   
@@ -55,7 +66,7 @@ void decay_bullet(edict_t *edict) {
       edict_kill(edict, i);
     }
     
-    if (edict->motion[i].hit_map) {
+    if (edict->box[i].hit_map) {
       edict_kill(edict, i);
     }
   }
