@@ -14,7 +14,7 @@ void box_hit_box(edict_t *edict);
 void integrate_motion(edict_t *edict);
 void predict_motion(edict_t *edict);
 
-void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time);
+void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time, tag_t target);
 void perform_act(edict_t *edict);
 
 void orb_spawn(edict_t *edict, vec2_t pos);

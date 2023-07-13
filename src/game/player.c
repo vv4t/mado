@@ -21,6 +21,9 @@ void player_init(player_t *player, edict_t *edict)
   edict->field[player->entity] |= COMPONENT_ANIMATOR;
   edict->field[player->entity] |= COMPONENT_ACTOR;
   edict->field[player->entity] |= COMPONENT_BOX;
+  edict->field[player->entity] |= COMPONENT_TAG;
+  
+  edict->tag[player->entity] |= TAG_PLAYER;
   
   edict->transform[player->entity].position = vec2_init(2.0, 2.0);
   
@@ -82,5 +85,5 @@ void player_aim(player_t *player, edict_t *edict, const usercmd_t *usercmd) {
 
 void player_attack(entity_t entity, edict_t *edict)
 {
-  shoot_bullet(edict, edict->transform[entity].position, edict->actor[entity].angle, 1.0);
+  shoot_bullet(edict, edict->transform[entity].position, edict->actor[entity].angle, 1.0, TAG_ENEMY);
 }
