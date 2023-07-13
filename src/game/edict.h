@@ -2,7 +2,7 @@
 #define COMPONENT_H
 
 #define MAX_ENTITIES 16
-#define MAX_ACT 16
+#define MAX_EVENT 8
 
 #include "sprite.h"
 
@@ -30,12 +30,14 @@ typedef struct {
 } animator_t;
 
 typedef void (*xhit_t)(entity_t entity, edict_t *edict, entity_t hit);
+typedef void (*xhit_map_t)(entity_t entity, edict_t *edict);
 
 typedef struct {
   vec2_t min;
   vec2_t max;
+  
   xhit_t xhit;
-  bool hit_map;
+  xhit_map_t xhit_map;
 } box_t;
 
 typedef struct {
@@ -55,13 +57,18 @@ typedef struct {
 } act_t;
 
 typedef struct {
-  act_t act[MAX_ACT];
+  act_t act[MAX_EVENT];
   int num_act;
   float angle;
 } actor_t;
 
+typedef enum {
+  TAG_PLAYER = (1 << 0),
+  TAG_ENEMY  = (1 << 1)
+} tag_t;
+
 typedef struct {
-  float live_time;
+  tag_t target;
 } bullet_t;
 
 typedef enum {
@@ -71,12 +78,14 @@ typedef enum {
   COMPONENT_MOTION    = (1 << 3),
   COMPONENT_BULLET    = (1 << 4),
   COMPONENT_ACTOR     = (1 << 5),
-  COMPONENT_BOX       = (1 << 6)
+  COMPONENT_BOX       = (1 << 6),
+  COMPONENT_TAG       = (1 << 7)
 } component_t;
 
 struct edict {
   component_t field[MAX_ENTITIES];
   
+  tag_t tag[MAX_ENTITIES];
   box_t box[MAX_ENTITIES];
   actor_t actor[MAX_ENTITIES];
   motion_t motion[MAX_ENTITIES];

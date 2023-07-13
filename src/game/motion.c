@@ -81,8 +81,6 @@ void box_hit_map(edict_t *edict, const map_t *map)
     vec2_t min = edict->box[i].min;
     vec2_t max = edict->box[i].max;
     
-    edict->box[i].hit_map = false;
-    
     if (map_collide(map, new_pos, min, max)) {
       if (!map_collide(map, new_pos_y, min, max)) {
         edict->motion[i].velocity.x = 0.0;
@@ -93,7 +91,8 @@ void box_hit_map(edict_t *edict, const map_t *map)
         edict->motion[i].velocity.y = 0.0;
       }
       
-      edict->box[i].hit_map = true;
+      if (edict->box[i].xhit_map)
+        edict->box[i].xhit_map(i, edict);
     }
   }
 }

@@ -5,6 +5,16 @@ void xhit_bullet(entity_t entity, edict_t *edict, entity_t hit)
   edict_kill(edict, entity);
 }
 
+void xhit_map_bullet(entity_t entity, edict_t *edict)
+{
+  edict_kill(edict, entity);
+}
+
+void xact_bullet_die(entity_t entity, edict_t *edict)
+{
+  edict_kill(edict, entity);
+}
+
 void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time)
 {
   entity_t entity = edict_spawn(edict);
@@ -13,6 +23,7 @@ void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time)
   edict->field[entity] |= COMPONENT_SPRITE;
   edict->field[entity] |= COMPONENT_BULLET;
   edict->field[entity] |= COMPONENT_BOX;
+  edict->field[entity] |= COMPONENT_ACTOR;
   
   edict->transform[entity].position = pos;
   edict->transform[entity].rotation = angle;
@@ -26,8 +37,13 @@ void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time)
   edict->box[entity].min = vec2_init(-0.2, -0.2);
   edict->box[entity].max = vec2_init(+0.2, +0.2);
   edict->box[entity].xhit = xhit_bullet;
+  edict->box[entity].xhit_map = xhit_map_bullet;
   
-  edict->bullet[entity].live_time = live_time;
+  edict->actor[entity].act[0].xaction = xact_bullet_die;
+  edict->actor[entity].act[0].time = live_time;
+  edict->actor[entity].act[0].cooldown = live_time;
+  edict->actor[entity].act[0].active = true;
+  edict->actor[entity].num_act = 1;
 }
 
 void perform_act(edict_t *edict)
@@ -49,25 +65,6 @@ void perform_act(edict_t *edict)
         edict->actor[i].act[j].xaction(i, edict);
         edict->actor[i].act[j].count++;
       }
-    }
-  }
-}
-
-void decay_bullet(edict_t *edict) {
-  const component_t mask = COMPONENT_BULLET;
-  
-  for (int i = 0; i < MAX_ENTITIES; i++) {
-    if ((edict->field[i] & mask) != mask)
-      continue;
-    
-    edict->bullet[i].live_time -= 0.015;
-    
-    if (edict->bullet[i].live_time <= 0) {
-      edict_kill(edict, i);
-    }
-    
-    if (edict->box[i].hit_map) {
-      edict_kill(edict, i);
     }
   }
 }

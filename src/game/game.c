@@ -26,7 +26,6 @@ void game_update(game_t *game, const usercmd_t *usercmd)
   predict_motion(&game->edict);
   integrate_motion(&game->edict);
   
-  decay_bullet(&game->edict);
   animate_sprite(&game->edict);
 }
 
