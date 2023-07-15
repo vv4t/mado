@@ -2,14 +2,6 @@
 
 #include "system.h"
 
-void play_animation(animator_t *animator, const animation_t *animation)
-{
-  if (animator->animation != animation) {
-    animator->animation = animation;
-    animator->time = 0.0;
-  }
-}
-
 void animate_sprite(edict_t *edict)
 {
   const component_t mask = COMPONENT_SPRITE | COMPONENT_ANIMATOR;

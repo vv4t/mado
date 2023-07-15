@@ -1,75 +1,20 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
+#include "component/c_tag.h"
+#include "component/c_box.h"
+#include "component/c_actor.h"
+#include "component/c_motion.h"
+#include "component/c_sprite.h"
+#include "component/c_bullet.h"
+#include "component/c_animator.h"
+#include "component/c_transform.h"
+
 #define MAX_ENTITIES 16
-#define MAX_EVENT 8
 
-#include "sprite.h"
+typedef int entity_t;
 
-typedef struct edict edict_t;
-
-typedef enum {
-  ENTITY_INVALID = -1
-} entity_t;
-
-typedef struct {
-  vec2_t position;
-  float rotation;
-} transform_t;
-
-typedef struct {
-  vec2_t uv;
-  float rotation;
-  bool orient;
-  bool stand;
-} sprite_t;
-
-typedef struct {
-  const animation_t *animation;
-  float time;
-} animator_t;
-
-typedef void (*xhit_t)(entity_t entity, edict_t *edict, entity_t hit);
-typedef void (*xhit_map_t)(entity_t entity, edict_t *edict);
-
-typedef struct {
-  vec2_t min;
-  vec2_t max;
-  
-  xhit_t xhit;
-  xhit_map_t xhit_map;
-} box_t;
-
-typedef struct {
-  vec2_t velocity;
-  float angular_velocity;
-  vec2_t new_pos;
-} motion_t;
-
-typedef void (*xaction_t)(entity_t entity, edict_t *edict);
-
-typedef struct {
-  xaction_t xaction;
-  float time;
-  float cooldown;
-  int count;
-  bool active;
-} act_t;
-
-typedef struct {
-  act_t act[MAX_EVENT];
-  int num_act;
-  float angle;
-} actor_t;
-
-typedef enum {
-  TAG_PLAYER = (1 << 0),
-  TAG_ENEMY  = (1 << 1)
-} tag_t;
-
-typedef struct {
-  tag_t target;
-} bullet_t;
+#define ENTITY_INVALID -1
 
 typedef enum {
   COMPONENT_TRANSFORM = (1 << 0),
@@ -82,18 +27,18 @@ typedef enum {
   COMPONENT_TAG       = (1 << 7)
 } component_t;
 
-struct edict {
-  component_t field[MAX_ENTITIES];
+typedef struct edict_s {
+  int field[MAX_ENTITIES];
   
-  tag_t tag[MAX_ENTITIES];
-  box_t box[MAX_ENTITIES];
-  actor_t actor[MAX_ENTITIES];
-  motion_t motion[MAX_ENTITIES];
-  sprite_t sprite[MAX_ENTITIES];
-  bullet_t bullet[MAX_ENTITIES];
-  animator_t animator[MAX_ENTITIES];
-  transform_t transform[MAX_ENTITIES];
-};
+  c_tag_t tag[MAX_ENTITIES];
+  c_box_t box[MAX_ENTITIES];
+  c_actor_t actor[MAX_ENTITIES];
+  c_motion_t motion[MAX_ENTITIES];
+  c_sprite_t sprite[MAX_ENTITIES];
+  c_bullet_t bullet[MAX_ENTITIES];
+  c_animator_t animator[MAX_ENTITIES];
+  c_transform_t transform[MAX_ENTITIES];
+} edict_t;
 
 entity_t edict_spawn(edict_t *edict);
 void edict_kill(edict_t *edict, entity_t entity);

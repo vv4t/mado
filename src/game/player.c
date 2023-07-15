@@ -30,7 +30,7 @@ void player_init(player_t *player, edict_t *edict)
   edict->sprite[player->entity].stand = true;
   edict->sprite[player->entity].orient = true;
   edict->sprite[player->entity].rotation = 0.0;
-  play_animation(&edict->animator[player->entity], &player_anim_move_left);
+  c_animator_play(&edict->animator[player->entity], &player_anim_move_left);
   
   edict->actor[player->entity].act[0].xaction = player_attack;
   edict->actor[player->entity].act[0].time = 0.0;
@@ -65,13 +65,13 @@ void player_move(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 void player_animate(player_t *player, edict_t *edict, const usercmd_t *usercmd)
 {
   if (usercmd->side < 0) {
-    play_animation(&edict->animator[player->entity], &player_anim_move_left);
+    c_animator_play(&edict->animator[player->entity], &player_anim_move_left);
   } else if (usercmd->side > 0) {
-    play_animation(&edict->animator[player->entity], &player_anim_move_right);
+    c_animator_play(&edict->animator[player->entity], &player_anim_move_right);
   } else if (usercmd->forward > 0) {
-    play_animation(&edict->animator[player->entity], &player_anim_move_forward);
+    c_animator_play(&edict->animator[player->entity], &player_anim_move_forward);
   } else if (usercmd->forward < 0) {
-    play_animation(&edict->animator[player->entity], &player_anim_move_back);
+    c_animator_play(&edict->animator[player->entity], &player_anim_move_back);
   }
 }
 

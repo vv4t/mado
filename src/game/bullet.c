@@ -21,7 +21,7 @@ void xact_bullet_die(entity_t entity, edict_t *edict)
   edict_kill(edict, entity);
 }
 
-void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time, tag_t target)
+void shoot_bullet(edict_t *edict, vec2_t pos, float angle, float live_time, c_tag_t target)
 {
   entity_t entity = edict_spawn(edict);
   edict->field[entity] |= COMPONENT_TRANSFORM;

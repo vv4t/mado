@@ -21,7 +21,7 @@ void orb_spawn(edict_t *edict, vec2_t pos)
   edict->sprite[entity].uv = vec2_init(3, 4);
   edict->sprite[entity].orient = true;
   edict->sprite[entity].stand = true;
-  play_animation(&edict->animator[entity], &orb_anim_idle);
+  c_animator_play(&edict->animator[entity], &orb_anim_idle);
   
   edict->tag[entity] |= TAG_ENEMY;
   
