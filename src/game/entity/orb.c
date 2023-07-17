@@ -1,4 +1,6 @@
-#include "system.h"
+#include "orb.h"
+
+#include "bullet.h"
 
 void orb_attack1(entity_t entity, edict_t *edict);
 void orb_attack2(entity_t entity, edict_t *edict);
@@ -47,7 +49,7 @@ void orb_attack1(entity_t entity, edict_t *edict)
     vec2_t delta_pos = vec2_sub(edict->transform[0].position, edict->transform[entity].position);
     float angle = atan2(delta_pos.y, delta_pos.x);
     
-    shoot_bullet(edict, edict->transform[entity].position, angle, 1.0, TAG_PLAYER);
+    bullet_shoot(edict, edict->transform[entity].position, angle, 1.0, TAG_PLAYER);
   } else {
     edict->actor[entity].act[0].active = false;
   }

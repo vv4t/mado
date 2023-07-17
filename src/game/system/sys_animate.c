@@ -1,8 +1,6 @@
-#include "edict.h"
-
 #include "system.h"
 
-void animate_sprite(edict_t *edict)
+void sys_animate_sprite(edict_t *edict)
 {
   const component_t mask = COMPONENT_SPRITE | COMPONENT_ANIMATOR;
   

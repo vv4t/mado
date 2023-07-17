@@ -1,8 +1,20 @@
-#include "edict.h"
-
 #include "system.h"
 
-void integrate_motion(edict_t *edict)
+static void box_hit_map(edict_t *edict, const map_t *map);
+static void box_hit_box(edict_t *edict);
+static void integrate_motion(edict_t *edict);
+static void predict_motion(edict_t *edict);
+
+void sys_physics_update(edict_t *edict, const map_t *map)
+{
+  predict_motion(edict);
+  box_hit_map(edict, map);
+  box_hit_box(edict);
+  predict_motion(edict);
+  integrate_motion(edict);
+}
+
+static void integrate_motion(edict_t *edict)
 {
   const component_t mask = COMPONENT_TRANSFORM | COMPONENT_MOTION;
   
@@ -14,7 +26,7 @@ void integrate_motion(edict_t *edict)
   }
 }
 
-void predict_motion(edict_t *edict)
+static void predict_motion(edict_t *edict)
 {
   const component_t mask = COMPONENT_TRANSFORM | COMPONENT_MOTION;
   
@@ -29,7 +41,7 @@ void predict_motion(edict_t *edict)
   }
 }
 
-void box_hit_box(edict_t *edict)
+static void box_hit_box(edict_t *edict)
 {
   const component_t mask = COMPONENT_TRANSFORM | COMPONENT_MOTION | COMPONENT_BOX;
   
@@ -64,7 +76,7 @@ void box_hit_box(edict_t *edict)
 }
     
 
-void box_hit_map(edict_t *edict, const map_t *map)
+static void box_hit_map(edict_t *edict, const map_t *map)
 {
   const component_t mask = COMPONENT_TRANSFORM | COMPONENT_MOTION | COMPONENT_BOX;
   
