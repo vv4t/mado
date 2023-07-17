@@ -1,7 +1,7 @@
 #include "bullet.h"
 
-void xact_bullet_die(entity_t entity, edict_t *edict);
-void xhit_map_bullet(entity_t entity, edict_t *edict);
+void xaction_bullet_die(entity_t entity, edict_t *edict);
+void xhitmap_bullet(entity_t entity, edict_t *edict);
 void xhit_bullet(entity_t entity, edict_t *edict, entity_t hit);
 
 void bullet_shoot(edict_t *edict, vec2_t pos, float angle, float live_time, c_tag_t target)
@@ -26,13 +26,13 @@ void bullet_shoot(edict_t *edict, vec2_t pos, float angle, float live_time, c_ta
   edict->box[entity].min = vec2_init(-0.2, -0.2);
   edict->box[entity].max = vec2_init(+0.2, +0.2);
   edict->box[entity].xhit = xhit_bullet;
-  edict->box[entity].xhit_map = xhit_map_bullet;
+  edict->box[entity].xhitmap = xhitmap_bullet;
   
-  edict->actor[entity].act[0].xaction = xact_bullet_die;
-  edict->actor[entity].act[0].time = live_time;
-  edict->actor[entity].act[0].cooldown = live_time;
-  edict->actor[entity].act[0].active = true;
-  edict->actor[entity].num_act = 1;
+  edict->actor[entity].action[0].xaction = xaction_bullet_die;
+  edict->actor[entity].action[0].time = live_time;
+  edict->actor[entity].action[0].cooldown = live_time;
+  edict->actor[entity].action[0].active = true;
+  edict->actor[entity].num_action = 1;
   
   edict->bullet[entity].target = target;
 }
@@ -48,12 +48,12 @@ void xhit_bullet(entity_t entity, edict_t *edict, entity_t hit)
   }
 }
 
-void xhit_map_bullet(entity_t entity, edict_t *edict)
+void xhitmap_bullet(entity_t entity, edict_t *edict)
 {
   edict_kill(edict, entity);
 }
 
-void xact_bullet_die(entity_t entity, edict_t *edict)
+void xaction_bullet_die(entity_t entity, edict_t *edict)
 {
   edict_kill(edict, entity);
 }

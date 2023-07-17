@@ -103,8 +103,8 @@ static void box_hit_map(edict_t *edict, const map_t *map)
         edict->motion[i].velocity.y = 0.0;
       }
       
-      if (edict->box[i].xhit_map)
-        edict->box[i].xhit_map(i, edict);
+      if (edict->box[i].xhitmap)
+        edict->box[i].xhitmap(i, edict);
     }
   }
 }

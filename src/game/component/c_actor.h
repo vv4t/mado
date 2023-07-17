@@ -1,7 +1,7 @@
 #ifndef C_ACTOR_H
 #define C_ACTOR_H
 
-#define MAX_ACT 4
+#define MAX_ACTION 4
 
 #include <stdbool.h>
 
@@ -16,11 +16,11 @@ typedef struct {
   float cooldown;
   int count;
   bool active;
-} act_t;
+} action_t;
 
 typedef struct {
-  act_t act[MAX_ACT];
-  int num_act;
+  action_t action[MAX_ACTION];
+  int num_action;
   float angle;
 } c_actor_t;
 

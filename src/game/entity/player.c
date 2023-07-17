@@ -33,12 +33,12 @@ void player_init(entity_t entity, edict_t *edict)
   edict->sprite[entity].rotation = 0.0;
   c_animator_play(&edict->animator[entity], &player_anim_move_left);
   
-  edict->actor[entity].act[0].xaction = player_attack;
-  edict->actor[entity].act[0].time = 0.0;
-  edict->actor[entity].act[0].cooldown = 0.25;
-  edict->actor[entity].act[0].active = false;
-  edict->actor[entity].act[0].count = 0;
-  edict->actor[entity].num_act = 1;
+  edict->actor[entity].action[0].xaction = player_attack;
+  edict->actor[entity].action[0].time = 0.0;
+  edict->actor[entity].action[0].cooldown = 0.25;
+  edict->actor[entity].action[0].active = false;
+  edict->actor[entity].action[0].count = 0;
+  edict->actor[entity].num_action = 1;
   
   edict->box[entity].min = vec2_init(-0.2, -0.2);
   edict->box[entity].max = vec2_init(+0.2, +0.2);
@@ -81,7 +81,7 @@ void player_aim(entity_t entity, edict_t *edict, const usercmd_t *usercmd) {
   float shoot_angle = player_angle - atan2(usercmd->aim_y, usercmd->aim_x);
   
   edict->actor[entity].angle = shoot_angle;
-  edict->actor[entity].act[0].active = usercmd->attack;
+  edict->actor[entity].action[0].active = usercmd->attack;
 }
 
 void player_attack(entity_t entity, edict_t *edict)

@@ -16,7 +16,7 @@ void game_update(game_t *game, const usercmd_t *usercmd)
 {
   player_update(game->player, &game->edict, usercmd);
   
-  sys_perform_act(&game->edict);
+  sys_perform_action(&game->edict);
   sys_physics_update(&game->edict, game->map);
   sys_animate_sprite(&game->edict);
 }
