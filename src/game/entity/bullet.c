@@ -28,11 +28,7 @@ void bullet_shoot(edict_t *edict, vec2_t pos, float angle, float live_time, c_ta
   edict->box[entity].xhit = xhit_bullet;
   edict->box[entity].xhitmap = xhitmap_bullet;
   
-  edict->actor[entity].action[0].xaction = xaction_bullet_die;
-  edict->actor[entity].action[0].time = live_time;
-  edict->actor[entity].action[0].cooldown = live_time;
-  edict->actor[entity].action[0].active = true;
-  edict->actor[entity].num_action = 1;
+  c_actor_set_act(&edict->actor[entity], 0, xaction_bullet_die, live_time);
   
   edict->bullet[entity].target = target;
 }

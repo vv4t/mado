@@ -8,11 +8,15 @@ void sys_perform_action(edict_t *edict)
     if ((edict->field[i] & mask) != mask)
       continue;
     
-    for (int j = 0; j < edict->actor[i].num_action; j++) {
+    for (int j = 0; j < MAX_ACTION; j++) {
+      if (edict->actor[i].action[j].time > 0) {
+        edict->actor[i].action[j].time -= DELTA_TIME;
+      } else {
+        edict->actor[i].action[j].time = 0.0;
+      }
+      
       if (!edict->actor[i].action[j].active)
         continue;
-      
-      edict->actor[i].action[j].time -= DELTA_TIME;
       
       if (edict->actor[i].action[j].time <= 0) {
         edict->actor[i].action[j].time = edict->actor[i].action[j].cooldown;

@@ -20,8 +20,19 @@ typedef struct {
 
 typedef struct {
   action_t action[MAX_ACTION];
-  int num_action;
   float angle;
 } c_actor_t;
+
+inline void c_actor_set_act(c_actor_t *c_actor, int act, xaction_t xaction, float cooldown)
+{
+  if (act >= MAX_ACTION)
+    return;
+  
+  c_actor->action[act].xaction = xaction;
+  c_actor->action[act].cooldown = cooldown;
+  c_actor->action[act].time = cooldown;
+  c_actor->action[act].count = 0;
+  c_actor->action[act].active = true;
+}
 
 #endif

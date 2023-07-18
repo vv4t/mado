@@ -27,17 +27,8 @@ void orb_spawn(edict_t *edict, vec2_t pos)
   
   edict->tag[entity] |= TAG_ENEMY;
   
-  edict->actor[entity].action[0].xaction = orb_attack1;
-  edict->actor[entity].action[0].time = 0.0;
-  edict->actor[entity].action[0].cooldown = 0.1;
-  edict->actor[entity].action[0].active = true;
-  
-  edict->actor[entity].action[1].xaction = orb_attack2;
-  edict->actor[entity].action[1].time = 0.0;
-  edict->actor[entity].action[1].cooldown = 1.0;
-  edict->actor[entity].action[1].active = true;
-  
-  edict->actor[entity].num_action = 2;
+  c_actor_set_act(&edict->actor[entity], 0, orb_attack1, 0.1);
+  c_actor_set_act(&edict->actor[entity], 1, orb_attack2, 1.0);
   
   edict->box[entity].min = vec2_init(-0.2, -0.2);
   edict->box[entity].max = vec2_init(+0.2, +0.2);
