@@ -3,9 +3,8 @@
 #include "../system/system.h"
 #include "bullet.h"
 
-static void player_move(entity_t entity, game_t *game, const usercmd_t *usercmd);
-static void player_animate(entity_t entity, game_t *game, const usercmd_t *usercmd);
-static void player_aim(entity_t entity, game_t *game, const usercmd_t *usercmd);
+static void player_move(entity_t entity, game_t *game);
+static void player_animate(entity_t entity, game_t *game);
 static void player_attack(entity_t entity, game_t *game);
 
 static animation_t player_anim_move_right   = (animation_t) { .uv = {0,5}, .frame_count = 2, .frame_time = 0.2 };
@@ -33,18 +32,18 @@ void player_init(entity_t entity, game_t *game)
   c_actor_set_act(&game->cdict.actor[entity], 0, player_attack, 0.25);
 }
 
-void player_update(entity_t entity, game_t *game, const usercmd_t *usercmd)
+void player_update(entity_t entity, game_t *game)
 {
-  player_aim(entity, game, usercmd);
-  player_move(entity, game, usercmd);
-  player_animate(entity, game, usercmd);
+  player_move(entity, game);
+  player_animate(entity, game);
 }
 
-void player_move(entity_t entity, game_t *game, const usercmd_t *usercmd)
+void player_move(entity_t entity, game_t *game)
 {
-  game->cdict.transform[entity].rotation += usercmd->rot * 3.0 * DELTA_TIME;
+  game->cdict.actor[entity].action[0].active = game->usercmd.attack;
+  game->cdict.transform[entity].rotation += game->usercmd.rot * 3.0 * DELTA_TIME;
   
-  vec2_t cmd_dir = vec2_init(usercmd->side, usercmd->forward);
+  vec2_t cmd_dir = vec2_init(game->usercmd.side, game->usercmd.forward);
   vec2_t wish_dir = vec2_normalize(cmd_dir);
   vec2_t rot_dir = vec2_rotate(wish_dir, game->cdict.transform[entity].rotation);
   vec2_t move_dir = vec2_mulf(rot_dir, 3.0);
@@ -52,31 +51,25 @@ void player_move(entity_t entity, game_t *game, const usercmd_t *usercmd)
   game->cdict.motion[entity].velocity = move_dir;
 }
 
-void player_animate(entity_t entity, game_t *game, const usercmd_t *usercmd)
+void player_animate(entity_t entity, game_t *game)
 {
-  if (usercmd->side < 0) {
+  if (game->usercmd.side < 0) {
     c_animator_play(&game->cdict.animator[entity], &player_anim_move_left);
-  } else if (usercmd->side > 0) {
+  } else if (game->usercmd.side > 0) {
     c_animator_play(&game->cdict.animator[entity], &player_anim_move_right);
-  } else if (usercmd->forward > 0) {
+  } else if (game->usercmd.forward > 0) {
     c_animator_play(&game->cdict.animator[entity], &player_anim_move_forward);
-  } else if (usercmd->forward < 0) {
+  } else if (game->usercmd.forward < 0) {
     c_animator_play(&game->cdict.animator[entity], &player_anim_move_back);
   }
-}
-
-void player_aim(entity_t entity, game_t *game, const usercmd_t *usercmd) {
-  float player_angle = game->cdict.transform[entity].rotation; 
-  float shoot_angle = player_angle - atan2(usercmd->aim_y, usercmd->aim_x);
-  
-  game->cdict.actor[entity].angle = shoot_angle;
-  game->cdict.actor[entity].action[0].active = usercmd->attack;
 }
 
 void player_attack(entity_t entity, game_t *game)
 {
   vec2_t pos = game->cdict.transform[entity].position;
-  float angle = game->cdict.actor[entity].angle;
+  
+  float player_angle = game->cdict.transform[entity].rotation; 
+  float angle = player_angle - atan2(game->usercmd.aim_y, game->usercmd.aim_x);
   
   bullet_shoot(game, pos, vec2_init(0,7), angle, 1.0, TAG_ENEMY);
 }

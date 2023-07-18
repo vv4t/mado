@@ -7,6 +7,6 @@
 #include "../../common/nui_math.h"
 
 void player_init(entity_t entity, game_t *game);
-void player_update(entity_t entity, game_t *game, const usercmd_t *usercmd);
+void player_update(entity_t entity, game_t *game);
 
 #endif

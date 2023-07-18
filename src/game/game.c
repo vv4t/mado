@@ -14,7 +14,9 @@ void game_init(game_t *game)
 
 void game_update(game_t *game, const usercmd_t *usercmd)
 {
-  player_update(game->player, game, usercmd);
+  game->usercmd = *usercmd;
+  
+  player_update(game->player, game);
   
   sys_perform_action(game);
   sys_physics_update(game);

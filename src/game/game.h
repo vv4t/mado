@@ -13,6 +13,7 @@ typedef struct game_s {
   edict_t edict;
   cdict_t cdict;
   entity_t player;
+  usercmd_t usercmd;
 } game_t;
 
 void game_init(game_t *game);

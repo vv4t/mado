@@ -21,7 +21,6 @@ typedef struct {
 
 typedef struct {
   action_t action[MAX_ACTION];
-  float angle;
 } c_actor_t;
 
 inline void c_actor_set_act(c_actor_t *c_actor, int act, xaction_t xaction, float cooldown)
