@@ -5,10 +5,11 @@
 
 #include <stdbool.h>
 
-typedef int entity_t;
-typedef struct edict_s edict_t;
+#include "../game.h"
 
-typedef void (*xaction_t)(entity_t entity, edict_t *edict);
+typedef struct game_s game_t;
+
+typedef void (*xaction_t)(entity_t entity, game_t *game);
 
 typedef struct {
   xaction_t xaction;

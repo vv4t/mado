@@ -4,10 +4,12 @@
 #include "edict.h"
 #include "usercmd.h"
 #include "map.h"
+#include "component/cdict.h"
 
-typedef struct {
+typedef struct game_s {
   map_t *map;
   edict_t edict;
+  cdict_t cdict;
   entity_t player;
 } game_t;
 

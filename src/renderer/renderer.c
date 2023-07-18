@@ -31,9 +31,9 @@ void renderer_render(renderer_t *renderer, const game_t *game)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  renderer->camera.pos.x = game->edict.transform[game->player].position.x;
-  renderer->camera.pos.y = game->edict.transform[game->player].position.y;
-  renderer->camera.rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), game->edict.transform[game->player].rotation);
+  renderer->camera.pos.x = game->cdict.transform[game->player].position.x;
+  renderer->camera.pos.y = game->cdict.transform[game->player].position.y;
+  renderer->camera.rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), game->cdict.transform[game->player].rotation);
   
   camera_set_isometric(&renderer->camera);
   camera_setup_view(&renderer->camera);

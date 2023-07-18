@@ -1,6 +1,8 @@
 #ifndef USERCMD_H
 #define USERCMD_H
 
+#include <stdbool.h>
+
 typedef struct {
   float forward;
   float side;

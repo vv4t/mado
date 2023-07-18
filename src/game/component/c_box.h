@@ -1,13 +1,12 @@
 #ifndef C_BOX_H
 #define C_BOX_H
 
-#include "../../common/nui_math.h"
+#include "../edict.h"
 
-typedef int entity_t;
-typedef struct edict_s edict_t;
+typedef struct game_s game_t;
 
-typedef void (*xhit_t)(entity_t entity, edict_t *edict, entity_t hit);
-typedef void (*xhitmap_t)(entity_t entity, edict_t *edict);
+typedef void (*xhit_t)(entity_t entity, game_t *game, entity_t hit);
+typedef void (*xhitmap_t)(entity_t entity, game_t *game);
 
 typedef struct {
   vec2_t min;

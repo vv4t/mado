@@ -1,8 +1,8 @@
 #ifndef ORB_H
 #define ORB_H
 
-#include "../edict.h"
+#include "../game.h"
 
-void orb_spawn(edict_t *edict, vec2_t pos);
+void orb_spawn(game_t *game, vec2_t pos);
 
 #endif

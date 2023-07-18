@@ -2,52 +2,52 @@
 
 #include "bullet.h"
 
-void orb_attack1(entity_t entity, edict_t *edict);
-void orb_attack2(entity_t entity, edict_t *edict);
+void orb_attack1(entity_t entity, game_t *game);
+void orb_attack2(entity_t entity, game_t *game);
 
 static animation_t orb_anim_idle = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.2 };
 
-void orb_spawn(edict_t *edict, vec2_t pos)
+void orb_spawn(game_t *game, vec2_t pos)
 {
-  entity_t entity = edict_spawn(edict);
-  edict->field[entity] |= COMPONENT_TRANSFORM;
-  edict->field[entity] |= COMPONENT_MOTION;
-  edict->field[entity] |= COMPONENT_SPRITE;
-  edict->field[entity] |= COMPONENT_ANIMATOR;
-  edict->field[entity] |= COMPONENT_ACTOR;
-  edict->field[entity] |= COMPONENT_BOX;
-  edict->field[entity] |= COMPONENT_TAG;
+  entity_t entity = edict_spawn(&game->edict);
+  game->edict.field[entity] |= COMPONENT_TRANSFORM;
+  game->edict.field[entity] |= COMPONENT_MOTION;
+  game->edict.field[entity] |= COMPONENT_SPRITE;
+  game->edict.field[entity] |= COMPONENT_ANIMATOR;
+  game->edict.field[entity] |= COMPONENT_ACTOR;
+  game->edict.field[entity] |= COMPONENT_BOX;
+  game->edict.field[entity] |= COMPONENT_TAG;
   
-  edict->transform[entity].position = pos;
+  game->cdict.transform[entity].position = pos;
   
-  edict->sprite[entity].uv = vec2_init(3, 4);
-  edict->sprite[entity].orient = true;
-  edict->sprite[entity].stand = true;
-  c_animator_play(&edict->animator[entity], &orb_anim_idle);
+  game->cdict.sprite[entity].uv = vec2_init(3, 4);
+  game->cdict.sprite[entity].orient = true;
+  game->cdict.sprite[entity].stand = true;
+  c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
   
-  edict->tag[entity] |= TAG_ENEMY;
+  game->cdict.tag[entity] |= TAG_ENEMY;
   
-  c_actor_set_act(&edict->actor[entity], 0, orb_attack1, 0.1);
-  c_actor_set_act(&edict->actor[entity], 1, orb_attack2, 1.0);
+  c_actor_set_act(&game->cdict.actor[entity], 0, orb_attack1, 0.1);
+  c_actor_set_act(&game->cdict.actor[entity], 1, orb_attack2, 1.0);
   
-  edict->box[entity].min = vec2_init(-0.2, -0.2);
-  edict->box[entity].max = vec2_init(+0.2, +0.2);
+  game->cdict.box[entity].min = vec2_init(-0.2, -0.2);
+  game->cdict.box[entity].max = vec2_init(+0.2, +0.2);
 }
 
-void orb_attack1(entity_t entity, edict_t *edict)
+void orb_attack1(entity_t entity, game_t *game)
 {
-  if (edict->actor[entity].action[0].count < 3) {
-    vec2_t delta_pos = vec2_sub(edict->transform[0].position, edict->transform[entity].position);
+  if (game->cdict.actor[entity].action[0].count < 3) {
+    vec2_t delta_pos = vec2_sub(game->cdict.transform[0].position, game->cdict.transform[entity].position);
     float angle = atan2(delta_pos.y, delta_pos.x);
     
-    bullet_shoot(edict, edict->transform[entity].position, angle, 1.0, TAG_PLAYER);
+    bullet_shoot(game, game->cdict.transform[entity].position, angle, 1.0, TAG_PLAYER);
   } else {
-    edict->actor[entity].action[0].active = false;
+    game->cdict.actor[entity].action[0].active = false;
   }
 }
 
-void orb_attack2(entity_t entity, edict_t *edict)
+void orb_attack2(entity_t entity, game_t *game)
 {
-  edict->actor[entity].action[0].active = true;
-  edict->actor[entity].action[0].count = 0;
+  game->cdict.actor[entity].action[0].active = true;
+  game->cdict.actor[entity].action[0].count = 0;
 }
