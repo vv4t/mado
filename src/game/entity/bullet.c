@@ -16,22 +16,15 @@ void bullet_shoot(game_t *game, vec2_t pos, float angle, float live_time, c_tag_
   
   game->cdict.transform[entity].position = pos;
   game->cdict.transform[entity].rotation = angle;
-  
-  game->cdict.sprite[entity].uv = vec2_init(0, 7);
-  game->cdict.sprite[entity].rotation = angle - M_PI/2.0;
-  game->cdict.sprite[entity].orient = false;
-  game->cdict.sprite[entity].stand = false;
-  
   game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
-  
-  game->cdict.box[entity].min = vec2_init(-0.2, -0.2);
-  game->cdict.box[entity].max = vec2_init(+0.2, +0.2);
-  game->cdict.box[entity].xhit = xhit_bullet;
-  game->cdict.box[entity].xhitmap = xhitmap_bullet;
-  
   game->cdict.bullet[entity].target = target;
   
+  c_sprite_init(&game->cdict.sprite[entity], vec2_init(0, 7), false, false, angle - M_PI/2.0);
+  c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
   c_actor_set_act(&game->cdict.actor[entity], 0, xaction_bullet_die, live_time);
+  
+  game->cdict.box[entity].xhit = xhit_bullet;
+  game->cdict.box[entity].xhitmap = xhitmap_bullet;
 }
 
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit)

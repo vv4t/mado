@@ -11,9 +11,16 @@ typedef void (*xhitmap_t)(entity_t entity, game_t *game);
 typedef struct {
   vec2_t min;
   vec2_t max;
-  
   xhit_t xhit;
   xhitmap_t xhitmap;
 } c_box_t;
+
+inline void c_box_init(c_box_t *c_box, vec2_t min, vec2_t max)
+{
+  c_box->min = min;
+  c_box->max = max;
+  c_box->xhit = NULL;
+  c_box->xhitmap = NULL;
+}
 
 #endif

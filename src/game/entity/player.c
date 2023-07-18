@@ -25,18 +25,12 @@ void player_init(entity_t entity, game_t *game)
   game->edict.field[entity] |= COMPONENT_TAG;
   
   game->cdict.tag[entity] |= TAG_PLAYER;
-  
   game->cdict.transform[entity].position = vec2_init(2.0, 2.0);
   
-  game->cdict.sprite[entity].stand = true;
-  game->cdict.sprite[entity].orient = true;
-  game->cdict.sprite[entity].rotation = 0.0;
+  c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
+  c_sprite_init(&game->cdict.sprite[entity], vec2_init(0, 5), true, true, 0.0);
   c_animator_play(&game->cdict.animator[entity], &player_anim_move_left);
-  
   c_actor_set_act(&game->cdict.actor[entity], 0, player_attack, 0.25);
-  
-  game->cdict.box[entity].min = vec2_init(-0.2, -0.2);
-  game->cdict.box[entity].max = vec2_init(+0.2, +0.2);
 }
 
 void player_update(entity_t entity, game_t *game, const usercmd_t *usercmd)

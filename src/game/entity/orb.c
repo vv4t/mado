@@ -2,6 +2,9 @@
 
 #include "bullet.h"
 
+#define ACT_ORB_ATTACK_1 0
+#define ACT_ORB_ATTACK_2 1
+
 void orb_attack1(entity_t entity, game_t *game);
 void orb_attack2(entity_t entity, game_t *game);
 
@@ -19,35 +22,34 @@ void orb_spawn(game_t *game, vec2_t pos)
   game->edict.field[entity] |= COMPONENT_TAG;
   
   game->cdict.transform[entity].position = pos;
+  game->cdict.tag[entity] = TAG_ENEMY;
   
-  game->cdict.sprite[entity].uv = vec2_init(3, 4);
-  game->cdict.sprite[entity].orient = true;
-  game->cdict.sprite[entity].stand = true;
+  c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
+  c_sprite_init(&game->cdict.sprite[entity], vec2_init(3, 4), true, true, 0.0);
   c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
-  
-  game->cdict.tag[entity] |= TAG_ENEMY;
-  
-  c_actor_set_act(&game->cdict.actor[entity], 0, orb_attack1, 0.1);
-  c_actor_set_act(&game->cdict.actor[entity], 1, orb_attack2, 1.0);
-  
-  game->cdict.box[entity].min = vec2_init(-0.2, -0.2);
-  game->cdict.box[entity].max = vec2_init(+0.2, +0.2);
+  c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_1, orb_attack1, 0.1);
+  c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_2, orb_attack2, 1.0);
 }
 
 void orb_attack1(entity_t entity, game_t *game)
 {
-  if (game->cdict.actor[entity].action[0].count < 3) {
-    vec2_t delta_pos = vec2_sub(game->cdict.transform[0].position, game->cdict.transform[entity].position);
+  action_t *attack1 = &game->cdict.actor[entity].action[ACT_ORB_ATTACK_1];
+  
+  if (attack1->count < 3) {
+    vec2_t player_pos = game->cdict.transform[0].position;
+    vec2_t orb_pos = game->cdict.transform[entity].position;
+    vec2_t delta_pos = vec2_sub(player_pos, orb_pos);
+    
     float angle = atan2(delta_pos.y, delta_pos.x);
     
     bullet_shoot(game, game->cdict.transform[entity].position, angle, 1.0, TAG_PLAYER);
   } else {
-    game->cdict.actor[entity].action[0].active = false;
+    attack1->active = false;
   }
 }
 
 void orb_attack2(entity_t entity, game_t *game)
 {
-  game->cdict.actor[entity].action[0].active = true;
-  game->cdict.actor[entity].action[0].count = 0;
+  game->cdict.actor[entity].action[ACT_ORB_ATTACK_1].active = true;
+  game->cdict.actor[entity].action[ACT_ORB_ATTACK_1].count = 0;
 }
