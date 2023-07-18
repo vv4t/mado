@@ -75,5 +75,8 @@ void player_aim(entity_t entity, game_t *game, const usercmd_t *usercmd) {
 
 void player_attack(entity_t entity, game_t *game)
 {
-  bullet_shoot(game, game->cdict.transform[entity].position, game->cdict.actor[entity].angle, 1.0, TAG_ENEMY);
+  vec2_t pos = game->cdict.transform[entity].position;
+  float angle = game->cdict.actor[entity].angle;
+  
+  bullet_shoot(game, pos, vec2_init(0,7), angle, 1.0, TAG_ENEMY);
 }

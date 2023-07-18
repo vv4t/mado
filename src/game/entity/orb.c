@@ -42,7 +42,7 @@ void orb_attack1(entity_t entity, game_t *game)
     
     float angle = atan2(delta_pos.y, delta_pos.x);
     
-    bullet_shoot(game, game->cdict.transform[entity].position, angle, 1.0, TAG_PLAYER);
+    bullet_shoot(game, game->cdict.transform[entity].position, vec2_init(1,7), angle, 1.0, TAG_PLAYER);
   } else {
     attack1->active = false;
   }

@@ -6,6 +6,8 @@
 #include "map.h"
 #include "component/cdict.h"
 
+#define DELTA_TIME 0.015
+
 typedef struct game_s {
   map_t *map;
   edict_t edict;

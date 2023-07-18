@@ -4,7 +4,7 @@ void xaction_bullet_die(entity_t entity, game_t *game);
 void xhitmap_bullet(entity_t entity, game_t *game);
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit);
 
-void bullet_shoot(game_t *game, vec2_t pos, float angle, float live_time, c_tag_t target)
+void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_time, c_tag_t target)
 {
   entity_t entity = edict_spawn(&game->edict);
   game->edict.field[entity] |= COMPONENT_TRANSFORM;
@@ -19,7 +19,7 @@ void bullet_shoot(game_t *game, vec2_t pos, float angle, float live_time, c_tag_
   game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
   game->cdict.bullet[entity].target = target;
   
-  c_sprite_init(&game->cdict.sprite[entity], vec2_init(0, 7), false, false, angle - M_PI/2.0);
+  c_sprite_init(&game->cdict.sprite[entity], uv, false, false, angle - M_PI/2.0);
   c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
   c_actor_set_act(&game->cdict.actor[entity], 0, xaction_bullet_die, live_time);
   
