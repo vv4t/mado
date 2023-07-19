@@ -22,9 +22,11 @@ void player_init(entity_t entity, game_t *game)
   game->edict.field[entity] |= COMPONENT_ACTOR;
   game->edict.field[entity] |= COMPONENT_BOX;
   game->edict.field[entity] |= COMPONENT_TAG;
+  game->edict.field[entity] |= COMPONENT_HEALTH;
   
   game->cdict.tag[entity] |= TAG_PLAYER;
   game->cdict.transform[entity].position = vec2_init(2.0, 2.0);
+  game->cdict.health[entity].health = 100;
   
   c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
   c_sprite_init(&game->cdict.sprite[entity], vec2_init(0, 5), true, true, 0.0);

@@ -4,6 +4,7 @@
 #include "c_tag.h"
 #include "c_box.h"
 #include "c_actor.h"
+#include "c_health.h"
 #include "c_motion.h"
 #include "c_sprite.h"
 #include "c_bullet.h"
@@ -20,14 +21,16 @@ typedef enum {
   COMPONENT_BULLET    = (1 << 4),
   COMPONENT_ACTOR     = (1 << 5),
   COMPONENT_BOX       = (1 << 6),
-  COMPONENT_TAG       = (1 << 7)
+  COMPONENT_TAG       = (1 << 7),
+  COMPONENT_HEALTH    = (1 << 8)
 } component_t;
 
-typedef struct { 
+typedef struct {
   c_tag_t tag[MAX_ENTITIES];
   c_box_t box[MAX_ENTITIES];
   c_actor_t actor[MAX_ENTITIES];
   c_motion_t motion[MAX_ENTITIES];
+  c_health_t health[MAX_ENTITIES];
   c_sprite_t sprite[MAX_ENTITIES];
   c_bullet_t bullet[MAX_ENTITIES];
   c_animator_t animator[MAX_ENTITIES];

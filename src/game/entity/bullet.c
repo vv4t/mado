@@ -29,13 +29,20 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
 
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit)
 {
-  if (
-    (game->edict.field[hit] & COMPONENT_TAG) != 0 &&
-    (game->cdict.tag[hit] & game->cdict.bullet[entity].target) != 0
-  ) {
-    printf("e(%i) hit player\n", entity);
-    edict_kill(&game->edict, entity);
-  }
+  const component_t mask = COMPONENT_ACTOR | COMPONENT_HEALTH;
+  
+  if ((game->edict.field[hit] & mask) != mask)
+    return;
+  
+  c_tag_t tag_hit = game->cdict.tag[hit];
+  c_tag_t tag_target = game->cdict.bullet[entity].target;
+  
+  if ((tag_hit & tag_target) == 0)
+    return;
+  
+  c_health_apply_damage(&game->cdict.health[hit], 10);
+  
+  edict_kill(&game->edict, entity);
 }
 
 void xhitmap_bullet(entity_t entity, game_t *game)

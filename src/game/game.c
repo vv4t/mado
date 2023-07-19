@@ -21,6 +21,7 @@ void game_update(game_t *game, const usercmd_t *usercmd)
   sys_perform_action(game);
   sys_physics_update(game);
   sys_animate_sprite(game);
+  sys_check_health(game);
 }
 
 void game_load_map(game_t *game, map_t *map)

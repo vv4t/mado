@@ -7,6 +7,7 @@
 
 void orb_attack1(entity_t entity, game_t *game);
 void orb_attack2(entity_t entity, game_t *game);
+void orb_die(entity_t entity, game_t *game);
 
 static animation_t orb_anim_idle = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.2 };
 
@@ -20,6 +21,10 @@ void orb_spawn(game_t *game, vec2_t pos)
   game->edict.field[entity] |= COMPONENT_ACTOR;
   game->edict.field[entity] |= COMPONENT_BOX;
   game->edict.field[entity] |= COMPONENT_TAG;
+  game->edict.field[entity] |= COMPONENT_HEALTH;
+  
+  game->cdict.health[entity].health = 100;
+  game->cdict.health[entity].xdie = orb_die;
   
   game->cdict.transform[entity].position = pos;
   game->cdict.tag[entity] = TAG_ENEMY;
@@ -29,6 +34,11 @@ void orb_spawn(game_t *game, vec2_t pos)
   c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
   c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_1, orb_attack1, 0.1);
   c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_2, orb_attack2, 1.0);
+}
+
+void orb_die(entity_t entity, game_t *game)
+{
+  edict_kill(&game->edict, entity);
 }
 
 void orb_attack1(entity_t entity, game_t *game)
