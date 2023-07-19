@@ -148,7 +148,7 @@ void nui_base_move(void)
   nui.usercmd.forward = nui.input_state[IN_FORWARD] - nui.input_state[IN_BACK];
   nui.usercmd.side = nui.input_state[IN_RIGHT] - nui.input_state[IN_LEFT];
   nui.usercmd.rot = nui.input_state[IN_ROT_LEFT] - nui.input_state[IN_ROT_RIGHT];
-  nui.usercmd.aim_x = (nui.cursor_x - WIN_WIDTH / 2.0) / WIN_WIDTH;
+  nui.usercmd.aim_x = (nui.cursor_x - WIN_WIDTH / 2.0) / WIN_HEIGHT;
   nui.usercmd.aim_y = (nui.cursor_y - WIN_HEIGHT / 2.0) / WIN_HEIGHT;
   nui.usercmd.attack = nui.input_state[IN_MOUSE_DOWN];
 }
