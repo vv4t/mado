@@ -4,7 +4,7 @@ void xaction_bullet_die(entity_t entity, game_t *game);
 void xhitmap_bullet(entity_t entity, game_t *game);
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit);
 
-void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_time, c_tag_t target)
+void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_time, c_tag_t target, int damage)
 {
   entity_t entity = edict_spawn(&game->edict);
   game->edict.field[entity] |= COMPONENT_TRANSFORM;
@@ -18,6 +18,7 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   game->cdict.transform[entity].rotation = angle;
   game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
   game->cdict.bullet[entity].target = target;
+  game->cdict.bullet[entity].damage = damage;
   
   c_sprite_init(&game->cdict.sprite[entity], uv, false, false, angle - M_PI/2.0);
   c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
@@ -40,8 +41,9 @@ void xhit_bullet(entity_t entity, game_t *game, entity_t hit)
   if ((tag_hit & tag_target) == 0)
     return;
   
-  c_health_apply_damage(&game->cdict.health[hit], 10);
+  int damage = game->cdict.bullet[entity].damage;
   
+  c_health_apply_damage(&game->cdict.health[hit], damage);
   edict_kill(&game->edict, entity);
 }
 

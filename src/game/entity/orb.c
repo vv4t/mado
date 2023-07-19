@@ -4,6 +4,7 @@
 
 #define ACT_ORB_ATTACK_1 0
 #define ACT_ORB_ATTACK_2 1
+#define ORB_BULLET_DAMAGE 10
 
 void orb_attack1(entity_t entity, game_t *game);
 void orb_attack2(entity_t entity, game_t *game);
@@ -52,7 +53,7 @@ void orb_attack1(entity_t entity, game_t *game)
     
     float angle = atan2(delta_pos.y, delta_pos.x);
     
-    bullet_shoot(game, game->cdict.transform[entity].position, vec2_init(1,7), angle, 1.0, TAG_PLAYER);
+    bullet_shoot(game, orb_pos, vec2_init(1,7), angle, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
   } else {
     attack1->active = false;
   }

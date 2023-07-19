@@ -3,6 +3,7 @@
 
 typedef struct {
   c_tag_t target;
+  int damage;
 } c_bullet_t;
 
 #endif

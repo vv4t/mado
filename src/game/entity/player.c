@@ -3,6 +3,10 @@
 #include "../system/system.h"
 #include "bullet.h"
 
+#define PLAYER_BULLET_DAMAGE 10
+#define PLAYER_MOVE_SPEED 3.0
+#define PLAYER_ROTATE_SPEED 3.0
+
 static void player_move(entity_t entity, game_t *game);
 static void player_animate(entity_t entity, game_t *game);
 static void player_attack(entity_t entity, game_t *game);
@@ -43,12 +47,12 @@ void player_update(entity_t entity, game_t *game)
 void player_move(entity_t entity, game_t *game)
 {
   game->cdict.actor[entity].action[0].active = game->usercmd.attack;
-  game->cdict.transform[entity].rotation += game->usercmd.rot * 3.0 * DELTA_TIME;
+  game->cdict.transform[entity].rotation += game->usercmd.rot * PLAYER_ROTATE_SPEED * DELTA_TIME;
   
   vec2_t cmd_dir = vec2_init(game->usercmd.side, game->usercmd.forward);
   vec2_t wish_dir = vec2_normalize(cmd_dir);
   vec2_t rot_dir = vec2_rotate(wish_dir, game->cdict.transform[entity].rotation);
-  vec2_t move_dir = vec2_mulf(rot_dir, 3.0);
+  vec2_t move_dir = vec2_mulf(rot_dir, PLAYER_MOVE_SPEED);
   
   game->cdict.motion[entity].velocity = move_dir;
 }
@@ -73,5 +77,5 @@ void player_attack(entity_t entity, game_t *game)
   float player_angle = game->cdict.transform[entity].rotation; 
   float angle = player_angle - atan2(game->usercmd.aim_y, game->usercmd.aim_x);
   
-  bullet_shoot(game, pos, vec2_init(0,7), angle, 1.0, TAG_ENEMY);
+  bullet_shoot(game, pos, vec2_init(0,7), angle, 1.0, TAG_ENEMY, PLAYER_BULLET_DAMAGE);
 }
