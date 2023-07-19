@@ -2,6 +2,7 @@
 
 #include "map_mesh.h"
 #include "sprite_mesh.h"
+#include "health_mesh.h"
 #include "texture.h"
 #include "../common/log.h"
 #include "../common/file.h"
@@ -46,6 +47,7 @@ void renderer_render(renderer_t *renderer, const game_t *game)
   glUniformMatrix4fv(renderer->ul_mvp, 1, GL_FALSE, renderer->camera.view_proj_mat.m);
   
   sprite_mesh_draw(&renderer->sprite_mesh, game, &renderer->camera);
+  health_mesh_draw(&renderer->health_mesh, game, &renderer->camera);
 }
 
 void renderer_load_map(renderer_t *renderer, const map_t *map)
@@ -90,6 +92,7 @@ void renderer_init_gl(renderer_t *renderer)
 bool renderer_init_mesh(renderer_t *renderer)
 {
   sprite_mesh_init(&renderer->sprite_mesh, &renderer->buffer);
+  health_mesh_init(&renderer->health_mesh, &renderer->buffer);
 }
 
 bool renderer_init_shader(renderer_t *renderer)

@@ -18,6 +18,7 @@ typedef struct {
   
   mesh_t map_mesh;
   mesh_t sprite_mesh;
+  mesh_t health_mesh;
 } renderer_t;
 
 bool renderer_init(renderer_t *renderer);

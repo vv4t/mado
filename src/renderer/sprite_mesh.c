@@ -57,7 +57,7 @@ void sprite_mesh_draw(mesh_t *sprite_mesh, const game_t *game, const camera_t *c
       vec2_t uv = vec2_add(sprite_vertices[j].uv, game->cdict.sprite[i].uv);
       
       if (!game->cdict.sprite[i].stand) {
-        pos.z = 0.5;
+        pos.z = 2.0;
       }
       
       vertices[i * num_sprite_vertices + j].pos = pos;
