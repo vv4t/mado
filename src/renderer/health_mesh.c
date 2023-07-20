@@ -4,12 +4,12 @@
 #include <string.h>
 
 static const vertex_t health_vertices[] = {
-  { .pos = { +0.5, +0.5, 1.0 }, .uv = { 1.0f, 0.0f } },
-  { .pos = { +0.5, -0.5, 1.0 }, .uv = { 1.0f, 1.0f } },
-  { .pos = { -0.5, +0.5, 1.0 }, .uv = { 0.0f, 0.0f } },
-  { .pos = { -0.5, -0.5, 1.0 }, .uv = { 0.0f, 1.0f } },
-  { .pos = { -0.5, +0.5, 1.0 }, .uv = { 0.0f, 0.0f } },
-  { .pos = { +0.5, -0.5, 1.0 }, .uv = { 1.0f, 1.0f } }
+  { .pos = { +0.5, +0.5, 0.1 }, .uv = { 1.0f, 0.0f } },
+  { .pos = { +0.5, -0.5, 0.1 }, .uv = { 1.0f, 1.0f } },
+  { .pos = { -0.5, +0.5, 0.1 }, .uv = { 0.0f, 0.0f } },
+  { .pos = { -0.5, -0.5, 0.1 }, .uv = { 0.0f, 1.0f } },
+  { .pos = { -0.5, +0.5, 0.1 }, .uv = { 0.0f, 0.0f } },
+  { .pos = { +0.5, -0.5, 0.1 }, .uv = { 1.0f, 1.0f } }
 };
 
 const int num_health_vertices = sizeof(health_vertices) / sizeof(vertex_t);
@@ -43,7 +43,7 @@ void health_mesh_draw(mesh_t *health_mesh, const game_t *game, const camera_t *c
     if (game->cdict.health[i].health <= 0)
       continue;
     
-    float interp_health = game->cdict.health[i].health / 100.0;
+    float interp_health = game->cdict.health[i].health / 100.0 * 0.5;
     
     vec3_t pos = vec3_init(game->cdict.transform[i].position.x, game->cdict.transform[i].position.y, 0.0);
     quat_t rot = camera->rot;
