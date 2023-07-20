@@ -1,18 +1,16 @@
 #include "orb.h"
 
 #include "bullet.h"
+#include <stdlib.h>
 
-#define ACT_ORB_ATTACK_1  0
-#define ACT_ORB_ATTACK_2  1
-#define ACT_ORB_MOVE      2
 #define ORB_BULLET_DAMAGE 10
 #define ORB_PIVOT_RADIUS  0.4
 #define ORB_PIVOT_TIME    0.25
 
-void orb_attack1(entity_t entity, game_t *game);
-void orb_attack2(entity_t entity, game_t *game);
+void orb_attack1(entity_t entity, action_t *action, game_t *game);
+void orb_attack2(entity_t entity, action_t *action, game_t *game);
+void orb_move(entity_t entity, action_t *action, game_t *game);
 void orb_die(entity_t entity, game_t *game);
-void orb_move(entity_t entity, game_t *game);
 
 static animation_t orb_anim_idle = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.2 };
 
@@ -35,9 +33,9 @@ void orb_spawn(game_t *game, vec2_t pos)
   game->cdict.health[entity].xdie = orb_die;
   
   c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
-  c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_1, orb_attack1, 0.1);
-  c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_ATTACK_2, orb_attack2, 1.0);
-  c_actor_set_act(&game->cdict.actor[entity], ACT_ORB_MOVE, orb_move, ORB_PIVOT_TIME);
+  c_actor_add_act(&game->cdict.actor[entity], orb_attack1, 0.1);
+  c_actor_add_act(&game->cdict.actor[entity], orb_attack2, 1.0);
+  c_actor_add_act(&game->cdict.actor[entity], orb_move, ORB_PIVOT_TIME);
 }
 
 void orb_die(entity_t entity, game_t *game)
@@ -45,30 +43,26 @@ void orb_die(entity_t entity, game_t *game)
   game_kill(game, entity);
 }
 
-void orb_attack1(entity_t entity, game_t *game)
+void orb_attack1(entity_t entity, action_t *action, game_t *game)
 {
-  action_t *attack1 = &game->cdict.actor[entity].action[ACT_ORB_ATTACK_1];
+  if (action->count > 3)
+    c_actor_remove_act(&game->cdict.actor[entity], action);
   
-  if (attack1->count < 3) {
-    vec2_t player_pos = game->cdict.transform[0].position;
-    vec2_t orb_pos = game->cdict.transform[entity].position;
-    vec2_t delta_pos = vec2_sub(player_pos, orb_pos);
-    
-    float angle = atan2(delta_pos.y, delta_pos.x);
-    
-    bullet_shoot(game, orb_pos, vec2_init(1,7), angle, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
-  } else {
-    attack1->active = false;
-  }
+  vec2_t player_pos = game->cdict.transform[0].position;
+  vec2_t orb_pos = game->cdict.transform[entity].position;
+  vec2_t delta_pos = vec2_sub(player_pos, orb_pos);
+  
+  float angle = atan2(delta_pos.y, delta_pos.x);
+  
+  bullet_shoot(game, orb_pos, vec2_init(1,7), angle, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
 }
 
-void orb_attack2(entity_t entity, game_t *game)
+void orb_attack2(entity_t entity, action_t *action, game_t *game)
 {
-  game->cdict.actor[entity].action[ACT_ORB_ATTACK_1].active = true;
-  game->cdict.actor[entity].action[ACT_ORB_ATTACK_1].count = 0;
+  c_actor_add_act(&game->cdict.actor[entity], orb_attack1, 1.0);
 }
 
-void orb_move(entity_t entity, game_t *game)
+void orb_move(entity_t entity, action_t *action, game_t *game)
 {
   float pivot_angle = (rand() % 256) / 256.0 * M_PI * 2;
   

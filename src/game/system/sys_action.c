@@ -11,19 +11,20 @@ void sys_perform_action(game_t *game)
     c_actor_t *c_actor = &game->cdict.actor[i];
     
     for (int j = 0; j < MAX_ACTION; j++) {
-      if (c_actor->action[j].time > 0) {
-        c_actor->action[j].time -= DELTA_TIME;
-      } else {
-        c_actor->action[j].time = 0.0;
-      }
+      action_t *action = &c_actor->action[j];
       
-      if (!c_actor->action[j].active)
+      if (!action->use)
         continue;
       
-      if (c_actor->action[j].time <= 0) {
-        c_actor->action[j].time = c_actor->action[j].cooldown;
-        c_actor->action[j].xaction(i, game);
-        c_actor->action[j].count++;
+      action->time = fmax(action->time - DELTA_TIME, 0.0);
+      
+      if (!action->active)
+        continue;
+      
+      if (action->time <= 0) {
+        action->time = action->cooldown;
+        action->xaction(i, action, game);
+        action->count++;
       }
     }
   }

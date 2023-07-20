@@ -1,6 +1,6 @@
 #include "bullet.h"
 
-void xaction_bullet_die(entity_t entity, game_t *game);
+void xaction_bullet_die(entity_t entity, action_t *action, game_t *game);
 void xhitmap_bullet(entity_t entity, game_t *game);
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit);
 
@@ -17,7 +17,7 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   field |= c_actor_init(&game->cdict.actor[entity]);
   game->edict.field[entity] = field;
   
-  c_actor_set_act(&game->cdict.actor[entity], 0, xaction_bullet_die, live_time);
+  c_actor_add_act(&game->cdict.actor[entity], xaction_bullet_die, live_time);
   
   game->cdict.box[entity].xhit = xhit_bullet;
   game->cdict.box[entity].xhitmap = xhitmap_bullet;
@@ -48,7 +48,9 @@ void xhitmap_bullet(entity_t entity, game_t *game)
   game_kill(game, entity);
 }
 
-void xaction_bullet_die(entity_t entity, game_t *game)
+void xaction_bullet_die(entity_t entity, action_t *action, game_t *game)
 {
-  edict_kill(&game->edict, entity);
+  if (action->count == 1) {
+    edict_kill(&game->edict, entity);
+  }
 }

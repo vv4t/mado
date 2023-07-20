@@ -9,7 +9,7 @@
 
 static void player_move(entity_t entity, game_t *game);
 static void player_animate(entity_t entity, game_t *game);
-static void player_attack(entity_t entity, game_t *game);
+static void player_attack(entity_t entity, action_t *action, game_t *game);
 
 static animation_t player_anim_move_right   = (animation_t) { .uv = {0,5}, .frame_count = 2, .frame_time = 0.2 };
 static animation_t player_anim_move_left    = (animation_t) { .uv = {2,5}, .frame_count = 2, .frame_time = 0.2 };
@@ -67,7 +67,7 @@ void player_animate(entity_t entity, game_t *game)
   }
 }
 
-void player_attack(entity_t entity, game_t *game)
+void player_attack(entity_t entity, action_t *action, game_t *game)
 {
   vec2_t pos = game->cdict.transform[entity].position;
   
