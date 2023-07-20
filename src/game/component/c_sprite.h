@@ -1,6 +1,7 @@
 #ifndef C_SPRITE_H
 #define C_SPRITE_H
 
+#include "component.h"
 #include "../sprite.h"
 
 typedef struct {
@@ -10,12 +11,13 @@ typedef struct {
   bool stand;
 } c_sprite_t;
 
-inline void c_sprite_init(c_sprite_t *c_sprite, vec2_t uv, bool orient, bool stand, float rotation)
+inline component_t c_sprite_init(c_sprite_t *c_sprite, vec2_t uv, bool orient, bool stand, float rotation)
 {
   c_sprite->uv = uv;
   c_sprite->stand = orient;
   c_sprite->orient = stand;
   c_sprite->rotation = rotation;
+  return COMPONENT_SPRITE;
 }
 
 #endif

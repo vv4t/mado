@@ -1,5 +1,5 @@
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef EDICT_H
+#define EDICT_H
 
 #define MAX_ENTITIES 16
 #define ENTITY_INVALID -1

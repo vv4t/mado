@@ -44,7 +44,7 @@ typedef struct {
   float m[16];
 } mat4x4_t;
 
-inline static vec2_t vec2_init(float x, float y)
+inline vec2_t vec2_init(float x, float y)
 {
   return (vec2_t) {
     .x = x,
@@ -52,35 +52,35 @@ inline static vec2_t vec2_init(float x, float y)
   };
 }
 
-inline static vec2_t vec2_add(vec2_t a, vec2_t b)
+inline vec2_t vec2_add(vec2_t a, vec2_t b)
 {
   return vec2_init(
     a.x + b.x,
     a.y + b.y);
 }
 
-inline static vec2_t vec2_sub(vec2_t a, vec2_t b)
+inline vec2_t vec2_sub(vec2_t a, vec2_t b)
 {
   return vec2_init(
     a.x - b.x,
     a.y - b.y);
 }
 
-inline static vec2_t vec2_mul(vec2_t a, vec2_t b)
+inline vec2_t vec2_mul(vec2_t a, vec2_t b)
 {
   return vec2_init(
     a.x * b.x,
     a.y * b.y);
 }
 
-inline static vec2_t vec2_mulf(vec2_t a, float b)
+inline vec2_t vec2_mulf(vec2_t a, float b)
 {
   return vec2_init(
     a.x * b,
     a.y * b);
 }
 
-inline static vec2_t vec2_rotate(vec2_t v, float theta)
+inline vec2_t vec2_rotate(vec2_t v, float theta)
 {
   float c = cos(theta);
   float s = sin(theta);
@@ -91,17 +91,17 @@ inline static vec2_t vec2_rotate(vec2_t v, float theta)
   );
 }
 
-inline static float vec2_dot(vec2_t a, vec2_t b)
+inline float vec2_dot(vec2_t a, vec2_t b)
 {
   return a.x * b.x + a.y * b.y;
 }
 
-inline static float vec2_length(vec2_t v)
+inline float vec2_length(vec2_t v)
 {
   return sqrt(vec2_dot(v, v));
 }
 
-inline static vec2_t vec2_normalize(vec2_t v)
+inline vec2_t vec2_normalize(vec2_t v)
 {
   float length = vec2_length(v);
 
@@ -112,7 +112,7 @@ inline static vec2_t vec2_normalize(vec2_t v)
   return vec2_mulf(v, 1.0 / length);
 }
 
-inline static vec3_t vec3_init(float x, float y, float z)
+inline vec3_t vec3_init(float x, float y, float z)
 {
   return (vec3_t) {
     .x = x,
@@ -121,7 +121,7 @@ inline static vec3_t vec3_init(float x, float y, float z)
   };
 }
 
-inline static vec3_t vec3_add(vec3_t a, vec3_t b)
+inline vec3_t vec3_add(vec3_t a, vec3_t b)
 {
   return vec3_init(
     a.x + b.x,
@@ -129,7 +129,7 @@ inline static vec3_t vec3_add(vec3_t a, vec3_t b)
     a.z + b.z);
 }
 
-inline static vec3_t vec3_sub(vec3_t a, vec3_t b)
+inline vec3_t vec3_sub(vec3_t a, vec3_t b)
 {
   return vec3_init(
     a.x - b.x,
@@ -137,7 +137,7 @@ inline static vec3_t vec3_sub(vec3_t a, vec3_t b)
     a.z - b.z);
 }
 
-inline static vec3_t vec3_mulf(vec3_t a, float b)
+inline vec3_t vec3_mulf(vec3_t a, float b)
 {
   return vec3_init(
     a.x * b,
@@ -145,7 +145,7 @@ inline static vec3_t vec3_mulf(vec3_t a, float b)
     a.z * b);
 }
 
-inline static vec3_t vec3_mul(vec3_t a, vec3_t b)
+inline vec3_t vec3_mul(vec3_t a, vec3_t b)
 {
   return vec3_init(
     a.x * b.x,
@@ -153,7 +153,7 @@ inline static vec3_t vec3_mul(vec3_t a, vec3_t b)
     a.z * b.z);
 }
 
-inline static vec3_t vec3_cross(vec3_t a, vec3_t b)
+inline vec3_t vec3_cross(vec3_t a, vec3_t b)
 {
   return vec3_init(
     a.y * b.z - a.z * b.y,
@@ -161,17 +161,17 @@ inline static vec3_t vec3_cross(vec3_t a, vec3_t b)
     a.x * b.y - a.y * b.x);
 }
 
-inline static float vec3_dot(vec3_t a, vec3_t b)
+inline float vec3_dot(vec3_t a, vec3_t b)
 {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline static float vec3_length(vec3_t v)
+inline float vec3_length(vec3_t v)
 {
   return sqrt(vec3_dot(v, v));
 }
 
-inline static vec3_t vec3_normalize(vec3_t v)
+inline vec3_t vec3_normalize(vec3_t v)
 {
   float length = vec3_length(v);
   
@@ -182,7 +182,7 @@ inline static vec3_t vec3_normalize(vec3_t v)
   return vec3_mulf(v, 1.0 / length);
 }
 
-inline static vec4_t vec4_init(float x, float y, float z, float w)
+inline vec4_t vec4_init(float x, float y, float z, float w)
 {
   return (vec4_t) {
     .x = x,
@@ -192,7 +192,7 @@ inline static vec4_t vec4_init(float x, float y, float z, float w)
   };
 }
 
-inline static quat_t quat_init(float x, float y, float z, float w)
+inline quat_t quat_init(float x, float y, float z, float w)
 {
   return (quat_t) {
     .x = x,
@@ -202,12 +202,12 @@ inline static quat_t quat_init(float x, float y, float z, float w)
   };
 }
 
-inline static quat_t quat_conjugate(quat_t q)
+inline quat_t quat_conjugate(quat_t q)
 {
   return quat_init(-q.x, -q.y, -q.z, q.w);
 }
 
-inline static quat_t quat_init_rotation(vec3_t axis, float theta)
+inline quat_t quat_init_rotation(vec3_t axis, float theta)
 {
 	float cos_half_angle = cos(theta / 2.0f);
 	float sin_half_angle = sin(theta / 2.0f);
@@ -220,7 +220,7 @@ inline static quat_t quat_init_rotation(vec3_t axis, float theta)
   return quat_init(x, y, z, w);
 }
 
-inline static quat_t quat_mul(quat_t a, quat_t b)
+inline quat_t quat_mul(quat_t a, quat_t b)
 {
   return quat_init(
     a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
@@ -229,7 +229,7 @@ inline static quat_t quat_mul(quat_t a, quat_t b)
     a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
 }
 
-inline static quat_t quat_mul_vec3(quat_t a, vec3_t b)
+inline quat_t quat_mul_vec3(quat_t a, vec3_t b)
 {
   return quat_init(
      a.w * b.x + a.y * b.z - a.z * b.y,
@@ -238,7 +238,7 @@ inline static quat_t quat_mul_vec3(quat_t a, vec3_t b)
     -a.x * b.x - a.y * b.y - a.z * b.z);
 }
 
-inline static vec3_t vec3_rotate(vec3_t v, quat_t q)
+inline vec3_t vec3_rotate(vec3_t v, quat_t q)
 {
   quat_t q_conjugate = quat_conjugate(q);
   
@@ -248,7 +248,7 @@ inline static vec3_t vec3_rotate(vec3_t v, quat_t q)
   return vec3_init(full_rot.x, full_rot.y, full_rot.z);
 }
 
-inline static mat3x3_t mat3x3_init(vec3_t a, vec3_t b, vec3_t c)
+inline mat3x3_t mat3x3_init(vec3_t a, vec3_t b, vec3_t c)
 {
   mat3x3_t m;
   m.m[0]  = a.x;  m.m[3]  = a.y;  m.m[6] = a.z;
@@ -257,7 +257,7 @@ inline static mat3x3_t mat3x3_init(vec3_t a, vec3_t b, vec3_t c)
   return m;
 }
 
-inline static mat3x3_t mat3x3_init_identity()
+inline mat3x3_t mat3x3_init_identity()
 {
   mat3x3_t m;
   m.m[0]  = 1;  m.m[3]  = 0;  m.m[6] = 0;
@@ -266,7 +266,7 @@ inline static mat3x3_t mat3x3_init_identity()
   return m;
 }
 
-inline static mat3x3_t mat3x3_init_scale(vec2_t v)
+inline mat3x3_t mat3x3_init_scale(vec2_t v)
 {
   mat3x3_t m;
   m.m[0]  = v.x;  m.m[3]  = 0;    m.m[6] = 0;
@@ -275,7 +275,7 @@ inline static mat3x3_t mat3x3_init_scale(vec2_t v)
   return m;
 }
 
-inline static mat3x3_t mat3x3_init_translation(vec2_t v)
+inline mat3x3_t mat3x3_init_translation(vec2_t v)
 {
   mat3x3_t m;
   m.m[0]  = 1;  m.m[3]  = 0;  m.m[6] = v.x;
@@ -284,7 +284,7 @@ inline static mat3x3_t mat3x3_init_translation(vec2_t v)
   return m;
 }
 
-inline static mat3x3_t mat3x3_mul(mat3x3_t a, mat3x3_t b)
+inline mat3x3_t mat3x3_mul(mat3x3_t a, mat3x3_t b)
 {
   mat3x3_t m;
   for (int i = 0; i < 3; i++) {
@@ -299,7 +299,7 @@ inline static mat3x3_t mat3x3_mul(mat3x3_t a, mat3x3_t b)
   return m;
 }
 
-inline static vec2_t mat3x3_mul_vec2(mat3x3_t m, vec2_t v)
+inline vec2_t mat3x3_mul_vec2(mat3x3_t m, vec2_t v)
 {
   return vec2_init(
     v.x * m.m[0] + v.y * m.m[3] + 1.0 * m.m[6],
@@ -307,7 +307,7 @@ inline static vec2_t mat3x3_mul_vec2(mat3x3_t m, vec2_t v)
   );
 }
 
-inline static mat4x4_t mat4x4_init(vec4_t a, vec4_t b, vec4_t c, vec4_t d)
+inline mat4x4_t mat4x4_init(vec4_t a, vec4_t b, vec4_t c, vec4_t d)
 {
   mat4x4_t m;
   m.m[0]  = a.x;  m.m[4]  = a.y;  m.m[8]  = a.z;  m.m[12] = a.w;
@@ -317,7 +317,7 @@ inline static mat4x4_t mat4x4_init(vec4_t a, vec4_t b, vec4_t c, vec4_t d)
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_identity()
+inline mat4x4_t mat4x4_init_identity()
 {
   mat4x4_t m;
   m.m[0]  = 1;  m.m[4]  = 0;  m.m[8]  = 0;  m.m[12] = 0;
@@ -327,7 +327,7 @@ inline static mat4x4_t mat4x4_init_identity()
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_translation(vec3_t v)
+inline mat4x4_t mat4x4_init_translation(vec3_t v)
 {
   mat4x4_t m;
   m.m[0]  = 1;  m.m[4]  = 0;  m.m[8]  = 0;  m.m[12] = v.x;
@@ -337,7 +337,7 @@ inline static mat4x4_t mat4x4_init_translation(vec3_t v)
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_scale(vec3_t v)
+inline mat4x4_t mat4x4_init_scale(vec3_t v)
 {
   mat4x4_t m;
   m.m[0]  = v.x;  m.m[4]  = 0;    m.m[8]  = 0;    m.m[12] = 0;
@@ -347,7 +347,7 @@ inline static mat4x4_t mat4x4_init_scale(vec3_t v)
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_rotation(quat_t q)
+inline mat4x4_t mat4x4_init_rotation(quat_t q)
 {
   mat4x4_t m;
   m.m[0]  = 1-2*q.y*q.y - 2*q.z*q.z;  m.m[4]  = 2*q.x*q.y - 2*q.z*q.w;    m.m[8]  = 2*q.x*q.z + 2*q.y*q.w;    m.m[12] = 0;
@@ -358,7 +358,7 @@ inline static mat4x4_t mat4x4_init_rotation(quat_t q)
   return m;
 }
 
-inline static mat4x4_t mat4x4_mul(mat4x4_t a, mat4x4_t b)
+inline mat4x4_t mat4x4_mul(mat4x4_t a, mat4x4_t b)
 {
   mat4x4_t m;
   for (int i = 0; i < 4; i++) {
@@ -374,7 +374,7 @@ inline static mat4x4_t mat4x4_mul(mat4x4_t a, mat4x4_t b)
   return m;
 }
 
-inline static vec3_t mat4x4_mul_vec3(mat4x4_t m, vec3_t v)
+inline vec3_t mat4x4_mul_vec3(mat4x4_t m, vec3_t v)
 {
   return vec3_init(
     v.x * m.m[0] + v.y * m.m[4] + v.z * m.m[8]  + 1.0 * m.m[12],
@@ -383,7 +383,7 @@ inline static vec3_t mat4x4_mul_vec3(mat4x4_t m, vec3_t v)
   );
 }
 
-inline static mat4x4_t mat4x4_init_transform(vec3_t translate, vec3_t scale)
+inline mat4x4_t mat4x4_init_transform(vec3_t translate, vec3_t scale)
 {
   mat4x4_t translation_matrix = mat4x4_init_translation(translate);
   mat4x4_t scale_matrix = mat4x4_init_scale(scale);
@@ -391,7 +391,7 @@ inline static mat4x4_t mat4x4_init_transform(vec3_t translate, vec3_t scale)
   return mat4x4_mul(scale_matrix, translation_matrix);
 }
 
-inline static mat4x4_t mat4x4_init_look_at(vec3_t at, vec3_t from, vec3_t up)
+inline mat4x4_t mat4x4_init_look_at(vec3_t at, vec3_t from, vec3_t up)
 {
   vec3_t z_axis = vec3_normalize(vec3_sub(at, from));
   vec3_t x_axis = vec3_normalize(vec3_cross(up, z_axis));
@@ -409,7 +409,7 @@ inline static mat4x4_t mat4x4_init_look_at(vec3_t at, vec3_t from, vec3_t up)
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_perspective(float aspect_ratio, float fov, float near, float far)
+inline mat4x4_t mat4x4_init_perspective(float aspect_ratio, float fov, float near, float far)
 {
   float tan_fov = 1 / tan(fov / 2);
   float ar_tan_fov = aspect_ratio * tan_fov;
@@ -426,7 +426,7 @@ inline static mat4x4_t mat4x4_init_perspective(float aspect_ratio, float fov, fl
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_isometric(float l, float r, float t, float b, float n, float f)
+inline mat4x4_t mat4x4_init_isometric(float l, float r, float t, float b, float n, float f)
 {
   mat4x4_t m;
   m.m[0]	= 2 / (r - l);	m.m[4]	= 0;			      m.m[8]	= 0;			      m.m[12]	= -(r + l) / (r - l);
@@ -437,7 +437,7 @@ inline static mat4x4_t mat4x4_init_isometric(float l, float r, float t, float b,
   return m;
 }
 
-inline static mat4x4_t mat4x4_init_orthogonal(float l, float r, float t, float b, float n, float f)
+inline mat4x4_t mat4x4_init_orthogonal(float l, float r, float t, float b, float n, float f)
 {
   mat4x4_t m;
   m.m[0]	= 2 / (r - l);	m.m[4]	= 0;			      m.m[8]	= 0;			      m.m[12]	= -(r + l) / (r - l);
@@ -448,7 +448,7 @@ inline static mat4x4_t mat4x4_init_orthogonal(float l, float r, float t, float b
   return m;
 }
 
-inline static void mat4x4_print(mat4x4_t m)
+inline void mat4x4_print(mat4x4_t m)
 {
   printf("mat4x4_t(%f %f %f %f\n",  m.m[0], m.m[4], m.m[8],   m.m[12]);
   printf("         %f %f %f %f\n",  m.m[1], m.m[5], m.m[9],   m.m[13]);
@@ -456,22 +456,22 @@ inline static void mat4x4_print(mat4x4_t m)
   printf("         %f %f %f %f)\n", m.m[3], m.m[7], m.m[11],  m.m[15]);
 }
 
-inline static void vec2_print(vec2_t v)
+inline void vec2_print(vec2_t v)
 {
   printf("vec2_t(%f %f)\n", v.x, v.y);
 }
 
-inline static void vec3_print(vec3_t v)
+inline void vec3_print(vec3_t v)
 {
   printf("vec3_t(%f %f %f)\n", v.x, v.y, v.z);
 }
 
-inline static float to_radians(float x)
+inline float to_radians(float x)
 {
   return x * M_PI / 180.0;
 }
 
-inline static float to_degrees(float x)
+inline float to_degrees(float x)
 {
   return x * 180.0 / M_PI;
 }
