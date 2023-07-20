@@ -16,6 +16,8 @@ typedef struct game_s {
   usercmd_t usercmd;
 } game_t;
 
+void game_kill(game_t *game, entity_t entity);
+
 void game_init(game_t *game);
 void game_load_map(game_t *game, map_t *map);
 void game_update(game_t *game, const usercmd_t *usercmd);

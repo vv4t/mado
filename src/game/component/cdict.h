@@ -8,6 +8,7 @@
 #include "c_motion.h"
 #include "c_sprite.h"
 #include "c_bullet.h"
+#include "c_ai_move.h"
 #include "c_animator.h"
 #include "c_transform.h"
 
@@ -22,7 +23,8 @@ typedef enum {
   COMPONENT_ACTOR     = (1 << 5),
   COMPONENT_BOX       = (1 << 6),
   COMPONENT_TAG       = (1 << 7),
-  COMPONENT_HEALTH    = (1 << 8)
+  COMPONENT_HEALTH    = (1 << 8),
+  COMPONENT_AI_MOVE   = (1 << 9)
 } component_t;
 
 typedef struct {
@@ -33,6 +35,7 @@ typedef struct {
   c_health_t health[MAX_ENTITIES];
   c_sprite_t sprite[MAX_ENTITIES];
   c_bullet_t bullet[MAX_ENTITIES];
+  c_ai_move_t ai_move[MAX_ENTITIES];
   c_animator_t animator[MAX_ENTITIES];
   c_transform_t transform[MAX_ENTITIES];
 } cdict_t;

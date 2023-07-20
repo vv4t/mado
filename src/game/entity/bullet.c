@@ -44,12 +44,12 @@ void xhit_bullet(entity_t entity, game_t *game, entity_t hit)
   int damage = game->cdict.bullet[entity].damage;
   
   c_health_apply_damage(&game->cdict.health[hit], damage);
-  edict_kill(&game->edict, entity);
+  game_kill(game, entity);
 }
 
 void xhitmap_bullet(entity_t entity, game_t *game)
 {
-  edict_kill(&game->edict, entity);
+  game_kill(game, entity);
 }
 
 void xaction_bullet_die(entity_t entity, game_t *game)
