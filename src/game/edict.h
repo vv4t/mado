@@ -1,7 +1,7 @@
 #ifndef EDICT_H
 #define EDICT_H
 
-#define MAX_ENTITIES 16
+#define MAX_ENTITIES 32
 #define ENTITY_INVALID -1
 
 typedef int entity_t;

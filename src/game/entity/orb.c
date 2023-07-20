@@ -9,6 +9,8 @@
 
 void orb_attack1(entity_t entity, action_t *action, game_t *game);
 void orb_attack2(entity_t entity, action_t *action, game_t *game);
+void orb_attack3(entity_t entity, action_t *action, game_t *game);
+void orb_attack4(entity_t entity, action_t *action, game_t *game);
 void orb_move(entity_t entity, action_t *action, game_t *game);
 void orb_die(entity_t entity, game_t *game);
 
@@ -33,7 +35,6 @@ void orb_spawn(game_t *game, vec2_t pos)
   game->cdict.health[entity].xdie = orb_die;
   
   c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
-  c_actor_add_act(&game->cdict.actor[entity], orb_attack1, 0.1);
   c_actor_add_act(&game->cdict.actor[entity], orb_attack2, 1.0);
   c_actor_add_act(&game->cdict.actor[entity], orb_move, ORB_PIVOT_TIME);
 }
@@ -45,7 +46,7 @@ void orb_die(entity_t entity, game_t *game)
 
 void orb_attack1(entity_t entity, action_t *action, game_t *game)
 {
-  if (action->count > 3)
+  if (action->count >= 2)
     c_actor_remove_act(&game->cdict.actor[entity], action);
   
   vec2_t player_pos = game->cdict.transform[0].position;
@@ -59,7 +60,41 @@ void orb_attack1(entity_t entity, action_t *action, game_t *game)
 
 void orb_attack2(entity_t entity, action_t *action, game_t *game)
 {
-  c_actor_add_act(&game->cdict.actor[entity], orb_attack1, 1.0);
+  c_actor_add_act(&game->cdict.actor[entity], orb_attack4, 0.09);
+}
+
+void orb_attack3(entity_t entity, action_t *action, game_t *game)
+{
+  if (action->count >= 2)
+    c_actor_remove_act(&game->cdict.actor[entity], action);
+  
+  vec2_t player_pos = game->cdict.transform[0].position;
+  vec2_t orb_pos = game->cdict.transform[entity].position;
+  vec2_t delta_pos = vec2_sub(player_pos, orb_pos);
+  
+  float angle = atan2(delta_pos.y, delta_pos.x);
+  
+  for (int i = -1; i <= 1; i++) {
+    float offset = i * M_PI / 6.0;
+    bullet_shoot(game, orb_pos, vec2_init(1,7), angle + offset, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
+  }
+}
+
+void orb_attack4(entity_t entity, action_t *action, game_t *game)
+{
+  if (action->count >= 5)
+    c_actor_remove_act(&game->cdict.actor[entity], action);
+  
+  vec2_t player_pos = game->cdict.transform[0].position;
+  vec2_t orb_pos = game->cdict.transform[entity].position;
+  vec2_t delta_pos = vec2_sub(player_pos, orb_pos);
+  
+  for (int i = 0; i < 4; i++) {
+    float spin = action->count * M_PI / 20.0;
+    float angle = atan2(delta_pos.y, delta_pos.x) + i * M_PI / 2.0 + spin;
+    
+    bullet_shoot(game, orb_pos, vec2_init(1,7), angle, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
+  }
 }
 
 void orb_move(entity_t entity, action_t *action, game_t *game)

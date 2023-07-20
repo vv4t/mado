@@ -10,7 +10,7 @@ void game_init(game_t *game)
   *game = (game_t) {0};
   
   player_init(game->player, game);
-  orb_spawn(game, vec2_init(3, 3));
+  // orb_spawn(game, vec2_init(3, 3));
   orb_spawn(game, vec2_init(5, 4));
 }
 
