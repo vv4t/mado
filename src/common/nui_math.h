@@ -430,8 +430,8 @@ inline mat4x4_t mat4x4_init_isometric(float l, float r, float t, float b, float 
 {
   mat4x4_t m;
   m.m[0]	= 2 / (r - l);	m.m[4]	= 0;			      m.m[8]	= 0;			      m.m[12]	= -(r + l) / (r - l);
-  m.m[1]	= 0;			      m.m[5]	= 2 / (t - b);	m.m[9]	= -2 / (f - n); m.m[13]	= -(t + b) / (t - b);
-  m.m[2]	= 0;			      m.m[6]	= 0;			      m.m[10]	=  2 / (f - n);	m.m[14]	=  (f + n) / (f - n);
+  m.m[1]	= 0;			      m.m[5]	= 2 / (t - b);	m.m[9]	= -4 / (f - n); m.m[13]	= -(t + b) / (t - b);
+  m.m[2]	= 0;			      m.m[6]	= 0;			      m.m[10]	=  4 / (f - n);	m.m[14]	=  (f + n) / (f - n);
   m.m[3]	= 0;			      m.m[7]	= 0;			      m.m[11]	= 0;			      m.m[15]	= 1;
   
   return m;
