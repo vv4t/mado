@@ -43,7 +43,7 @@ void health_mesh_draw(mesh_t *health_mesh, const game_t *game, const camera_t *c
     if (game->cdict.health[i].health <= 0)
       continue;
     
-    float interp_health = game->cdict.health[i].health / 100.0 * 0.5;
+    float interp_health = game->cdict.health[i].health / 100.0 * 0.7;
     
     vec3_t pos = vec3_init(game->cdict.transform[i].position.x, game->cdict.transform[i].position.y, 0.0);
     quat_t rot = camera->rot;
