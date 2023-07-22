@@ -8,6 +8,10 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
 {
   entity_t entity = edict_spawn(&game->edict);
   
+  if (entity < 0) {
+    return;
+  }
+  
   component_t field = 0;
   field |= c_transform_init(&game->cdict.transform[entity], pos, angle);
   field |= c_motion_init(&game->cdict.motion[entity]);

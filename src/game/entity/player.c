@@ -32,7 +32,7 @@ void player_init(entity_t entity, game_t *game)
   game->edict.field[entity] = field;
   
   c_animator_play(&game->cdict.animator[entity], &player_anim_move_left);
-  c_actor_set_act(&game->cdict.actor[entity], 0, player_attack, 0.25);
+  c_actor_set_act(&game->cdict.actor[entity], 0, player_attack, 0.125);
 }
 
 void player_update(entity_t entity, game_t *game)
@@ -74,5 +74,5 @@ void player_attack(entity_t entity, action_t *action, game_t *game)
   float player_angle = game->cdict.transform[entity].rotation; 
   float angle = player_angle - atan2(game->usercmd.aim_y, game->usercmd.aim_x);
   
-  bullet_shoot(game, pos, vec2_init(0,7), angle, 1.0, TAG_ENEMY, PLAYER_BULLET_DAMAGE);
+  bullet_shoot(game, pos, vec2_init(0,7), angle, 0.5, TAG_ENEMY, PLAYER_BULLET_DAMAGE);
 }
