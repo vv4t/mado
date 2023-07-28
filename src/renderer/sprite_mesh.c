@@ -40,17 +40,22 @@ void sprite_mesh_draw(mesh_t *sprite_mesh, const game_t *game, const camera_t *c
     if ((game->edict.field[i] & mask) != mask)
       continue;
     
-    vec3_t pos = vec3_init(game->cdict.transform[i].position.x, game->cdict.transform[i].position.y, 0.0);
-    quat_t rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), game->cdict.sprite[i].rotation);
+    const c_sprite_t *c_sprite = &game->cdict.sprite[i];
+    const c_transform_t *c_transform = &game->cdict.transform[i];
+    
+    vec3_t pos = vec3_init(c_transform->position.x, c_transform->position.y, 0.0);
+    vec3_t size = vec3_init(c_sprite->size.x, c_sprite->size.y, 1.0);
+    quat_t rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), c_sprite->rotation);
     
     if (game->cdict.sprite[i].orient) {
       rot = quat_mul(rot, camera->rot);
     }
     
     mat4x4_t stand_mat = mat4x4_init_translation(vec3_init(0, game->cdict.sprite[i].stand * 0.5f, 0));
+    mat4x4_t size_mat = mat4x4_init_scale(size);
     mat4x4_t rot_mat = mat4x4_init_rotation(rot);
     mat4x4_t pos_mat = mat4x4_init_translation(pos);
-    mat4x4_t vert_mat = mat4x4_mul(mat4x4_mul(stand_mat, rot_mat), pos_mat);
+    mat4x4_t vert_mat = mat4x4_mul(mat4x4_mul(stand_mat, mat4x4_mul(rot_mat, size_mat)), pos_mat);
     
     for (int j = 0; j < num_sprite_vertices; j++) {
       vec3_t pos = mat4x4_mul_vec3(vert_mat, sprite_vertices[j].pos);

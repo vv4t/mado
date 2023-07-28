@@ -15,13 +15,17 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   component_t field = 0;
   field |= c_transform_init(&game->cdict.transform[entity], pos, angle);
   field |= c_motion_init(&game->cdict.motion[entity]);
-  field |= c_sprite_init(&game->cdict.sprite[entity], uv, false, false, angle - M_PI/2.0);
+  field |= c_sprite_init(&game->cdict.sprite[entity], uv);
   field |= c_bullet_init(&game->cdict.bullet[entity], target, damage);
   field |= c_box_init(&game->cdict.box[entity], vec2_init(-0.2,-0.2), vec2_init(+0.2,+0.2));
   field |= c_actor_init(&game->cdict.actor[entity]);
   game->edict.field[entity] = field;
   
   c_actor_add_act(&game->cdict.actor[entity], xaction_bullet_die, live_time);
+  
+  game->cdict.sprite[entity].stand = false;
+  game->cdict.sprite[entity].orient = false;
+  game->cdict.sprite[entity].rotation = angle - M_PI/2.0;
   
   game->cdict.box[entity].xhit = xhit_bullet;
   game->cdict.box[entity].xhitmap = xhitmap_bullet;

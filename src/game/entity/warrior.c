@@ -22,7 +22,7 @@ void warrior_spawn(game_t *game, vec2_t pos)
   component_t field = 0;
   field |= c_transform_init(&game->cdict.transform[entity], pos, 0.0);
   field |= c_motion_init(&game->cdict.motion[entity]);
-  field |= c_sprite_init(&game->cdict.sprite[entity], vec2_init(0,3), true, true, 0.0);
+  field |= c_sprite_init(&game->cdict.sprite[entity], vec2_init(0,3));
   field |= c_animator_init(&game->cdict.animator[entity]);
   field |= c_actor_init(&game->cdict.actor[entity]);
   field |= c_box_init(&game->cdict.box[entity], vec2_init(-0.2,-0.2), vec2_init(0.2, 0.2));
@@ -30,6 +30,8 @@ void warrior_spawn(game_t *game, vec2_t pos)
   field |= c_health_init(&game->cdict.health[entity], 100);
   field |= c_ai_move_init(&game->cdict.ai_move[entity], vec2_add(pos, vec2_init(0, WARRIOR_PIVOT_RADIUS)));
   game->edict.field[entity] = field;
+  
+  game->cdict.sprite[entity].size = vec2_init(1.5, 1.5);
   
   game->cdict.health[entity].xdie = warrior_die;
   

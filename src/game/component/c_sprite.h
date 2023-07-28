@@ -6,17 +6,19 @@
 
 typedef struct {
   vec2_t uv;
+  vec2_t size;
   float rotation;
   bool orient;
   bool stand;
 } c_sprite_t;
 
-inline component_t c_sprite_init(c_sprite_t *c_sprite, vec2_t uv, bool orient, bool stand, float rotation)
+inline component_t c_sprite_init(c_sprite_t *c_sprite, vec2_t uv)
 {
   c_sprite->uv = uv;
-  c_sprite->stand = orient;
-  c_sprite->orient = stand;
-  c_sprite->rotation = rotation;
+  c_sprite->size = vec2_init(1.0, 1.0);
+  c_sprite->stand = true;
+  c_sprite->orient = true;
+  c_sprite->rotation = 0.0;
   return COMPONENT_SPRITE;
 }
 

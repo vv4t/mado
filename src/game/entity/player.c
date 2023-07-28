@@ -23,7 +23,7 @@ void player_init(entity_t entity, game_t *game)
   component_t field = 0;
   field |= c_transform_init(&game->cdict.transform[entity], vec2_init(2.0, 2.0), 0.0);
   field |= c_motion_init(&game->cdict.motion[entity]);
-  field |= c_sprite_init(&game->cdict.sprite[entity], vec2_init(0,5), true, true, 0.0);
+  field |= c_sprite_init(&game->cdict.sprite[entity], vec2_init(0,5));
   field |= c_animator_init(&game->cdict.animator[entity]);
   field |= c_actor_init(&game->cdict.actor[entity]);
   field |= c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
