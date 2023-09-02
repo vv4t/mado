@@ -32,7 +32,7 @@ void player_init(entity_t entity, game_t *game)
   game->edict.field[entity] = field;
   
   c_animator_play(&game->cdict.animator[entity], &player_anim_move_left);
-  c_actor_set_act(&game->cdict.actor[entity], 0, player_attack, 0.125);
+  c_actor_start(&game->cdict.actor[entity], player_attack, 0.125, 0);
 }
 
 void player_update(entity_t entity, game_t *game)

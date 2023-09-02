@@ -33,8 +33,8 @@ void orb_spawn(game_t *game, vec2_t pos)
   game->cdict.health[entity].xdie = orb_die;
   
   c_animator_play(&game->cdict.animator[entity], &orb_anim_idle);
-  c_actor_add_act(&game->cdict.actor[entity], orb_burst, 1.0);
-  c_actor_add_act(&game->cdict.actor[entity], orb_move, ORB_PIVOT_TIME);
+  c_actor_start(&game->cdict.actor[entity], orb_burst, 1.0, 0);
+  c_actor_start(&game->cdict.actor[entity], orb_move, ORB_PIVOT_TIME, 0);
 }
 
 void orb_die(entity_t entity, game_t *game)
@@ -44,14 +44,11 @@ void orb_die(entity_t entity, game_t *game)
 
 void orb_burst(entity_t entity, action_t *action, game_t *game)
 {
-  c_actor_add_act(&game->cdict.actor[entity], orb_triple, 0.09);
+  c_actor_start(&game->cdict.actor[entity], orb_triple, 0.09, 1);
 }
 
 void orb_triple(entity_t entity, action_t *action, game_t *game)
 {
-  if (action->count >= 2)
-    c_actor_remove_act(&game->cdict.actor[entity], action);
-  
   vec2_t player_pos = game->cdict.transform[0].position;
   vec2_t orb_pos = game->cdict.transform[entity].position;
   vec2_t delta_pos = vec2_sub(player_pos, orb_pos);

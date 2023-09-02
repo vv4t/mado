@@ -35,9 +35,9 @@ void warrior_spawn(game_t *game, vec2_t pos)
   
   game->cdict.health[entity].xdie = warrior_die;
   
-  c_animator_play(&game->cdict.animator[entity], &warrior_anim_idle);
-  c_actor_add_act(&game->cdict.actor[entity], warrior_attack, 2.5);
-  c_actor_add_act(&game->cdict.actor[entity], warrior_move, WARRIOR_PIVOT_TIME);
+  c_animator_repeat(&game->cdict.animator[entity], &warrior_anim_idle);
+  c_actor_start(&game->cdict.actor[entity], warrior_attack, 2.5, 0);
+  c_actor_start(&game->cdict.actor[entity], warrior_move, WARRIOR_PIVOT_TIME, 0);
 }
 
 void warrior_die(entity_t entity, game_t *game)
@@ -48,25 +48,20 @@ void warrior_die(entity_t entity, game_t *game)
 void warrior_attack(entity_t entity, action_t *action, game_t *game)
 {
   c_animator_play(&game->cdict.animator[entity], &warrior_anim_attack);
-  c_actor_add_act(&game->cdict.actor[entity], warrior_shotgun, 0.5);
+  c_actor_start(&game->cdict.actor[entity], warrior_shotgun, 0.5, 1);
 }
 
 void warrior_shotgun(entity_t entity, action_t *action, game_t *game)
 {
-  if (action->count == 1) {
-    vec2_t player_pos = game->cdict.transform[0].position;
-    vec2_t warrior_pos = game->cdict.transform[entity].position;
-    vec2_t delta_pos = vec2_sub(player_pos, warrior_pos);
-    
-    float angle = atan2(delta_pos.y, delta_pos.x);
-    
-    bullet_shoot(game, warrior_pos, vec2_init(3,7), angle, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
-    bullet_shoot(game, warrior_pos, vec2_init(3,7), angle - 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
-    bullet_shoot(game, warrior_pos, vec2_init(3,7), angle + 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
-  } else if (action->count >= 2) {
-    c_actor_remove_act(&game->cdict.actor[entity], action);
-    c_animator_play(&game->cdict.animator[entity], &warrior_anim_idle);
-  }
+  vec2_t player_pos = game->cdict.transform[0].position;
+  vec2_t warrior_pos = game->cdict.transform[entity].position;
+  vec2_t delta_pos = vec2_sub(player_pos, warrior_pos);
+  
+  float angle = atan2(delta_pos.y, delta_pos.x);
+  
+  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
+  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle - 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
+  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle + 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
 }
 
 void warrior_move(entity_t entity, action_t *action, game_t *game)

@@ -21,7 +21,7 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   field |= c_actor_init(&game->cdict.actor[entity]);
   game->edict.field[entity] = field;
   
-  c_actor_add_act(&game->cdict.actor[entity], xaction_bullet_die, live_time);
+  c_actor_start(&game->cdict.actor[entity], xaction_bullet_die, live_time, 1);
   
   game->cdict.sprite[entity].stand = false;
   game->cdict.sprite[entity].orient = false;
