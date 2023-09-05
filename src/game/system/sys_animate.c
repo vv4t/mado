@@ -21,14 +21,14 @@ void sys_animate_sprite(game_t *game)
       continue;
     }
     
-    c_animator->time += DELTA_TIME / animation->frame_time;
-    
     int frame_id = ((int) c_animator->time) % animation->frame_count;
     
     c_sprite->uv.x = animation->uv.x + c_sprite->spr_size.x * frame_id;
     c_sprite->uv.y = animation->uv.y;
     
-    if (c_animator->time >= animation->frame_count) {
+    c_animator->time += DELTA_TIME / animation->frame_time;
+    
+    if (c_animator->time > animation->frame_count) {
       if (animation == game->cdict.animator[i].do_once) {
         game->cdict.animator[i].do_once = NULL;
       }
