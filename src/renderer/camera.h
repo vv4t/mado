@@ -11,12 +11,13 @@ typedef struct {
   float     height;
   
   vec3_t    pos;
-  quat_t    rot;
+  float     rot;
   
   mat4x4_t  proj_mat;
   mat4x4_t  view_proj_mat;
 } camera_t;
 
+void      camera_viewport(camera_t *camera, float w, float h, float n, float f, float ar);
 void      camera_set_orthogonal(camera_t *camera);
 void      camera_set_isometric(camera_t *camera);
 void      camera_setup_view(camera_t *camera);

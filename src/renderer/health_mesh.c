@@ -46,10 +46,10 @@ void health_mesh_draw(mesh_t *health_mesh, const game_t *game, const camera_t *c
     float interp_health = game->cdict.health[i].health / 100.0 * 0.7;
     
     vec3_t pos = vec3_init(game->cdict.transform[i].position.x, game->cdict.transform[i].position.y, 0.0);
-    quat_t rot = camera->rot;
+    float rot = camera->rot;
     vec3_t scale = vec3_init(interp_health, 0.0625, 1.0);
     
-    mat4x4_t rot_mat = mat4x4_init_rotation(rot);
+    mat4x4_t rot_mat = mat4x4_init_rotation_z(rot);
     mat4x4_t pos_mat = mat4x4_init_translation(pos);
     mat4x4_t scale_mat = mat4x4_init_scale(scale);
     mat4x4_t vert_mat = mat4x4_mul(mat4x4_mul(scale_mat, rot_mat), pos_mat);

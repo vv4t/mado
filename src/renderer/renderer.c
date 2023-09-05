@@ -23,7 +23,7 @@ bool renderer_init(renderer_t *renderer)
   renderer_init_gl(renderer);
   
   renderer->camera.pos = vec3_init(0.0, 0.0, 0.0);
-  renderer->camera.rot = quat_init(0.0, 0.0, 0.0, 1.0);
+  renderer->camera.rot = 0.0;
   
   return true;
 }
@@ -34,7 +34,7 @@ void renderer_render(renderer_t *renderer, const game_t *game)
   
   renderer->camera.pos.x = game->cdict.transform[game->player].position.x;
   renderer->camera.pos.y = game->cdict.transform[game->player].position.y;
-  renderer->camera.rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), game->cdict.transform[game->player].rotation);
+  renderer->camera.rot = game->cdict.transform[game->player].rotation;
   
   camera_set_isometric(&renderer->camera);
   camera_setup_view(&renderer->camera);
@@ -68,11 +68,7 @@ void renderer_load_sheet(renderer_t *renderer, const sprite_sheet_t *sprite_shee
 
 void renderer_init_camera(renderer_t *renderer)
 {
-  renderer->camera.aspect_ratio = 1280.0 / 720.0;
-  renderer->camera.near = -10.0;
-  renderer->camera.far = 10.0;
-  renderer->camera.width = 5.0;
-  renderer->camera.height = 5.0;
+  camera_viewport(&renderer->camera, 1280.0 / 720.0, 5.0, 5.0, -10.0, 10.0);
 }
 
 void renderer_init_gl(renderer_t *renderer)

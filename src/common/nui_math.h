@@ -358,6 +358,19 @@ inline mat4x4_t mat4x4_init_rotation(quat_t q)
   return m;
 }
 
+inline mat4x4_t mat4x4_init_rotation_z(float theta)
+{
+  float cs = cos(theta);
+  float sn = sin(theta);
+  
+  mat4x4_t m;
+  m.m[0]  = cs;   m.m[4]  = -sn;  m.m[8]  = 0;    m.m[12] = 0;
+  m.m[1]  = sn;   m.m[5]  = cs;   m.m[9]  = 0;    m.m[13] = 0;
+  m.m[2]  = 0;    m.m[6]  = 0;    m.m[10] = 1;    m.m[14] = 0;
+  m.m[3]  = 0;    m.m[7]  = 0;    m.m[11] = 0;    m.m[15] = 1;
+  return m;
+}
+
 inline mat4x4_t mat4x4_mul(mat4x4_t a, mat4x4_t b)
 {
   mat4x4_t m;

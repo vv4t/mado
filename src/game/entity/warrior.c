@@ -13,7 +13,7 @@ void warrior_move(entity_t entity, action_t *action, game_t *game);
 void warrior_die(entity_t entity, game_t *game);
 
 static animation_t warrior_anim_idle = (animation_t) { .uv = {0,3}, .frame_count = 2, .frame_time = 0.5 };
-static animation_t warrior_anim_attack = (animation_t) { .uv = {2,3}, .frame_count = 2, .frame_time = 0.5 };
+static animation_t warrior_anim_attack = (animation_t) { .uv = {4,3}, .frame_count = 2, .frame_time = 0.5 };
 
 void warrior_spawn(game_t *game, vec2_t pos)
 {
@@ -31,8 +31,8 @@ void warrior_spawn(game_t *game, vec2_t pos)
   field |= c_ai_move_init(&game->cdict.ai_move[entity], vec2_add(pos, vec2_init(0, WARRIOR_PIVOT_RADIUS)));
   game->edict.field[entity] = field;
   
-  game->cdict.sprite[entity].size = vec2_init(1.5, 1.5);
-  
+  game->cdict.sprite[entity].size = vec2_init(3.0, 1.5);
+  game->cdict.sprite[entity].spr_size = vec2_init(2.0, 1.0);
   game->cdict.health[entity].xdie = warrior_die;
   
   c_animator_repeat(&game->cdict.animator[entity], &warrior_anim_idle);

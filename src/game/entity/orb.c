@@ -44,7 +44,7 @@ void orb_die(entity_t entity, game_t *game)
 
 void orb_burst(entity_t entity, action_t *action, game_t *game)
 {
-  c_actor_start(&game->cdict.actor[entity], orb_triple, 0.09, 1);
+  c_actor_start(&game->cdict.actor[entity], orb_triple, 0.09, 3);
 }
 
 void orb_triple(entity_t entity, action_t *action, game_t *game)

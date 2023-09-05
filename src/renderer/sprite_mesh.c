@@ -45,21 +45,26 @@ void sprite_mesh_draw(mesh_t *sprite_mesh, const game_t *game, const camera_t *c
     
     vec3_t pos = vec3_init(c_transform->position.x, c_transform->position.y, 0.0);
     vec3_t size = vec3_init(c_sprite->size.x, c_sprite->size.y, 1.0);
-    quat_t rot = quat_init_rotation(vec3_init(0.0, 0.0, 1.0), c_sprite->rotation);
+    float rot = c_sprite->rotation;
     
     if (game->cdict.sprite[i].orient) {
-      rot = quat_mul(rot, camera->rot);
+      rot += camera->rot;
     }
     
     mat4x4_t stand_mat = mat4x4_init_translation(vec3_init(0, game->cdict.sprite[i].stand * 0.5f, 0));
+    
     mat4x4_t size_mat = mat4x4_init_scale(size);
-    mat4x4_t rot_mat = mat4x4_init_rotation(rot);
+    mat4x4_t rot_mat = mat4x4_init_rotation_z(rot);
     mat4x4_t pos_mat = mat4x4_init_translation(pos);
-    mat4x4_t vert_mat = mat4x4_mul(mat4x4_mul(stand_mat, mat4x4_mul(rot_mat, size_mat)), pos_mat);
+    mat4x4_t vert_mat = mat4x4_mul(mat4x4_mul(stand_mat, mat4x4_mul(size_mat, rot_mat)), pos_mat);
+    
+    mat3x3_t uv_pos_mat = mat3x3_init_translation(game->cdict.sprite[i].uv);
+    mat3x3_t uv_size_mat = mat3x3_init_scale(game->cdict.sprite[i].spr_size);
+    mat3x3_t uv_mat = mat3x3_mul(uv_size_mat, uv_pos_mat);
     
     for (int j = 0; j < num_sprite_vertices; j++) {
       vec3_t pos = mat4x4_mul_vec3(vert_mat, sprite_vertices[j].pos);
-      vec2_t uv = vec2_add(sprite_vertices[j].uv, game->cdict.sprite[i].uv);
+      vec2_t uv = mat3x3_mul_vec2(uv_mat, sprite_vertices[j].uv);
       
       vertices[i * num_sprite_vertices + j].pos = pos;
       vertices[i * num_sprite_vertices + j].uv = uv;
