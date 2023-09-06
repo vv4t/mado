@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 #define WARRIOR_BULLET_DAMAGE 10
-#define WARRIOR_PIVOT_RADIUS  0.4
-#define WARRIOR_PIVOT_TIME    0.25
+#define WARRIOR_PIVOT_RADIUS  0.2
+#define WARRIOR_PIVOT_TIME    0.2
 
 void warrior_attack(entity_t entity, action_t *action, game_t *game);
 void warrior_shotgun(entity_t entity, action_t *action, game_t *game);

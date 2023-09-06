@@ -29,7 +29,7 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   
   game->cdict.box[entity].xhit = xhit_bullet;
   game->cdict.box[entity].xhitmap = xhitmap_bullet;
-  game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 10, sin(angle) * 10);
+  game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 5, sin(angle) * 5);
 }
 
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit)

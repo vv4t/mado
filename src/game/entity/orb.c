@@ -12,7 +12,7 @@ void orb_triple(entity_t entity, action_t *action, game_t *game);
 void orb_move(entity_t entity, action_t *action, game_t *game);
 void orb_die(entity_t entity, game_t *game);
 
-static animation_t orb_anim_idle = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.2 };
+static animation_t orb_anim_idle = (animation_t) { .uv = {4,4}, .frame_count = 2, .frame_time = 0.2 };
 
 void orb_spawn(game_t *game, vec2_t pos)
 {
