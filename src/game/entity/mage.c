@@ -13,7 +13,7 @@ void mage_move(entity_t entity, action_t *action, game_t *game);
 void mage_die(entity_t entity, game_t *game);
 
 static animation_t mage_anim_idle = (animation_t) { .uv = {0,4}, .frame_count = 2, .frame_time = 0.2 };
-static animation_t mage_anim_attack = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.5 };
+static animation_t mage_anim_attack = (animation_t) { .uv = {2,4}, .frame_count = 2, .frame_time = 0.8 };
 
 void mage_spawn(game_t *game, vec2_t pos)
 {
@@ -48,7 +48,7 @@ void mage_die(entity_t entity, game_t *game)
 void mage_attack(entity_t entity, action_t *action, game_t *game)
 {
   c_animator_play(&game->cdict.animator[entity], &mage_anim_attack);
-  c_actor_start(&game->cdict.actor[entity], mage_shotgun, 0.5, 1);
+  c_actor_start(&game->cdict.actor[entity], mage_shotgun, 0.8, 1);
 }
 
 void mage_shotgun(entity_t entity, action_t *action, game_t *game)
