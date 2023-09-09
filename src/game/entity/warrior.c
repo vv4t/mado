@@ -12,8 +12,16 @@ void warrior_shotgun(entity_t entity, action_t *action, game_t *game);
 void warrior_move(entity_t entity, action_t *action, game_t *game);
 void warrior_die(entity_t entity, game_t *game);
 
-static animation_t warrior_anim_idle = (animation_t) { .uv = {0,3}, .frame_count = 2, .frame_time = 0.5 };
-static animation_t warrior_anim_attack = (animation_t) { .uv = {4,3}, .frame_count = 2, .frame_time = 0.5 };
+static animation_t warrior_anim_idle = { .uv = {0,3}, .frame_count = 2, .frame_time = 0.5 };
+static animation_t warrior_anim_attack = { .uv = {4,3}, .frame_count = 2, .frame_time = 0.5 };
+
+static shooter_t warrior_shooter = {
+  .uv = {3,7},
+  .target = TAG_PLAYER,
+  .damage = 10,
+  .live_time = 1.0f,
+  .speed = 10.0f
+};
 
 void warrior_spawn(game_t *game, vec2_t pos)
 {
@@ -59,9 +67,9 @@ void warrior_shotgun(entity_t entity, action_t *action, game_t *game)
   
   float angle = atan2(delta_pos.y, delta_pos.x);
   
-  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
-  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle - 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
-  bullet_shoot(game, warrior_pos, vec2_init(3,7), angle + 0.5, 1.0, TAG_PLAYER, WARRIOR_BULLET_DAMAGE);
+  bullet_shoot(game, &warrior_shooter, warrior_pos, angle);
+  bullet_shoot(game, &warrior_shooter, warrior_pos, angle - 0.5);
+  bullet_shoot(game, &warrior_shooter, warrior_pos, angle + 0.5);
 }
 
 void warrior_move(entity_t entity, action_t *action, game_t *game)

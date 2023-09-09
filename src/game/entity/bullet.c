@@ -4,7 +4,7 @@ void xaction_bullet_die(entity_t entity, action_t *action, game_t *game);
 void xhitmap_bullet(entity_t entity, game_t *game);
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit);
 
-void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_time, c_tag_t target, int damage)
+void bullet_shoot(game_t *game, const shooter_t *shooter, vec2_t pos, float angle)
 {
   entity_t entity = edict_spawn(&game->edict);
   
@@ -15,21 +15,21 @@ void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_t
   component_t field = 0;
   field |= c_transform_init(&game->cdict.transform[entity], pos, angle);
   field |= c_motion_init(&game->cdict.motion[entity]);
-  field |= c_sprite_init(&game->cdict.sprite[entity], uv);
-  field |= c_bullet_init(&game->cdict.bullet[entity], target, damage);
-  field |= c_box_init(&game->cdict.box[entity], vec2_init(-0.2,-0.2), vec2_init(+0.2,+0.2));
+  field |= c_sprite_init(&game->cdict.sprite[entity], shooter->uv);
+  field |= c_bullet_init(&game->cdict.bullet[entity], shooter->target, shooter->damage);
+  field |= c_box_init(&game->cdict.box[entity], vec2_init(-0.2, -0.2), vec2_init(+0.2, +0.2));
   field |= c_actor_init(&game->cdict.actor[entity]);
   game->edict.field[entity] = field;
   
-  c_actor_start(&game->cdict.actor[entity], xaction_bullet_die, live_time, 1);
+  c_actor_start(&game->cdict.actor[entity], xaction_bullet_die, shooter->live_time, 1);
   
   game->cdict.sprite[entity].stand = false;
   game->cdict.sprite[entity].orient = false;
-  game->cdict.sprite[entity].rotation = angle - M_PI/2.0;
+  game->cdict.sprite[entity].rotation = angle - M_PI / 2.0;
   
   game->cdict.box[entity].xhit = xhit_bullet;
   game->cdict.box[entity].xhitmap = xhitmap_bullet;
-  game->cdict.motion[entity].velocity = vec2_init(cos(angle) * 5, sin(angle) * 5);
+  game->cdict.motion[entity].velocity = vec2_init(cos(angle) * shooter->speed, sin(angle) * shooter->speed);
 }
 
 void xhit_bullet(entity_t entity, game_t *game, entity_t hit)

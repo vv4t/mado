@@ -14,6 +14,14 @@ void orb_die(entity_t entity, game_t *game);
 
 static animation_t orb_anim_idle = (animation_t) { .uv = {4,4}, .frame_count = 2, .frame_time = 0.2 };
 
+static shooter_t orb_shooter = {
+  .uv = {1,7},
+  .target = TAG_PLAYER,
+  .damage = 10,
+  .live_time = 1.0f,
+  .speed = 5.0f
+};
+
 void orb_spawn(game_t *game, vec2_t pos)
 {
   entity_t entity = edict_spawn(&game->edict);
@@ -55,7 +63,7 @@ void orb_triple(entity_t entity, action_t *action, game_t *game)
   
   float angle = atan2(delta_pos.y, delta_pos.x);
   
-  bullet_shoot(game, orb_pos, vec2_init(1,7), angle, 1.0, TAG_PLAYER, ORB_BULLET_DAMAGE);
+  bullet_shoot(game, &orb_shooter, orb_pos, angle);
 }
 
 void orb_move(entity_t entity, action_t *action, game_t *game)

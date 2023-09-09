@@ -3,6 +3,14 @@
 
 #include "../game.h"
 
-void bullet_shoot(game_t *game, vec2_t pos, vec2_t uv, float angle, float live_time, c_tag_t target, int damage);
+typedef struct {
+  vec2_t  uv;
+  c_tag_t target;
+  float   live_time;
+  float   speed;
+  int     damage;
+} shooter_t;
+
+void bullet_shoot(game_t *game, const shooter_t *shooter, vec2_t pos, float angle);
 
 #endif

@@ -16,6 +16,14 @@ static animation_t player_anim_move_left    = (animation_t) { .uv = {2,5}, .fram
 static animation_t player_anim_move_forward = (animation_t) { .uv = {2,6}, .frame_count = 2, .frame_time = 0.2 };
 static animation_t player_anim_move_back    = (animation_t) { .uv = {0,6}, .frame_count = 2, .frame_time = 0.2 };
 
+static shooter_t player_shooter = {
+  .uv = {0,7},
+  .live_time = 0.5f,
+  .target = TAG_ENEMY,
+  .damage = 10,
+  .speed = 10.0f
+};
+
 void player_init(entity_t entity, game_t *game)
 {
   entity = edict_spawn(&game->edict);
@@ -74,5 +82,5 @@ void player_attack(entity_t entity, action_t *action, game_t *game)
   float player_angle = game->cdict.transform[entity].rotation; 
   float angle = player_angle - atan2(game->usercmd.aim_y, game->usercmd.aim_x);
   
-  bullet_shoot(game, pos, vec2_init(0,7), angle, 0.5, TAG_ENEMY, PLAYER_BULLET_DAMAGE);
+  bullet_shoot(game, &player_shooter, pos, angle);
 }
