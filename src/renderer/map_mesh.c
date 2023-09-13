@@ -3,7 +3,7 @@
 #include "../common/log.h"
 #include <stdlib.h>
 
-#define MAX_VERTICES 1024
+#define MAX_VERTICES 4*1024
 
 typedef struct {
   vertex_t vertices[MAX_VERTICES];

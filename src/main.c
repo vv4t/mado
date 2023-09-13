@@ -93,18 +93,11 @@ bool nui_init(void)
 #define A (0 | TILE_DATA_EXISTS)
 #define B (1 | TILE_DATA_EXISTS)
   
-  static tile_t map_data[] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, B, B, A, 0, 0, 0, 0,
-    0, 0, 0, A, A, B, A, A, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-  };
+  static tile_t map_data[32*32] = {0};
+  
+  for (int i = 0; i < 3; i++) {
+    map_data[rand() % (16*16)] = A;
+  }
   
   static sprite_sheet_t sprite_sheet = {
     .path = "assets/texture/texture.png",
@@ -123,8 +116,8 @@ bool nui_init(void)
     .data = map_data,
     .tile_set = &tile_set,
     .border_tile = A,
-    .width = 10,
-    .height = 10
+    .width = 16,
+    .height = 16
   };
   
   game_init(&nui.game);

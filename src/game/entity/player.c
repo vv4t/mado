@@ -21,7 +21,7 @@ static shooter_t player_shooter = {
   .live_time = 0.5f,
   .target = TAG_ENEMY,
   .damage = 10,
-  .speed = 10.0f
+  .speed = 15.0f
 };
 
 void player_init(entity_t entity, game_t *game)

@@ -15,7 +15,7 @@ void renderer_init_gl(renderer_t *renderer);
 
 bool renderer_init(renderer_t *renderer)
 {
-  buffer_init(&renderer->buffer, 32 * 1024);
+  buffer_init(&renderer->buffer, 1024 * 1024);
   
   renderer_init_camera(renderer);
   renderer_init_shader(renderer);
