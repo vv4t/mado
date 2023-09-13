@@ -67,7 +67,6 @@ void mage_shotgun(entity_t entity, action_t *action, game_t *game)
   
   for (int i = 0; i < num_shots; i++) {
     float theta = (float) i / num_shots * M_PI * 2;
-    
     bullet_shoot(game, &mage_shooter, mage_pos, theta);
   }
 }

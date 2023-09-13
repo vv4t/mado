@@ -18,7 +18,7 @@ static animation_t player_anim_move_back    = (animation_t) { .uv = {0,6}, .fram
 
 static shooter_t player_shooter = {
   .uv = {0,7},
-  .live_time = 0.5f,
+  .live_time = 0.4f,
   .target = TAG_ENEMY,
   .damage = 10,
   .speed = 8.0f
@@ -82,5 +82,8 @@ void player_attack(entity_t entity, action_t *action, game_t *game)
   float player_angle = game->cdict.transform[entity].rotation; 
   float angle = player_angle - atan2(game->usercmd.aim_y, game->usercmd.aim_x);
   
+  // bullet_shoot(game, &player_shooter, pos, angle);
   bullet_shoot(game, &player_shooter, pos, angle);
+  bullet_shoot(game, &player_shooter, pos, angle - 0.5);
+  bullet_shoot(game, &player_shooter, pos, angle + 0.5);
 }
