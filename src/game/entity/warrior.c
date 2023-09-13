@@ -12,8 +12,8 @@ void warrior_shotgun(entity_t entity, action_t *action, game_t *game);
 void warrior_move(entity_t entity, action_t *action, game_t *game);
 void warrior_die(entity_t entity, game_t *game);
 
-static animation_t warrior_anim_idle = { .uv = {0,3}, .frame_count = 2, .frame_time = 0.5 };
-static animation_t warrior_anim_attack = { .uv = {4,3}, .frame_count = 2, .frame_time = 0.5 };
+static animation_t warrior_anim_idle = { .uv = {0,3}, .frame_count = 2, .frame_time = 0.3 };
+static animation_t warrior_anim_attack = { .uv = {4,3}, .frame_count = 2, .frame_time = 0.3 };
 
 static shooter_t warrior_shooter = {
   .uv = {3,7},
@@ -56,7 +56,7 @@ void warrior_die(entity_t entity, game_t *game)
 void warrior_attack(entity_t entity, action_t *action, game_t *game)
 {
   c_animator_play(&game->cdict.animator[entity], &warrior_anim_attack);
-  c_actor_start(&game->cdict.actor[entity], warrior_shotgun, 0.5, 1);
+  c_actor_start(&game->cdict.actor[entity], warrior_shotgun, 0.3, 1);
 }
 
 void warrior_shotgun(entity_t entity, action_t *action, game_t *game)
