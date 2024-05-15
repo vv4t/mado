@@ -1,12 +1,15 @@
-# mado
+# NUI
 
-Reqiurements
-- SDL2
-- SDL2 Image
-- GLEW
+## Build
 
-Build Instructions
+### Linux
+
 ```
-make
-./mado
+make -f linux.mk
+```
+
+### Web
+
+```
+make -f web.mk
 ```

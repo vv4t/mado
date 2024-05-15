@@ -1,113 +1,61 @@
-#include "renderer.h"
+#include <renderer/renderer.h>
+#include <renderer/texture.h>
+#include <renderer/shader.h>
+#include <renderer/mesh.h>
+#include <renderer/camera.h>
+#include <renderer/r_sprite.h>
+#include <renderer/r_map.h>
+#include <stdio.h>
+#include <GL/glew.h>
 
-#include "map_mesh.h"
-#include "sprite_mesh.h"
-#include "health_mesh.h"
-#include "texture.h"
-#include "../common/log.h"
-#include "../common/file.h"
-#include <stdlib.h>
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 600
 
-void renderer_init_camera(renderer_t *renderer);
-bool renderer_init_shader(renderer_t *renderer);
-bool renderer_init_mesh(renderer_t *renderer);
-void renderer_init_gl(renderer_t *renderer);
+#define MAX_VERTICES 1024
 
-bool renderer_init(renderer_t *renderer)
+struct {
+  mesh_t map;
+} renderer;
+
+static void renderer_init_assets();
+static void renderer_draw_sprites(const game_t *gs);
+
+void renderer_init()
 {
-  buffer_init(&renderer->buffer, 1024 * 1024);
+  camera_init();
+  vbuffer_init(MAX_VERTICES);
+  vbuffer_bind();
+  r_sprite_init();
+  r_map_init();
   
-  renderer_init_camera(renderer);
-  renderer_init_shader(renderer);
-  renderer_init_mesh(renderer);
-  renderer_init_gl(renderer);
-  
-  renderer->camera.pos = vec3_init(0.0, 0.0, 0.0);
-  renderer->camera.rot = 0.0;
-  
-  return true;
-}
-
-void renderer_render(renderer_t *renderer, const game_t *game)
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-  renderer->camera.pos.x = game->cdict.transform[game->player].position.x;
-  renderer->camera.pos.y = game->cdict.transform[game->player].position.y;
-  renderer->camera.rot = game->cdict.transform[game->player].rotation;
-  
-  camera_set_isometric(&renderer->camera);
-  camera_setup_view(&renderer->camera);
-  glUniformMatrix4fv(renderer->ul_mvp, 1, GL_FALSE, renderer->camera.view_proj_mat.m);
-  
-  glDrawArrays(GL_TRIANGLES, renderer->map_mesh.offset, renderer->map_mesh.count);
-  
-  camera_set_orthogonal(&renderer->camera);
-  camera_setup_view(&renderer->camera);
-  glUniformMatrix4fv(renderer->ul_mvp, 1, GL_FALSE, renderer->camera.view_proj_mat.m);
-  
-  sprite_mesh_draw(&renderer->sprite_mesh, game, &renderer->camera);
-  health_mesh_draw(&renderer->health_mesh, game, &renderer->camera);
-}
-
-void renderer_load_map(renderer_t *renderer, const map_t *map)
-{
-  map_mesh_init(&renderer->map_mesh, &renderer->buffer, map);
-}
-
-void renderer_load_sheet(renderer_t *renderer, const sprite_sheet_t *sprite_sheet)
-{
-  texture_load(&renderer->sprite_sheet, "assets/texture/texture.png");
-  
-  glUniform2f(
-    renderer->ul_size_uv,
-    1.0 / sprite_sheet->sheet_width,
-    1.0 / sprite_sheet->sheet_height
-  );
-}
-
-void renderer_init_camera(renderer_t *renderer)
-{
-  camera_viewport(&renderer->camera, 1280.0 / 720.0, 5.0, 5.0, -10.0, 10.0);
-}
-
-void renderer_init_gl(renderer_t *renderer)
-{
-  glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
   
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  
-  glUseProgram(renderer->program);
-  
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, renderer->sprite_sheet);
+  float fov = 1.0 / 6.0;
+  float aspect_ratio = (float) SCR_WIDTH / (float) SCR_HEIGHT;
+  camera_isometric(fov * 1.0, fov * aspect_ratio);
 }
 
-bool renderer_init_mesh(renderer_t *renderer)
+float t = 0.0;
+
+void renderer_render(const game_t *gs)
 {
-  sprite_mesh_init(&renderer->sprite_mesh, &renderer->buffer);
-  health_mesh_init(&renderer->health_mesh, &renderer->buffer);
+  t += 0.015;
+  
+  const transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, gs->player, transform);
+  camera_move(pt->position, pt->rotation);
+  
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  camera_update(identity());
+  r_map_draw();
+  r_sprite_draw(gs);
 }
 
-bool renderer_init_shader(renderer_t *renderer)
+void renderer_deinit()
 {
-  char *shader_vsh = file_read_all("assets/shader/shader.vsh");
-  char *shader_fsh = file_read_all("assets/shader/shader.fsh");
-  
-  shader_load(&renderer->program, "", shader_vsh, shader_fsh);
-  glUseProgram(renderer->program);
-  
-  renderer->ul_mvp = glGetUniformLocation(renderer->program, "u_mvp");
-  renderer->ul_size_uv = glGetUniformLocation(renderer->program, "u_size_uv");
-  
-  GLuint ul_texture = glGetUniformLocation(renderer->program, "u_texture");
-  
-  glUniform1i(ul_texture, 0);
-  
-  free(shader_vsh);
-  free(shader_fsh);
-  
-  return true;
+  r_map_deinit();
+  r_sprite_deinit();
+  vbuffer_deinit();
+  camera_deinit();
 }

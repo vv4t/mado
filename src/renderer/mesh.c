@@ -1,66 +1,150 @@
-#include "mesh.h"
+#include <renderer/mesh.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <GL/glew.h>
 
-#include "../common/log.h"
+struct meshdata_s {
+  vertex_t *vertices;
+  int pos;
+  int size;
+};
 
-void buffer_init(buffer_t *buffer, int max_vertices)
+struct {
+  GLuint vbo;
+  int offset;
+  int max_vertices;
+} vbuffer;
+
+static void solve_tangent(vertex_t *v1, vertex_t *v2, vertex_t *v3);
+
+void vbuffer_init(int max_vertices)
 {
-  glGenBuffers(1, &buffer->vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer-> vbo);
-  glBufferData(GL_ARRAY_BUFFER, max_vertices * sizeof(vertex_t), 0, GL_DYNAMIC_DRAW);
+  glGenBuffers(1, &vbuffer.vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbuffer.vbo);
+  glBufferData(GL_ARRAY_BUFFER, max_vertices * sizeof(vertex_t), 0, GL_STATIC_DRAW);
   
+  // vertex.p
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (float*) 0);
   
+  // vertex.uv
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (float*) 0 + 3);
   
-  buffer->offset = 0;
-  buffer->max_vertices = max_vertices;
+  vbuffer.offset = 0;
+  vbuffer.max_vertices = max_vertices;
 }
 
-bool buffer_new_mesh(
-  buffer_t        *buffer,
-  mesh_t          *mesh,
-  const vertex_t  *vertices,
-  int             num_vertices)
+void vbuffer_bind()
 {
-  if (buffer->offset + num_vertices > buffer->max_vertices) {
-    LOG_ERROR("ran out of memory");
-    return false;
+  glBindBuffer(GL_ARRAY_BUFFER, vbuffer.vbo);
+}
+
+mesh_t vbuffer_add(meshdata_t md)
+{
+  int num_vertices = meshdata_get_size(md);
+  
+  if (vbuffer.offset + num_vertices > vbuffer.max_vertices) {
+    fprintf(stderr, "error:%s:%s:%i: vbuffer out of memory\n", __FILE__, __FUNCTION__, __LINE__);
+    exit(1);
   }
   
-  mesh->offset = buffer->offset;
-  mesh->count = num_vertices;
-  buffer->offset += num_vertices;
+  mesh_t mesh = {
+    .offset = vbuffer.offset,
+    .count = num_vertices
+  };
+  
+  vbuffer.offset += num_vertices;
   
   glBufferSubData(
     GL_ARRAY_BUFFER,
-    mesh->offset * sizeof(vertex_t),
+    mesh.offset * sizeof(vertex_t),
     num_vertices * sizeof(vertex_t),
-    vertices
+    meshdata_get_vertices(md)
   );
   
-  return true;
+  return mesh;
 }
 
-
-bool mesh_sub_data(
-  mesh_t          *mesh,
-  const vertex_t  *vertices,
-  int             offset,
-  int             num_vertices)
+void vbuffer_draw(mesh_t mesh)
 {
-  if (offset + num_vertices > mesh->count) {
-    LOG_ERROR("out of bounds");
-    return false;
-  }
+  glDrawArrays(GL_TRIANGLES, mesh.offset, mesh.count);
+}
+
+void vbuffer_deinit()
+{
+  glDeleteBuffers(1, &vbuffer.vbo);
+}
+
+meshdata_t meshdata_create()
+{
+  meshdata_t md = calloc(sizeof(*md), 1);
+  md->pos = 0;
+  md->size = 32;
+  md->vertices = calloc(sizeof(*md->vertices), md->size);
+  return md;
+}
+
+void meshdata_add_quad(meshdata_t md, matrix T_p, matrix T_uv)
+{
+  vector quad[] = {
+    vec2(-1, +1),
+    vec2(-1, -1),
+    vec2(+1, -1),
+    
+    vec2(-1, +1),
+    vec2(+1, -1),
+    vec2(+1, +1)
+  };
   
-  glBufferSubData(
-    GL_ARRAY_BUFFER,
-    (mesh->offset + offset) * sizeof(vertex_t),
-    num_vertices * sizeof(vertex_t),
-    vertices
+  matrix T_n;
+  T_n = mat3_from_mat4(T_p);
+  T_uv = mdotm(mdotm(translate(vec2(1.0, 1.0)), scale(vec2(0.5, 0.5))), T_uv);
+  
+  meshdata_add_face(
+    md,
+    vertex_create(mdotv(T_p, v2pt(quad[0])), mdotv(T_uv, v2pt(quad[0]))),
+    vertex_create(mdotv(T_p, v2pt(quad[1])), mdotv(T_uv, v2pt(quad[1]))),
+    vertex_create(mdotv(T_p, v2pt(quad[2])), mdotv(T_uv, v2pt(quad[2])))
   );
   
-  return true;
+  meshdata_add_face(
+    md,
+    vertex_create(mdotv(T_p, v2pt(quad[3])), mdotv(T_uv, v2pt(quad[3]))),
+    vertex_create(mdotv(T_p, v2pt(quad[4])), mdotv(T_uv, v2pt(quad[4]))),
+    vertex_create(mdotv(T_p, v2pt(quad[5])), mdotv(T_uv, v2pt(quad[5])))
+  );
+}
+
+void meshdata_add_face(meshdata_t md, vertex_t v1, vertex_t v2, vertex_t v3)
+{
+  meshdata_add_vertex(md, v1);
+  meshdata_add_vertex(md, v2);
+  meshdata_add_vertex(md, v3);
+}
+
+void meshdata_add_vertex(meshdata_t md, vertex_t v)
+{
+  if (md->pos >= md->size) {
+    md->size *= 2;
+    md->vertices = realloc(md->vertices, md->size * sizeof(*md->vertices));
+  }
+  
+  md->vertices[md->pos++] = v;
+}
+
+const vertex_t *meshdata_get_vertices(meshdata_t md)
+{
+  return md->vertices;
+}
+
+int meshdata_get_size(meshdata_t md)
+{
+  return md->pos;
+}
+
+void meshdata_destroy(meshdata_t md)
+{
+  free(md->vertices);
+  free(md);
 }
