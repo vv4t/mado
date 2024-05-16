@@ -63,7 +63,7 @@ void r_sprite_draw(const game_t *gs)
     spritedata.sprite[spritedata.num_sprite++];
   }
   
-  spritedata.sprite[0].T_p = inverse(mat3_from_mat4(camera_get_view()));
+  spritedata.sprite[0].T_p = mdotm(translate(vec2(0.0, 0.5)), inverse(mat3_from_mat4(camera_get_view())));
   
   glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(spritedata), &spritedata);
@@ -75,6 +75,6 @@ void r_sprite_draw(const game_t *gs)
 
 void r_sprite_deinit()
 {
-  texture_destroy(r_sprite.sheet);
   shader_destroy(r_sprite.shader);
+  texture_destroy(r_sprite.sheet);
 }

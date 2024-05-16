@@ -13,10 +13,12 @@ struct {
   texture_t sheet;
 } r_map;
 
+static void map_load(meshdata_t md);
+
 void r_map_init()
 {
   meshdata_t md = meshdata_create();
-    meshdata_add_quad(md, mdotm(fscale(100.0), translate(vec3(0.0, 0.0, 0.0))), fscale(100.0));
+    meshdata_add_quad(md, fscale(100.0), fscale(100.0));
     r_map.mesh = vbuffer_add(md);
   meshdata_destroy(md);
   
@@ -28,7 +30,22 @@ void r_map_init()
     camera_shader_attach(r_map.shader);
   shaderdata_destroy(sd);
   
-  r_map.sheet = texture_load_image("assets/sheet/grass.png");
+  r_map.sheet = texture_load_image("assets/sheet/grid.png");
+}
+
+void map_load(meshdata_t md)
+{
+  matrix T_uv = mdotm(translate(vec2(3.0, 7.0)), fscale(1.0 / 8.0));
+  
+  for (int i = 0; i < 32; i++) {
+    for (int j = 0; j < 32; j++) {
+      matrix T_p = mdotm(fscale(0.5), translate(vec2(i, j)));
+      meshdata_add_quad(md, T_p, T_uv);
+    }
+  }
+  
+  matrix T_p = mdotm(mdotm(rotate_x(M_PI / 2.0), fscale(0.5)), translate(vec2(-3, -3)));
+  meshdata_add_quad(md, T_p, T_uv);
 }
 
 void r_map_draw()
@@ -40,6 +57,6 @@ void r_map_draw()
 
 void r_map_deinit()
 {
-  texture_destroy(r_map.sheet);
   shader_destroy(r_map.shader);
+  texture_destroy(r_map.sheet);
 }

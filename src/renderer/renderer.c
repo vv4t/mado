@@ -11,7 +11,7 @@
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
 
-#define MAX_VERTICES 1024
+#define MAX_VERTICES 1024 * 1024
 
 struct {
   mesh_t map;
