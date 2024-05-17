@@ -249,10 +249,10 @@ inline static matrix perspective(float w, float h, float n, float f)
 inline static matrix isometric(float w, float h)
 {
   return mat4(
-    vec4(w, 0,  0, 0),
-    vec4(0, h, -1, 0),
-    vec4(0, 0, +1, 0),
-    vec4(0, 0,  0, 1)
+    vec4(w, 0, 0, 0),
+    vec4(0, h,-w, 0),
+    vec4(0, 0, w, 0),
+    vec4(0, 0, 0, 1)
   );
 }
 

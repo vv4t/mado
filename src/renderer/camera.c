@@ -42,7 +42,7 @@ void camera_shader_import(shaderdata_t sd)
 
 void camera_orthographic(float w, float h)
 {
-  camera.p = scale(vec3(w, h, 1.0));
+  camera.p = scale(vec3(w, h, w));
 }
 
 void camera_isometric(float w, float h)

@@ -3,12 +3,8 @@
 
 #include <math3d.h>
 
-typedef enum {
-  SPR_PLAYER
-} spritename_t;
-
 typedef struct {
-  spritename_t name;
+  int tx, ty, tw, th;
   int stand;
   int orient;
 } sprite_t;
@@ -16,7 +12,8 @@ typedef struct {
 inline static sprite_t create_sprite()
 {
   return (sprite_t) {
-    .name = SPR_PLAYER,
+    .tx = 0, .ty = 0,
+    .tw = 1, .th = 1,
     .stand = 1,
     .orient = 1
   };

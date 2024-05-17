@@ -8,8 +8,12 @@
 #include <stdio.h>
 #include <GL/glew.h>
 
+#define FOV (1.0 / 6.0)
+
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
+
+#define ASPECT_RATIO ((float) SCR_WIDTH / (float) SCR_HEIGHT)
 
 #define MAX_VERTICES 1024 * 1024
 
@@ -31,10 +35,6 @@ void renderer_init()
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  
-  float fov = 1.0 / 6.0;
-  float aspect_ratio = (float) SCR_WIDTH / (float) SCR_HEIGHT;
-  camera_isometric(fov * 1.0, fov * aspect_ratio);
 }
 
 float t = 0.0;
@@ -47,8 +47,13 @@ void renderer_render(const game_t *gs)
   camera_move(pt->position, pt->rotation);
   
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+  camera_isometric(FOV * 1.0, FOV * ASPECT_RATIO);
   camera_update(identity());
   r_map_draw();
+  
+  camera_orthographic(FOV * 1.0, FOV * ASPECT_RATIO);
+  camera_update(identity());
   r_sprite_draw(gs);
 }
 

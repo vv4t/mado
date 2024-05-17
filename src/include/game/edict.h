@@ -10,15 +10,15 @@
 typedef int entity_t;
 
 typedef enum {
-  C_transform       = 1 << 0,
-  C_sprite  = 1 << 1
+  C_transform = 1 << 0,
+  C_sprite    = 1 << 1
 } component_t;
 
 typedef struct {
-  transform_t       transform[MAX_ENTITIES];
-  sprite_t  sprite[MAX_ENTITIES];
-  component_t       field[MAX_ENTITIES];
-  int num_entities;
+  transform_t transform[MAX_ENTITIES];
+  sprite_t    sprite[MAX_ENTITIES];
+  component_t field[MAX_ENTITIES];
+  int         num_entities;
 } edict_t;
 
 void edict_init(edict_t *edict);

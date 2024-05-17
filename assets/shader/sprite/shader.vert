@@ -17,6 +17,7 @@ out vec2 vs_uv;
 
 void main()
 {
-  vs_uv = vec2(v_uv.x, 1.0 - v_uv.y);
+  vs_uv = vec2(sprite[gl_InstanceID].T_uv * vec4(v_uv, 0.0, 1.0));
+  vs_uv = vec2(vs_uv.x, 1.0 - vs_uv.y);
   gl_Position = mvp * sprite[gl_InstanceID].T_p * vec4(v_p, 1.0);
 }

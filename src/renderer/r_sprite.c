@@ -28,8 +28,16 @@ struct {
 
 void r_sprite_init()
 {
+  matrix T_p = mat3(
+    vec3( 1,  0,  0),
+    vec3( 0,  1, -1),
+    vec3( 0,  0,  1)
+  );
+  
+  T_p = mdotm(mdotm(translate(vec3(0, 0, -1)), fscale(0.5)), T_p);
+  
   meshdata_t md = meshdata_create();
-    meshdata_add_quad(md, mdotm(fscale(0.5), translate(vec3(0.0, 0.0, -0.001))), mdotm(translate(vec2(0.0, 1.0)), fscale(1.0 / 8.0)));
+    meshdata_add_quad(md, T_p, identity());
     r_sprite.mesh = vbuffer_add(md);
   meshdata_destroy(md);
   
@@ -60,10 +68,27 @@ void r_sprite_draw(const game_t *gs)
       continue;
     }
     
-    spritedata.sprite[spritedata.num_sprite++];
+    if (spritedata.num_sprite >= SPRITE_MAX) {
+      continue;
+    }
+    
+    const transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
+    const sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
+    
+    matrix T_p = identity();
+    T_p = mdotm(T_p, translate(vec2(0.0, 0.5)));
+    T_p = mdotm(T_p, inverse(mat3_from_mat4(camera_get_view())));
+    T_p = mdotm(T_p, translate(t->position));
+    
+    matrix T_uv = identity();
+    T_uv = mdotm(T_uv, translate(vec2(s->tx, s->ty)));
+    T_uv = mdotm(T_uv, fscale(1.0 / 8.0));
+    
+    spritedata.sprite[spritedata.num_sprite++] = (ub_sprite_t) {
+      .T_p = T_p,
+      .T_uv = T_uv
+    };
   }
-  
-  spritedata.sprite[0].T_p = mdotm(translate(vec2(0.0, 0.5)), inverse(mat3_from_mat4(camera_get_view())));
   
   glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(spritedata), &spritedata);

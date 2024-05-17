@@ -77,7 +77,7 @@ void sdl_init(int width, int height)
     sdl.key[i] = 0;
   }
   
-  SDL_SetRelativeMouseMode(1);
+  // SDL_SetRelativeMouseMode(1);
 }
 
 int sdl_poll()

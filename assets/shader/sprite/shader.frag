@@ -7,5 +7,8 @@ uniform sampler2D u_sprite;
 void main()
 {
   frag_color = texture(u_sprite, vs_uv);
-  if (frag_color.w < 1.0) discard;
+  
+  if (frag_color.w < 1.0) {
+    discard;
+  }
 }
