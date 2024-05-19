@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <math3d.h>
+#include <lib/math3d.h>
 #include <renderer/shader.h>
 
 void camera_init();

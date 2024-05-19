@@ -1,59 +1,67 @@
 #include <game/game.h>
+#include <game/player.h>
+#include <stdio.h>
+
+static void game_animate(game_t *gs);
+static void game_integrate(game_t *gs);
 
 void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
-  gs->time = 0.0;
+  gs->player = player_create(gs);
   
-  sprite_t *s;
-  transform_t *t;
-  
-  gs->player = edict_add(&gs->edict);
-  ENTITY_ADD_COMPONENT(gs->edict, gs->player, transform);
-  ENTITY_ADD_COMPONENT(gs->edict, gs->player, sprite);
-  t = ENTITY_GET_COMPONENT(gs->edict, gs->player, transform);
-  s = ENTITY_GET_COMPONENT(gs->edict, gs->player, sprite);
-  s->tx = 0;
-  s->ty = 1;
-  
-  entity_t e;
-  
-  e = edict_add(&gs->edict);
+  entity_t e = edict_add(&gs->edict);
   ENTITY_ADD_COMPONENT(gs->edict, e, transform);
   ENTITY_ADD_COMPONENT(gs->edict, e, sprite);
-  t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
-  s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
-  s->tx = 4;
-  s->ty = 3;
+  ENTITY_ADD_COMPONENT(gs->edict, e, rigidbody);
+  rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
+  rb->velocity.x = 2;
+  rb->velocity.y = 2;
+  sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
+  s->tx = 0;
+  s->ty = 0;
+  s->orient = 0;
+  s->stand = 0;
+  s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
+  transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
+  t->position.x = 3;
 }
 
-void game_update(game_t *gs, int key[], float mx, float my)
+void game_update(game_t *gs, const input_t in)
 {
-  transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, gs->player, transform);
-  sprite_t *ps = ENTITY_GET_COMPONENT(gs->edict, gs->player, sprite);
-  
-  float speed = 0.1;
-  float rot_speed = 0.05;
-  vector walk = vec3(0, 0, 0);
-  
-  pt->rotation.z += key['q'] * rot_speed;
-  pt->rotation.z -= key['e'] * rot_speed;
-  
-  if (key['w']) { ps->tx = 2; ps->ty = 1; }
-  if (key['s']) { ps->tx = 0; ps->ty = 1; }
-  if (key['a']) { ps->tx = 2; ps->ty = 2; }
-  if (key['d']) { ps->tx = 0; ps->ty = 2; }
-  
-  walk.y += key['w'];
-  walk.y -= key['s'];
-  walk.x -= key['a'];
-  walk.x += key['d'];
-  
-  if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_xyz(pt->rotation), walk)));
-    pt->position = vaddv(pt->position, walk);
-    ps->tx += (int) (gs->time * 7.0) % 2;
-  }
-  
+  player_update(gs, gs->player, in);
+  game_animate(gs);
+  game_integrate(gs);
   gs->time += 0.015;
+}
+
+void game_integrate(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
+    if (ENTITY_MATCH(gs->edict, e, C_transform | C_rigidbody)) {
+      continue;
+    }
+    
+    transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
+    rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
+    
+    t->position = vaddv(t->position, fdotv(0.015, rb->velocity));
+  }
+}
+
+void game_animate(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
+    if (ENTITY_MATCH(gs->edict, e, C_sprite)) {
+      continue;
+    }
+    
+    sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
+    
+    if (s->repeat) {
+      s->tx = s->repeat->tx + (int) s->time % s->repeat->framecount;
+      s->ty = s->repeat->ty;
+      s->time += s->repeat->frametime;
+    }
+  }
 }

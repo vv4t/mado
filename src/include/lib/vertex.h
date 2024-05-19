@@ -1,7 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include <math3d.h>
+#include <lib/math3d.h>
 
 typedef struct {
   float p[3];

@@ -1,8 +1,8 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <math3d.h>
-#include <vertex.h>
+#include <lib/math3d.h>
+#include <lib/vertex.h>
 
 typedef struct meshdata_s *meshdata_t;
 

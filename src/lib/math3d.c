@@ -1,5 +1,4 @@
-#include "math3d.h"
-
+#include <lib/math3d.h>
 #include <stdio.h>
 
 void vector_print(const char *string, vector x)

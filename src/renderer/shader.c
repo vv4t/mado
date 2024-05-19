@@ -1,5 +1,5 @@
 #include <renderer/shader.h>
-
+#include <lib/log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,8 +34,7 @@ GLuint shader_load(shaderdata_t sd)
   
   if (!success) {
     glGetProgramInfoLog(shader, sizeof(info), NULL, info);
-    fprintf(stderr, "%s", info);
-    exit(1);
+    LOG_ERROR("%s", info);
   }
   
   glDetachShader(shader, vert_shader);
@@ -69,8 +68,7 @@ GLuint shader_compile(GLuint type, const char **src, int num_src)
   
   if (!success) {
     glGetShaderInfoLog(shader, sizeof(info), NULL, info);
-    fprintf(stderr, "%s", info);
-    exit(1);
+    LOG_ERROR("%s", info);
   }
   
   return shader;

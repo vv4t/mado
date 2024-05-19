@@ -1,4 +1,5 @@
 #include <game/edict.h>
+#include <lib/log.h>
 
 void edict_init(edict_t *edict)
 {
@@ -19,6 +20,10 @@ entity_t edict_add(edict_t *edict)
   
   if (entity == INVALID_ENTITY) {
     entity = edict->num_entities++;
+  }
+  
+  if (edict->num_entities >= ENTITY_MAX) {
+    LOG_ERROR("edict: out of memory");
   }
   
   return entity;

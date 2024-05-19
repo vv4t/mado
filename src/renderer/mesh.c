@@ -1,4 +1,5 @@
 #include <renderer/mesh.h>
+#include <lib/log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glew.h>
@@ -45,8 +46,7 @@ mesh_t vbuffer_add(meshdata_t md)
   int num_vertices = meshdata_get_size(md);
   
   if (vbuffer.offset + num_vertices > vbuffer.max_vertices) {
-    fprintf(stderr, "error:%s:%s:%i: vbuffer out of memory\n", __FILE__, __FUNCTION__, __LINE__);
-    exit(1);
+    LOG_ERROR("vbuffer out of memory");
   }
   
   mesh_t mesh = {

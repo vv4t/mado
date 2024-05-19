@@ -7,9 +7,9 @@ SRC=$(wildcard src/*/*.c)
 OBJ=$(patsubst src/%.c, bin/%.o, $(SRC))
 SRC_H=$(wildcard src/*/*.h)
 
-default: nui run
+default: mado run
 
-nui: $(OBJ)
+mado: $(OBJ)
 	gcc $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 bin/%.o: src/%.c $(SRC_H)
@@ -17,5 +17,5 @@ bin/%.o: src/%.c $(SRC_H)
 	mkdir -p "$(shell dirname "$@")"
 	gcc $(INCLUDE) $(CFLAGS) -c -o $@ $<
 
-run: nui
-	./nui
+run: mado
+	./mado

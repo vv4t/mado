@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <game/edict.h>
+#include <lib/input.h>
 
 typedef struct {
   edict_t edict;
@@ -9,7 +10,7 @@ typedef struct {
   float time;
 } game_t;
 
-void game_init(game_t *game);
-void game_update(game_t *game, int key[], float mx, float my);
+void game_init(game_t *gs);
+void game_update(game_t *gs, const input_t in);
 
 #endif

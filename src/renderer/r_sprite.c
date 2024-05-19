@@ -3,7 +3,7 @@
 #include <renderer/mesh.h>
 #include <renderer/shader.h>
 #include <renderer/texture.h>
-#include <math3d.h>
+#include <lib/math3d.h>
 #include <GL/glew.h>
 #include <stdio.h>
 
@@ -76,8 +76,9 @@ void r_sprite_draw(const game_t *gs)
     const sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
     
     matrix T_p = identity();
-    T_p = mdotm(T_p, translate(vec2(0.0, 0.5)));
-    T_p = mdotm(T_p, inverse(mat3_from_mat4(camera_get_view())));
+    if (s->stand) T_p = mdotm(T_p, translate(vec2(0.0, 0.5)));
+    if (s->orient) T_p = mdotm(T_p, inverse(mat3_from_mat4(camera_get_view())));
+    T_p = mdotm(T_p, rotate_z(s->rotation));
     T_p = mdotm(T_p, translate(t->position));
     
     matrix T_uv = identity();

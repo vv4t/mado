@@ -3,7 +3,7 @@
 #include <renderer/mesh.h>
 #include <renderer/shader.h>
 #include <renderer/texture.h>
-#include <math3d.h>
+#include <lib/math3d.h>
 #include <GL/glew.h>
 #include <stdio.h>
 

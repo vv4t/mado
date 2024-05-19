@@ -1,5 +1,4 @@
 #include <renderer/texture.h>
-
 #include <SDL2/SDL_image.h>
 
 static GLuint bitmap_format(SDL_Surface *bitmap);
