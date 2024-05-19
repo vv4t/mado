@@ -9,7 +9,7 @@ void edict_init(edict_t *edict)
 
 entity_t edict_add(edict_t *edict)
 {
-  entity_t entity = INVALID_ENTITY;
+  entity_t entity = -1;
   
   for (int i = 0; i < edict->num_entities; i++) {
     if (edict->field[i] == 0) {
@@ -18,7 +18,7 @@ entity_t edict_add(edict_t *edict)
     }
   }
   
-  if (entity == INVALID_ENTITY) {
+  if (entity == -1) {
     entity = edict->num_entities++;
   }
   
@@ -27,4 +27,13 @@ entity_t edict_add(edict_t *edict)
   }
   
   return entity;
+}
+
+void edict_kill(edict_t *edict, entity_t e)
+{
+  if (e >= ENTITY_MAX) {
+    return;
+  }
+  
+  edict->field[e] = 0;
 }

@@ -1,30 +1,16 @@
 #include <game/game.h>
 #include <game/player.h>
+#include <game/actor.h>
 #include <stdio.h>
 
 static void game_animate(game_t *gs);
 static void game_integrate(game_t *gs);
+static void game_perform(game_t *gs);
 
 void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
   gs->player = player_create(gs);
-  
-  entity_t e = edict_add(&gs->edict);
-  ENTITY_ADD_COMPONENT(gs->edict, e, transform);
-  ENTITY_ADD_COMPONENT(gs->edict, e, sprite);
-  ENTITY_ADD_COMPONENT(gs->edict, e, rigidbody);
-  rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
-  rb->velocity.x = 2;
-  rb->velocity.y = 2;
-  sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
-  s->tx = 0;
-  s->ty = 0;
-  s->orient = 0;
-  s->stand = 0;
-  s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
-  transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
-  t->position.x = 3;
 }
 
 void game_update(game_t *gs, const input_t in)
@@ -32,7 +18,43 @@ void game_update(game_t *gs, const input_t in)
   player_update(gs, gs->player, in);
   game_animate(gs);
   game_integrate(gs);
+  game_perform(gs);
   gs->time += 0.015;
+}
+
+void game_perform(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
+    if (ENTITY_MATCH(gs->edict, e, C_actor)) {
+      continue;
+    }
+    
+    actor_t *a = ENTITY_GET_COMPONENT(gs->edict, e, actor);
+    
+    for (int i = 0; i < ACTION_MAX; i++) {
+      action_t *action = &a->action[i];
+      
+      if (action->act == NULL || action->time == 0.0) {
+        continue;
+      }
+      
+      action->time -= 0.015;
+      
+      if (action->time < 0) {
+        action->act(gs, e);
+        action->time = action->maxtime;
+        
+        if (action->count == 1) {
+          if (i > ACTION_FIXED_MAX) {
+            action->act = NULL;
+          }
+          action->time = 0.0;
+        } else if (action->count > 1) {
+          action->count--;
+        }
+      }
+    }
+  }
 }
 
 void game_integrate(game_t *gs)

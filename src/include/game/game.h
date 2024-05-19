@@ -4,7 +4,7 @@
 #include <game/edict.h>
 #include <lib/input.h>
 
-typedef struct {
+typedef struct game_s {
   edict_t edict;
   entity_t player;
   float time;
