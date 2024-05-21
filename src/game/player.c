@@ -13,9 +13,9 @@ void die(game_t *gs, entity_t e)
   edict_kill(&gs->edict, e);
 }
 
-void thing(game_t *gs, entity_t p)
+void shoot(game_t *gs, entity_t p)
 {
-  const transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, p, transform);
+  transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, p, transform);
   
   entity_t e = edict_add(&gs->edict);
   ENTITY_ADD_COMPONENT(gs->edict, e, transform);
@@ -23,7 +23,7 @@ void thing(game_t *gs, entity_t p)
     t->position = pt->position;
   ENTITY_ADD_COMPONENT(gs->edict, e, rigidbody);
     rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
-    rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
+    rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 8));
   ENTITY_ADD_COMPONENT(gs->edict, e, sprite);
     sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
     s->tx = 0;
@@ -33,7 +33,13 @@ void thing(game_t *gs, entity_t p)
     s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
   ENTITY_ADD_COMPONENT(gs->edict, e, actor);
     actor_t *a = ENTITY_GET_COMPONENT(gs->edict, e, actor);
-    actor_do(a, die, 1.0, 1);
+    actor_do(a, 0, die, 1.0, 1);
+}
+
+void burst(game_t *gs, entity_t p)
+{
+  actor_t *pa = ENTITY_GET_COMPONENT(gs->edict, p, actor);
+  actor_redo(pa, 1);
 }
 
 entity_t player_create(game_t *gs)
@@ -41,7 +47,7 @@ entity_t player_create(game_t *gs)
   entity_t p = edict_add(&gs->edict);
   ENTITY_ADD_COMPONENT(gs->edict, p, transform);
     transform_t *t = ENTITY_GET_COMPONENT(gs->edict, p, transform);
-    t->position = vec2(3, 3);
+    t->position = vec2(1, 1);
   ENTITY_ADD_COMPONENT(gs->edict, p, sprite);
     sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, p, sprite);
     s->tx = 0;
@@ -49,31 +55,41 @@ entity_t player_create(game_t *gs)
     s->repeat = &walk_forward;
   ENTITY_ADD_COMPONENT(gs->edict, p, actor);
     actor_t *a = ENTITY_GET_COMPONENT(gs->edict, p, actor);
-    actor_do(a, thing, 1.0, 5);
+    actor_set(a, 0, burst, 0.5, 0);
+    actor_set(a, 1, shoot, 0.125, 3);
+    actor_redo(a, 0);
+  ENTITY_ADD_COMPONENT(gs->edict, p, rigidbody);
+    rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, p, rigidbody);
   return p;
 }
 
 void player_update(game_t *gs, entity_t p, const input_t in)
 {
   player_move(gs, p, in);
+  
+  actor_t *a = ENTITY_GET_COMPONENT(gs->edict, p, actor);
+  
+  if (input_is_mouse_pressed(in, 1)) {
+    actor_start(a, 0);
+  } else {
+    actor_stop(a, 0);
+  }
 }
 
 void player_move(game_t *gs, entity_t p, const input_t in)
 {
   sprite_t *ps = ENTITY_GET_COMPONENT(gs->edict, p, sprite);
   transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, p, transform);
+  rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, p, rigidbody);
   
-  float speed = 0.1;
-  float rot_speed = 0.05;
-  vector walk = vec3(0, 0, 0);
-  
-  pt->rotation.z += input_is_key_pressed(in, 'q') * rot_speed;
-  pt->rotation.z -= input_is_key_pressed(in, 'e') * rot_speed;
+  float speed = 5.0;
+  vector walk = vec2(0, 0);
   
   if (input_is_key_pressed(in, 'w')) ps->repeat = &walk_forward;
   if (input_is_key_pressed(in, 's')) ps->repeat = &walk_back;
   if (input_is_key_pressed(in, 'a')) ps->repeat = &walk_left;
   if (input_is_key_pressed(in, 'd')) ps->repeat = &walk_right;
+  pt->rotation.z = gs->view_rotation.z + atan2(-input_get_mouse_x(in), input_get_mouse_y(in));
   
   walk.y += input_is_key_pressed(in, 'w');
   walk.y -= input_is_key_pressed(in, 's');
@@ -81,9 +97,10 @@ void player_move(game_t *gs, entity_t p, const input_t in)
   walk.x += input_is_key_pressed(in, 'd');
   
   if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_xyz(pt->rotation), walk)));
-    pt->position = vaddv(pt->position, walk);
+    walk = fdotv(speed, normalize(mdotv(rotate_xyz(gs->view_rotation), walk)));
+    rb->velocity = walk;
   } else {
     ps->repeat = NULL;
+    rb->velocity = vec2(0.0, 0.0);
   }
 }

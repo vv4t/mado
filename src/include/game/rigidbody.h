@@ -8,7 +8,7 @@ typedef struct {
 inline static rigidbody_t create_rigidbody()
 {
   return (rigidbody_t) {
-    .velocity = vec3(0.0, 0.0, 0.0)
+    .velocity = vec2(0.0, 0.0)
   };
 }
 

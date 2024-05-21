@@ -6,6 +6,8 @@
 struct {
   SDL_Window *window;
   SDL_GLContext *gl;
+  int width;
+  int height;
 } window;
 
 static int window_poll(input_t in);
@@ -47,9 +49,10 @@ void window_init(int width, int height, const char *title)
   );
   
   window.gl = SDL_GL_CreateContext(window.window);
+  window.width = width;
+  window.height = height;
   
   glewExperimental = 1;
-  
   GLenum status = glewInit();
   if (status != GLEW_OK) {
     LOG_ERROR("GLEW_Error: %s", glewGetErrorString(status));
@@ -57,17 +60,6 @@ void window_init(int width, int height, const char *title)
   
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(MessageCallback, 0);
-  
-  /*
-  window.mouse_x = 0;
-  window.mouse_y = 0;
-  
-  for (int i = 0; i < MAX_KEY; i++) {
-    window.key[i] = 0;
-  }
-  */
-  
-  // SDL_SetRelativeMouseMode(1);
 }
 
 int window_loop(input_t in)
@@ -93,9 +85,14 @@ int window_poll(input_t in)
       break;
     case SDL_KEYDOWN:
       input_key_down(in, event.key.keysym.sym);
+    case SDL_MOUSEBUTTONDOWN:
+      input_mouse_down(in, event.button.button);
+      break;
+    case SDL_MOUSEBUTTONUP:
+      input_mouse_up(in, event.button.button);
       break;
     case SDL_MOUSEMOTION:
-      input_mouse_move(in, event.motion.xrel, event.motion.yrel);
+      input_mouse_move(in, event.motion.x / (float) window.width, event.motion.y / (float) window.height);
       break;
     }
   }

@@ -1,7 +1,8 @@
 #include <client/window.h>
 #include <lib/input.h>
-#include <renderer/renderer.h>
+#include <lib/map.h>
 #include <game/game.h>
+#include <renderer/renderer.h>
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -19,6 +20,11 @@ int main(int argc, char *argv[])
   renderer_init();
   game_init(&mado.gs);
   mado.in = input_create();
+  
+  map_t map = map_load("assets/map/1.map");
+  
+  renderer_load_map(map);
+  game_load_map(&mado.gs, map);
   
   while (window_loop(mado.in)) update();
   

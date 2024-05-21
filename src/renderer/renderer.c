@@ -43,8 +43,7 @@ void renderer_render(const game_t *gs)
 {
   t += 0.015;
   
-  const transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, gs->player, transform);
-  camera_move(pt->position, pt->rotation);
+  camera_move(gs->view_position, gs->view_rotation);
   
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
@@ -55,6 +54,11 @@ void renderer_render(const game_t *gs)
   camera_orthographic(FOV * 1.0, FOV * ASPECT_RATIO);
   camera_update(identity());
   r_sprite_draw(gs);
+}
+
+void renderer_load_map(map_t map)
+{
+  r_map_load(map);
 }
 
 void renderer_deinit()

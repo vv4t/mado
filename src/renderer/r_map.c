@@ -14,15 +14,9 @@ struct {
 
 static void add_tile(meshdata_t md, int x, int y);
 static void add_block(meshdata_t md, int x, int y);
-static void r_map_load(meshdata_t md);
 
 void r_map_init()
 {
-  meshdata_t md = meshdata_create();
-    r_map_load(md);
-    r_map.mesh = vbuffer_add(md);
-  meshdata_destroy(md);
-  
   shaderdata_t sd = shaderdata_create();
     camera_shader_import(sd);
     shaderdata_source(sd, "assets/shader/map/shader.vert", SD_VERT);
@@ -38,22 +32,29 @@ void r_map_draw()
   vbuffer_draw(r_map.mesh);
 }
 
-void r_map_load(meshdata_t md)
+void r_map_load(map_t map)
 {
-  for (int i = 0; i < 32; i++) {
-    for (int j = 0; j < 32; j++) {
-      add_tile(md, i, j);
+  meshdata_t md = meshdata_create();
+  
+  for (int i = 0; i < map_get_width(map); i++) {
+    for (int j = 0; j < map_get_height(map); j++) {
+      int tile = map_get(map, i, j);
       
-      if (i % 8 == 0 && j % 8 == 0) {
+      if (tile > 0) {
         add_block(md, i, j);
+      } else {
+        add_tile(md, i, j);
       }
     }
   }
+  
+  r_map.mesh = vbuffer_add(md);
+  meshdata_destroy(md);
 }
 
 void add_tile(meshdata_t md, int x, int y)
 {
-  matrix T_p = mdotm(fscale(0.5), translate(vec2(x, y)));
+  matrix T_p = mdotm(fscale(0.5), translate(vec2(x + 0.5, y + 0.5)));
   matrix T_uv = mdotm(translate(vec2(1, 7)), fscale(1.0 / 8.0));
   meshdata_add_quad(md, T_p, T_uv);
 }
@@ -75,12 +76,12 @@ void add_block(meshdata_t md, int x, int y)
     T_p = mdotm(mdotm(rotate_z(-M_PI / 2.0), translate(vec3(0, 0, 1))), T_p);
     T_p = mdotm(T_p, translate(vec3(0, 0,-1)));
     T_p = mdotm(T_p, fscale(0.5));
-    T_p = mdotm(T_p, translate(vec2(x, y)));
+    T_p = mdotm(T_p, translate(vec2(x + 0.5, y + 0.5)));
     matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / 8.0));
     meshdata_add_quad(md, T_p, T_uv);
   }
   
-  matrix T_p = mdotm(fscale(0.5), translate(vec3(x, y, -1)));
+  matrix T_p = mdotm(fscale(0.5), translate(vec3(x + 0.5, y + 0.5, -1)));
   matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / 8.0));
   meshdata_add_quad(md, T_p, T_uv);
 }
