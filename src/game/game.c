@@ -42,31 +42,27 @@ void game_move_camera(game_t *gs, const input_t in)
 void game_perform(game_t *gs)
 {
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (ENTITY_MATCH(gs->edict, e, C_actor)) {
+    if (ENTITY_MATCH(gs->edict, e, C_actor | C_listen)) {
       continue;
     }
     
     actor_t *a = ENTITY_GET_COMPONENT(gs->edict, e, actor);
+    listen_t *ls = ENTITY_GET_COMPONENT(gs->edict, e, listen);
     
     for (int i = 0; i < ACTION_MAX; i++) {
       action_t *action = &a->action[i];
       
-      if (action->act == NULL || action->time == 0.0) {
-        continue;
-      }
+      if (action->time > 0.0) action->time -= 0.015;
+      else action->time = 0.0;
       
-      action->time -= 0.015;
+      if (!action->active) continue;
       
-      if (!action->active) {
-        continue;
-      }
-      
-      if (action->time < 0) {
-        action->act(gs, e);
+      if (action->time <= 0.0) {
+        ls->invoke(gs, e, (event_t) { .type = EV_ACT, .act.id = i });
         action->time = action->max_time;
         
         if (action->count == 1) {
-          action->time = 0.0;
+          action->active = 0;
         } else if (action->count > 1) {
           action->count--;
         }

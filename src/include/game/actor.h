@@ -5,10 +5,7 @@
 
 struct game_s;
 
-typedef void (*act_t)(struct game_s *gs, int e);
-
 typedef struct {
-  act_t act;
   float time;
   int   count;
   float max_time;
@@ -25,16 +22,15 @@ inline static actor_t create_actor()
   return (actor_t) {0};
 }
 
-inline static void actor_set(actor_t *a, int id, act_t act, float time, int count)
+inline static void actor_set(actor_t *a, int id, float time, int count)
 {
   if (id >= ACTION_MAX) {
     return;
   }
   
   a->action[id] = (action_t) {
-    .act = act,
-    .time = 0.0,
-    .count = 0,
+    .time = time,
+    .count = count,
     .max_time = time,
     .max_count = count,
     .active = 0
@@ -70,10 +66,13 @@ inline static void actor_redo(actor_t *a, int id)
   a->action[id].active = 1;
 }
 
-inline static void actor_do(actor_t *a, int id, act_t act, float time, int count)
+inline static void actor_do_now(actor_t *a, int id)
 {
-  actor_set(a, id, act, time, count);
-  actor_redo(a, id);
+  if (id >= ACTION_MAX) {
+    return;
+  }
+  
+  a->action[id].time = 0.0;
 }
 
 #endif

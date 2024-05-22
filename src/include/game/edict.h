@@ -7,6 +7,7 @@
 #include <game/sprite.h>
 #include <game/rigidbody.h>
 #include <game/actor.h>
+#include <game/listen.h>
 
 typedef int entity_t;
 
@@ -14,7 +15,8 @@ typedef enum {
   C_transform = 1 << 0,
   C_sprite    = 1 << 1,
   C_rigidbody = 1 << 2,
-  C_actor     = 1 << 3
+  C_actor     = 1 << 3,
+  C_listen    = 1 << 4
 } component_t;
 
 typedef struct {
@@ -22,6 +24,7 @@ typedef struct {
   sprite_t    sprite[ENTITY_MAX];
   rigidbody_t rigidbody[ENTITY_MAX];
   actor_t     actor[ENTITY_MAX];
+  listen_t    listen[ENTITY_MAX];
   component_t field[ENTITY_MAX];
   int         num_entities;
 } edict_t;
