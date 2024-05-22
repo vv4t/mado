@@ -4,7 +4,8 @@
 #define EVENT_MAX 12
 
 typedef enum {
-  EV_ACT
+  EV_ACT,
+  EV_HIT_MAP
 } event_type_t;
 
 typedef struct {

@@ -18,6 +18,9 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
       break;
     }
     break;
+  case EV_HIT_MAP:
+    edict_kill(&gs->edict, e);
+    break;
   }
 }
 
@@ -48,13 +51,6 @@ void shoot(game_t *gs, entity_t p)
     ls->invoke = bullet_invoke;
 }
 
-void burst(game_t *gs, entity_t p)
-{
-  actor_t *pa = ENTITY_GET_COMPONENT(gs->edict, p, actor);
-  actor_redo(pa, 1);
-  actor_do_now(pa, 1);
-}
-
 void player_invoke(game_t *gs, entity_t p, event_t ev);
 
 entity_t player_create(game_t *gs)
@@ -82,11 +78,13 @@ entity_t player_create(game_t *gs)
 
 void player_invoke(game_t *gs, entity_t p, event_t ev)
 {
+  actor_t *pa = ENTITY_GET_COMPONENT(gs->edict, p, actor);
+  
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.id) {
     case 0:
-      burst(gs, p);
+      actor_redo(pa, 1);
       break;
     case 1:
       shoot(gs, p);

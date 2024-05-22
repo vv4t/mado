@@ -42,7 +42,7 @@ void game_move_camera(game_t *gs, const input_t in)
 void game_perform(game_t *gs)
 {
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (ENTITY_MATCH(gs->edict, e, C_actor | C_listen)) {
+    if (!ENTITY_MATCH(gs->edict, e, C_actor | C_listen)) {
       continue;
     }
     
@@ -74,12 +74,13 @@ void game_perform(game_t *gs)
 void game_integrate(game_t *gs)
 {
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (ENTITY_MATCH(gs->edict, e, C_transform | C_rigidbody)) {
+    if (!ENTITY_MATCH(gs->edict, e, C_transform | C_rigidbody)) {
       continue;
     }
     
     transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
     rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
+    listen_t *ls = ENTITY_GET_COMPONENT(gs->edict, e, listen);
     
     vector new_p = vaddv(t->position, fdotv(0.015, rb->velocity));
     vector new_x = vec2(new_p.x, t->position.y);
@@ -87,9 +88,17 @@ void game_integrate(game_t *gs)
     
     float d = 0.25;
     
-    if (map_collide(gs->map, new_x, vec2(d, d))) new_p.x = t->position.x;
-    if (map_collide(gs->map, new_y, vec2(d, d))) new_p.y = t->position.y;
-    if (map_collide(gs->map, new_p, vec2(d, d))) new_p = t->position;
+    int hit_x = map_collide(gs->map, new_x, vec2(d, d));
+    int hit_y = map_collide(gs->map, new_y, vec2(d, d));
+    int hit_p = map_collide(gs->map, new_p, vec2(d, d));
+    
+    if (hit_x) new_p.x = t->position.x;
+    if (hit_y) new_p.y = t->position.y;
+    if (!hit_x && !hit_y && hit_p) new_p = t->position;
+    
+    if ((hit_x || hit_y || hit_p) && ENTITY_MATCH(gs->edict, e, C_listen)) {
+      ls->invoke(gs, e, (event_t) { .type = EV_HIT_MAP });
+    }
     
     t->position = new_p;
   }
@@ -98,7 +107,7 @@ void game_integrate(game_t *gs)
 void game_animate(game_t *gs)
 {
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (ENTITY_MATCH(gs->edict, e, C_sprite)) {
+    if (!ENTITY_MATCH(gs->edict, e, C_sprite)) {
       continue;
     }
     

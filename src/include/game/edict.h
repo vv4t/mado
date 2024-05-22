@@ -40,6 +40,6 @@ void edict_kill(edict_t *edict, entity_t e);
 }
 
 #define ENTITY_GET_COMPONENT(edict, entity, component) (&(edict).component[entity])
-#define ENTITY_MATCH(edict, entity, mask) (((edict).field[entity] & (mask)) != (mask))
+#define ENTITY_MATCH(edict, entity, mask) (((edict).field[entity] & (mask)) == (mask))
 
 #endif

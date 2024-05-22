@@ -64,7 +64,7 @@ void r_sprite_draw(const game_t *gs)
   spritedata.num_sprite = 0;
   
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (ENTITY_MATCH(gs->edict, e, C_transform | C_sprite)) {
+    if (!ENTITY_MATCH(gs->edict, e, C_transform | C_sprite)) {
       continue;
     }
     
