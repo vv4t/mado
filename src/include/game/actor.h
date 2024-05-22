@@ -3,8 +3,6 @@
 
 #define ACTION_MAX 8
 
-struct game_s;
-
 typedef struct {
   float time;
   int   count;

@@ -1,25 +1,24 @@
 #include <game/game.h>
+#include <game/system.h>
 #include <game/player.h>
-#include <game/actor.h>
 #include <stdio.h>
 
-static void game_animate(game_t *gs);
-static void game_integrate(game_t *gs);
-static void game_perform(game_t *gs);
 static void game_move_camera(game_t *gs, const input_t in);
 
 void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
-  gs->player = player_create(gs);
+  gs->player = player_create(&gs->edict);
 }
 
 void game_update(game_t *gs, const input_t in)
 {
-  player_update(gs, gs->player, in);
-  game_animate(gs);
-  game_integrate(gs);
-  game_perform(gs);
+  edict_t *ed = &gs->edict;
+  
+  player_update(ed, gs->player, gs->view_rotation.z, in);
+  system_animate(ed);
+  system_integrate(ed, gs->map);
+  system_perform(ed);
   game_move_camera(gs, in);
   gs->time += 0.015;
 }
@@ -32,91 +31,9 @@ void game_load_map(game_t *gs, map_t map)
 void game_move_camera(game_t *gs, const input_t in)
 {
   float rot_speed = 0.05;
-  transform_t *pt = ENTITY_GET_COMPONENT(gs->edict, gs->player, transform);
+  transform_t *pt = entity_get_component(&gs->edict, gs->player, transform);
   
   gs->view_rotation.z += input_is_key_pressed(in, 'q') * rot_speed;
   gs->view_rotation.z -= input_is_key_pressed(in, 'e') * rot_speed;
   gs->view_position = pt->position;
-}
-
-void game_perform(game_t *gs)
-{
-  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (!ENTITY_MATCH(gs->edict, e, C_actor | C_listen)) {
-      continue;
-    }
-    
-    actor_t *a = ENTITY_GET_COMPONENT(gs->edict, e, actor);
-    listen_t *ls = ENTITY_GET_COMPONENT(gs->edict, e, listen);
-    
-    for (int i = 0; i < ACTION_MAX; i++) {
-      action_t *action = &a->action[i];
-      
-      if (action->time > 0.0) action->time -= 0.015;
-      else action->time = 0.0;
-      
-      if (!action->active) continue;
-      
-      if (action->time <= 0.0) {
-        ls->invoke(gs, e, (event_t) { .type = EV_ACT, .act.id = i });
-        action->time = action->max_time;
-        
-        if (action->count == 1) {
-          action->active = 0;
-        } else if (action->count > 1) {
-          action->count--;
-        }
-      }
-    }
-  }
-}
-
-void game_integrate(game_t *gs)
-{
-  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (!ENTITY_MATCH(gs->edict, e, C_transform | C_rigidbody)) {
-      continue;
-    }
-    
-    transform_t *t = ENTITY_GET_COMPONENT(gs->edict, e, transform);
-    rigidbody_t *rb = ENTITY_GET_COMPONENT(gs->edict, e, rigidbody);
-    listen_t *ls = ENTITY_GET_COMPONENT(gs->edict, e, listen);
-    
-    vector new_p = vaddv(t->position, fdotv(0.015, rb->velocity));
-    vector new_x = vec2(new_p.x, t->position.y);
-    vector new_y = vec2(t->position.x, new_p.y);
-    
-    float d = 0.25;
-    
-    int hit_x = map_collide(gs->map, new_x, vec2(d, d));
-    int hit_y = map_collide(gs->map, new_y, vec2(d, d));
-    int hit_p = map_collide(gs->map, new_p, vec2(d, d));
-    
-    if (hit_x) new_p.x = t->position.x;
-    if (hit_y) new_p.y = t->position.y;
-    if (!hit_x && !hit_y && hit_p) new_p = t->position;
-    
-    if ((hit_x || hit_y || hit_p) && ENTITY_MATCH(gs->edict, e, C_listen)) {
-      ls->invoke(gs, e, (event_t) { .type = EV_HIT_MAP });
-    }
-    
-    t->position = new_p;
-  }
-}
-
-void game_animate(game_t *gs)
-{
-  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (!ENTITY_MATCH(gs->edict, e, C_sprite)) {
-      continue;
-    }
-    
-    sprite_t *s = ENTITY_GET_COMPONENT(gs->edict, e, sprite);
-    
-    if (s->repeat) {
-      s->tx = s->repeat->tx + (int) s->time % s->repeat->framecount;
-      s->ty = s->repeat->ty;
-      s->time += s->repeat->frametime;
-    }
-  }
 }

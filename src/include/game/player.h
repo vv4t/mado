@@ -1,10 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <game/game.h>
+#include <game/edict.h>
 #include <lib/input.h>
 
-entity_t player_create(game_t *gs);
-void player_update(game_t *gs, entity_t p, const input_t in);
+entity_t player_create(edict_t *ed);
+void player_update(edict_t *ed, entity_t p, float rot_z, const input_t in);
 
 #endif

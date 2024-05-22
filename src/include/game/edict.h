@@ -19,7 +19,7 @@ typedef enum {
   C_listen    = 1 << 4
 } component_t;
 
-typedef struct {
+typedef struct edict_s {
   transform_t transform[ENTITY_MAX];
   sprite_t    sprite[ENTITY_MAX];
   rigidbody_t rigidbody[ENTITY_MAX];
@@ -33,13 +33,13 @@ void edict_init(edict_t *edict);
 entity_t edict_add(edict_t *edict);
 void edict_kill(edict_t *edict, entity_t e);
 
-#define ENTITY_ADD_COMPONENT(edict, entity, component) \
+#define entity_add_component(ed, entity, component) \
 {\
-  (edict).component[entity] = create_##component();\
-  (edict).field[entity] |= C_##component;\
+  (ed)->component[entity] = create_##component();\
+  (ed)->field[entity] |= C_##component;\
 }
 
-#define ENTITY_GET_COMPONENT(edict, entity, component) (&(edict).component[entity])
-#define ENTITY_MATCH(edict, entity, mask) (((edict).field[entity] & (mask)) == (mask))
+#define entity_get_component(ed, entity, component) (&(ed)->component[entity])
+#define entity_match(ed, entity, mask) (((ed)->field[entity] & (mask)) == (mask))
 
 #endif
