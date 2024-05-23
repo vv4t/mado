@@ -1,16 +1,16 @@
 #include <game/player.h>
 #include <stdio.h>
 
-void player_move(game_t *gs, entity_t p, float rot_z, const input_t in);
-void player_shoot(game_t *gs, entity_t p, const input_t in);
-void player_invoke(game_t *gs, entity_t p, event_t ev);
+void player_move(game_t *gs, const input_t in);
+void player_shoot(game_t *gs, const input_t in);
+void player_invoke(game_t *gs, entity_t e, event_t ev);
 void shoot_player_bullet(game_t *gs, entity_t p);
 void bullet_invoke(game_t *gs, entity_t e, event_t ev);
 
-static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
-static const animation_t walk_back    = { .tx = 0, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
-static const animation_t walk_left    = { .tx = 2, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
-static const animation_t walk_right   = { .tx = 0, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
+static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
+static const animation_t walk_back    = { .tx = 0, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
+static const animation_t walk_left    = { .tx = 2, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
+static const animation_t walk_right   = { .tx = 0, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
 
 void player_init(game_t *gs)
 {
@@ -32,26 +32,26 @@ void player_init(game_t *gs)
   gs->player = e;
 }
 
-void player_invoke(game_t *gs, entity_t p, event_t ev)
+void player_invoke(game_t *gs, entity_t e, event_t ev)
 {
-  actor_t *pa = entity_get_component(gs, p, actor);
+  actor_t *pa = entity_get_component(gs, e, actor);
   
   switch (ev.type) {
   case EV_ACT0:
-    shoot_player_bullet(gs, p);
+    shoot_player_bullet(gs, e);
     break;
   }
 }
 
-void player_update(game_t *gs, entity_t p, float rot_z, const input_t in)
+void player_update(game_t *gs, const input_t in)
 {
-  player_move(gs, p, rot_z, in);
-  player_shoot(gs, p, in);
+  player_move(gs, in);
+  player_shoot(gs, in);
 }
 
-void player_shoot(game_t *gs, entity_t p, const input_t in)
+void player_shoot(game_t *gs, const input_t in)
 {
-  actor_t *a = entity_get_component(gs, p, actor);
+  actor_t *a = entity_get_component(gs, gs->player, actor);
   
   if (input_is_mouse_pressed(in, 1)) {
     actor_start(a, 0);
@@ -60,11 +60,11 @@ void player_shoot(game_t *gs, entity_t p, const input_t in)
   }
 }
 
-void player_move(game_t *gs, entity_t p, float rot_z, const input_t in)
+void player_move(game_t *gs, const input_t in)
 {
-  sprite_t *ps = entity_get_component(gs, p, sprite);
-  transform_t *pt = entity_get_component(gs, p, transform);
-  rigidbody_t *rb = entity_get_component(gs, p, rigidbody);
+  sprite_t *ps = entity_get_component(gs, gs->player, sprite);
+  transform_t *pt = entity_get_component(gs, gs->player, transform);
+  rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
   
   float speed = 5.0;
   vector walk = vec2(0, 0);
@@ -73,7 +73,7 @@ void player_move(game_t *gs, entity_t p, float rot_z, const input_t in)
   if (input_is_key_pressed(in, 's')) ps->repeat = &walk_back;
   if (input_is_key_pressed(in, 'a')) ps->repeat = &walk_left;
   if (input_is_key_pressed(in, 'd')) ps->repeat = &walk_right;
-  pt->rotation.z = rot_z + atan2(-input_get_mouse_x(in), input_get_mouse_y(in));
+  pt->rotation.z = gs->view_rotation.z + atan2(-input_get_mouse_x(in), input_get_mouse_y(in));
   
   walk.y += input_is_key_pressed(in, 'w');
   walk.y -= input_is_key_pressed(in, 's');
@@ -81,7 +81,7 @@ void player_move(game_t *gs, entity_t p, float rot_z, const input_t in)
   walk.x += input_is_key_pressed(in, 'd');
   
   if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_z(rot_z), walk)));
+    walk = fdotv(speed, normalize(mdotv(rotate_z(gs->view_rotation.z), walk)));
     rb->velocity = walk;
   } else {
     ps->repeat = NULL;
@@ -91,7 +91,7 @@ void player_move(game_t *gs, entity_t p, float rot_z, const input_t in)
 
 void shoot_player_bullet(game_t *gs, entity_t p)
 {
-  transform_t *pt = entity_get_component(gs, p, transform);
+  const transform_t *pt = entity_get_component(gs, p, transform);
   
   entity_t e = entity_add(gs);
   entity_add_component(gs, e, transform);

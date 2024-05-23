@@ -46,17 +46,20 @@ void warrior_invoke(game_t *gs, entity_t e, event_t ev)
   }
 }
 
-void shoot_warrior_bullet(game_t *gs, entity_t p)
+void shoot_warrior_bullet(game_t *gs, entity_t b)
 {
-  transform_t *pt = entity_get_component(gs, p, transform);
+  const transform_t *pt = entity_get_component(gs, gs->player, transform);
+  transform_t *bt = entity_get_component(gs, b, transform);
+  
+  vector direction = fdotv(10.0, normalize(vsubv(pt->position, bt->position)));
   
   entity_t e = entity_add(gs);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
-    t->position = pt->position;
+    t->position = bt->position;
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
+    rb->velocity = direction;
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     s->tx = 3;

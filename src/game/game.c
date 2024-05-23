@@ -18,7 +18,7 @@ void game_init(game_t *gs)
 
 void game_update(game_t *gs, const input_t in)
 {
-  player_update(gs, gs->player, gs->view_rotation.z, in);
+  player_update(gs, in);
   system_animate(gs);
   system_integrate(gs);
   system_perform(gs);
