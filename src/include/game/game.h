@@ -5,20 +5,34 @@
 #include <game/sprite.h>
 #include <game/rigidbody.h>
 #include <game/actor.h>
-#include <game/listen.h>
+#include <game/bullet.h>
 #include <lib/input.h>
 #include <lib/map.h>
 
-#define ENTITY_MAX 32
+#define ENTITY_MAX 128
 
 typedef int entity_t;
+
+struct game_s;
+
+typedef enum {
+  EV_ACT0, EV_ACT1, EV_ACT2, EV_ACT3,
+  EV_ACT4, EV_ACT5, EV_ACT6, EV_ACT7,
+  EV_MAP_COLLIDE
+} event_type_t;
+
+typedef struct {
+  event_type_t type;
+} event_t;
+
+typedef void (*invoke_t)(struct game_s *gs, int e, event_t ev);
 
 typedef enum {
   C_transform = 1 << 0,
   C_sprite    = 1 << 1,
   C_rigidbody = 1 << 2,
   C_actor     = 1 << 3,
-  C_listen    = 1 << 4
+  C_bullet    = 1 << 4
 } component_t;
 
 typedef struct game_s {
@@ -26,7 +40,8 @@ typedef struct game_s {
   sprite_t    sprite[ENTITY_MAX];
   rigidbody_t rigidbody[ENTITY_MAX];
   actor_t     actor[ENTITY_MAX];
-  listen_t    listen[ENTITY_MAX];
+  bullet_t    bullet[ENTITY_MAX];
+  invoke_t    invoke[ENTITY_MAX];
   component_t edict[ENTITY_MAX];
   int         num_entities;
   
@@ -45,6 +60,8 @@ void game_update(game_t *gs, const input_t in);
 
 entity_t  entity_add(game_t *gs);
 void      entity_kill(game_t *gs, entity_t e);
+void      entity_bind(game_t *gs, entity_t e, invoke_t invoke);
+void      entity_invoke(game_t *gs, entity_t e, event_t ev);
 
 #define entity_add_component(gs, e, component) \
 {\

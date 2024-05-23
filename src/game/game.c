@@ -22,6 +22,7 @@ void game_update(game_t *gs, const input_t in)
   system_animate(gs);
   system_integrate(gs);
   system_perform(gs);
+  system_update_bullet(gs);
   game_move_camera(gs, in);
   gs->time += 0.015;
 }
@@ -63,4 +64,16 @@ void entity_kill(game_t *gs, entity_t e)
   }
   
   gs->edict[e] = 0;
+}
+
+void entity_invoke(game_t *gs, entity_t e, event_t ev)
+{
+  if (gs->invoke) {
+    gs->invoke[e](gs, e, ev);
+  }
+}
+
+void entity_bind(game_t *gs, entity_t e, invoke_t invoke)
+{
+  gs->invoke[e] = invoke;
 }
