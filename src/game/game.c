@@ -1,6 +1,7 @@
 #include <game/game.h>
 #include <game/system.h>
 #include <game/player.h>
+#include <game/enemy.h>
 #include <stdio.h>
 
 static void game_move_camera(game_t *gs, const input_t in);
@@ -8,7 +9,11 @@ static void game_move_camera(game_t *gs, const input_t in);
 void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
-  gs->player = player_create(&gs->edict);
+  edict_init(&gs->edict);
+  
+  edict_t *ed = &gs->edict;
+  gs->player = player_create(ed);
+  enemy_spawn_warrior(ed);
 }
 
 void game_update(game_t *gs, const input_t in)

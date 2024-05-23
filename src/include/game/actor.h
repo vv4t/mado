@@ -60,7 +60,7 @@ inline static void actor_redo(actor_t *a, int id)
   }
   
   a->action[id].count = a->action[id].max_count;
-  a->action[id].time = 0.0;
+  a->action[id].time = a->action[id].max_time;
   a->action[id].active = 1;
 }
 

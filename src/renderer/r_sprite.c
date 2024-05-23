@@ -28,16 +28,8 @@ struct {
 
 void r_sprite_init()
 {
-  matrix T_p = mat3(
-      vec3( 1,  0,  0),
-      vec3( 0,  1, -1),
-      vec3( 0,  0,  1)
-    );
-  T_p = mdotm(mdotm(translate(vec3(0, 0, -1)), fscale(0.5)), T_p);
-  T_p = mdotm(T_p, translate(vec2(0.0, 0.5)));
-  
   meshdata_t md = meshdata_create();
-    meshdata_add_quad(md, T_p, identity());
+    meshdata_add_quad(md, identity(), identity());
     r_sprite.mesh = vbuffer_add(md);
   meshdata_destroy(md);
   
@@ -63,6 +55,8 @@ void r_sprite_draw(const game_t *gs)
   static ub_spritedata_t spritedata;
   spritedata.num_sprite = 0;
   
+  matrix V = inverse(mat3_from_mat4(camera_get_view()));
+  
   for (entity_t e = 0; e < gs->edict.num_entities; e++) {
     if (!entity_match(&gs->edict, e, C_transform | C_sprite)) {
       continue;
@@ -75,12 +69,20 @@ void r_sprite_draw(const game_t *gs)
     const transform_t *t = entity_get_component(&gs->edict, e, transform);
     const sprite_t *s = entity_get_component(&gs->edict, e, sprite);
     
-    matrix T_p = identity();
-    if (s->orient) T_p = mdotm(T_p, inverse(mat3_from_mat4(camera_get_view())));
+    matrix T_p = mat3(
+      vec3( 1,  0,  0),
+      vec3( 0,  1, -1),
+      vec3( 0,  0,  1)
+    );
+    T_p = mdotm(T_p, translate(vec2(0.0, 0.5)));
+    T_p = mdotm(T_p, scale(t->scale));
     T_p = mdotm(T_p, rotate_z(s->rotation));
+    if (s->orient)  T_p = mdotm(T_p, V);
+    T_p = mdotm(mdotm(translate(vec3(0, 0, -1)), fscale(0.5)), T_p);
     T_p = mdotm(T_p, translate(t->position));
     
     matrix T_uv = identity();
+    T_uv = mdotm(T_uv, scale(vec3(s->tw, s->th, 1)));
     T_uv = mdotm(T_uv, translate(vec2(s->tx, s->ty)));
     T_uv = mdotm(T_uv, fscale(1.0 / 8.0));
     

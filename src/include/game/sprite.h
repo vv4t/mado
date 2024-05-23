@@ -16,6 +16,7 @@ typedef struct {
   int tx, ty, tw, th;
   float time;
   const animation_t *repeat;
+  const animation_t *single;
 } sprite_t;
 
 inline static sprite_t create_sprite()
@@ -27,6 +28,25 @@ inline static sprite_t create_sprite()
     .time = 0.0,
     .repeat = NULL
   };
+}
+
+inline static void sprite_repeat(sprite_t *s, const animation_t *repeat)
+{
+  s->tx = repeat->tx;
+  s->ty = repeat->ty;
+  s->tw = repeat->tw;
+  s->th = repeat->th;
+  s->repeat = repeat;
+}
+
+inline static void sprite_play(sprite_t *s, const animation_t *single)
+{
+  s->tx = single->tx;
+  s->ty = single->ty;
+  s->tw = single->tw;
+  s->th = single->th;
+  s->single = single;
+  s->time = 0.0;
 }
 
 #endif

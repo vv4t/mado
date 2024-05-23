@@ -4,7 +4,7 @@
 void player_move(edict_t *ed, entity_t p, float rot_z, const input_t in);
 void player_shoot(edict_t *ed, entity_t p, const input_t in);
 void player_invoke(edict_t *ed, entity_t p, event_t ev);
-void shoot(edict_t *ed, entity_t p);
+void shoot_player_bullet(edict_t *ed, entity_t p);
 void bullet_invoke(edict_t *ed, entity_t e, event_t ev);
 
 static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
@@ -25,8 +25,7 @@ entity_t player_create(edict_t *ed)
     s->repeat = &walk_forward;
   entity_add_component(ed, p, actor);
     actor_t *a = entity_get_component(ed, p, actor);
-    actor_set(a, 0, 0.5, 0);
-    actor_set(a, 1, 0.125, 3);
+    actor_set(a, 0, 0.15, 0);
   entity_add_component(ed, p, rigidbody);
     rigidbody_t *rb = entity_get_component(ed, p, rigidbody);
   entity_add_component(ed, p, listen);
@@ -41,10 +40,7 @@ void player_invoke(edict_t *ed, entity_t p, event_t ev)
   
   switch (ev.type) {
   case EV_ACT0:
-    actor_redo(pa, 1);
-    break;
-  case EV_ACT1:
-    shoot(ed, p);
+    shoot_player_bullet(ed, p);
     break;
   }
 }
@@ -95,7 +91,7 @@ void player_move(edict_t *ed, entity_t p, float rot_z, const input_t in)
   }
 }
 
-void shoot(edict_t *ed, entity_t p)
+void shoot_player_bullet(edict_t *ed, entity_t p)
 {
   transform_t *pt = entity_get_component(ed, p, transform);
   
@@ -105,7 +101,7 @@ void shoot(edict_t *ed, entity_t p)
     t->position = pt->position;
   entity_add_component(ed, e, rigidbody);
     rigidbody_t *rb = entity_get_component(ed, e, rigidbody);
-    rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 4));
+    rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
   entity_add_component(ed, e, sprite);
     sprite_t *s = entity_get_component(ed, e, sprite);
     s->tx = 0;
@@ -114,7 +110,7 @@ void shoot(edict_t *ed, entity_t p)
     s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
   entity_add_component(ed, e, actor);
     actor_t *a = entity_get_component(ed, e, actor);
-    actor_set(a, 0, 1.0, 1);
+    actor_set(a, 0, 0.4, 1);
     actor_start(a, 0);
   entity_add_component(ed, e, listen);
     listen_t *ls = entity_get_component(ed, e, listen);

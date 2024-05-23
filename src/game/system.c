@@ -1,4 +1,5 @@
 #include <game/system.h>
+#include <stdio.h>
 
 void system_perform(edict_t *ed)
 {
@@ -77,10 +78,19 @@ void system_animate(edict_t *ed)
     
     sprite_t *s = entity_get_component(ed, e, sprite);
     
-    if (s->repeat) {
-      s->tx = s->repeat->tx + (int) s->time % s->repeat->framecount;
+    if (s->single) {
+      s->tx = s->single->tx + (int) s->time * s->single->tw;
+      s->ty = s->single->ty;
+      s->time += 0.015 / s->single->frametime;
+      
+      if ((int) s->time == s->single->framecount) {
+        s->single = NULL;
+      }
+    } else if (s->repeat) {
+      int frame = (int) s->time % s->repeat->framecount;
+      s->tx = s->repeat->tx + frame * s->repeat->tw;
       s->ty = s->repeat->ty;
-      s->time += s->repeat->frametime;
+      s->time += 0.015 / s->repeat->frametime;
     }
   }
 }
