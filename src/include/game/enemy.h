@@ -1,8 +1,8 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include <game/edict.h>
+struct game_s;
 
-entity_t enemy_spawn_warrior(edict_t *ed);
+int enemy_spawn_warrior(struct game_s *gs);
 
 #endif

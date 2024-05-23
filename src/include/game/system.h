@@ -1,11 +1,11 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <game/edict.h>
+#include <game/game.h>
 #include <lib/map.h>
 
-void system_animate(edict_t *ed);
-void system_integrate(edict_t *ed, map_t map);
-void system_perform(edict_t *ed);
+void system_animate(game_t *gs);
+void system_integrate(game_t *gs);
+void system_perform(game_t *gs);
 
 #endif

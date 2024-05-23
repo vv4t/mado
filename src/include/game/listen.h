@@ -3,7 +3,7 @@
 
 #define EVENT_MAX 12
 
-struct edict_s;
+struct game_s;
 
 typedef enum {
   EV_ACT0, EV_ACT1, EV_ACT2, EV_ACT3,
@@ -15,7 +15,7 @@ typedef struct {
   event_type_t type;
 } event_t;
 
-typedef void (*invoke_t)(struct edict_s *ed, int e, event_t ev);
+typedef void (*invoke_t)(struct game_s *ed, int e, event_t ev);
 
 typedef struct {
   invoke_t  invoke;

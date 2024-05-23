@@ -1,59 +1,57 @@
 #include <game/player.h>
 #include <stdio.h>
 
-void player_move(edict_t *ed, entity_t p, float rot_z, const input_t in);
-void player_shoot(edict_t *ed, entity_t p, const input_t in);
-void player_invoke(edict_t *ed, entity_t p, event_t ev);
-void shoot_player_bullet(edict_t *ed, entity_t p);
-void bullet_invoke(edict_t *ed, entity_t e, event_t ev);
+void player_move(game_t *gs, entity_t p, float rot_z, const input_t in);
+void player_shoot(game_t *gs, entity_t p, const input_t in);
+void player_invoke(game_t *gs, entity_t p, event_t ev);
+void shoot_player_bullet(game_t *gs, entity_t p);
+void bullet_invoke(game_t *gs, entity_t e, event_t ev);
 
 static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
 static const animation_t walk_back    = { .tx = 0, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
 static const animation_t walk_left    = { .tx = 2, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
 static const animation_t walk_right   = { .tx = 0, .ty = 2, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.1 };
 
-entity_t player_create(edict_t *ed)
+void player_init(game_t *gs)
 {
-  entity_t p = edict_add(ed);
-  entity_add_component(ed, p, transform);
-    transform_t *t = entity_get_component(ed, p, transform);
+  entity_t e = entity_add(gs);
+  entity_add_component(gs, e, transform);
+    transform_t *t = entity_get_component(gs, e, transform);
     t->position = vec2(1, 1);
-  entity_add_component(ed, p, sprite);
-    sprite_t *s = entity_get_component(ed, p, sprite);
-    s->tx = 0;
-    s->ty = 1;
+  entity_add_component(gs, e, sprite);
+    sprite_t *s = entity_get_component(gs, e, sprite);
     s->repeat = &walk_forward;
-  entity_add_component(ed, p, actor);
-    actor_t *a = entity_get_component(ed, p, actor);
+  entity_add_component(gs, e, actor);
+    actor_t *a = entity_get_component(gs, e, actor);
     actor_set(a, 0, 0.15, 0);
-  entity_add_component(ed, p, rigidbody);
-    rigidbody_t *rb = entity_get_component(ed, p, rigidbody);
-  entity_add_component(ed, p, listen);
-    listen_t *ls = entity_get_component(ed, p, listen);
+  entity_add_component(gs, e, rigidbody);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+  entity_add_component(gs, e, listen);
+    listen_t *ls = entity_get_component(gs, e, listen);
     ls->invoke = player_invoke;
-  return p;
+  gs->player = e;
 }
 
-void player_invoke(edict_t *ed, entity_t p, event_t ev)
+void player_invoke(game_t *gs, entity_t p, event_t ev)
 {
-  actor_t *pa = entity_get_component(ed, p, actor);
+  actor_t *pa = entity_get_component(gs, p, actor);
   
   switch (ev.type) {
   case EV_ACT0:
-    shoot_player_bullet(ed, p);
+    shoot_player_bullet(gs, p);
     break;
   }
 }
 
-void player_update(edict_t *ed, entity_t p, float rot_z, const input_t in)
+void player_update(game_t *gs, entity_t p, float rot_z, const input_t in)
 {
-  player_move(ed, p, rot_z, in);
-  player_shoot(ed, p, in);
+  player_move(gs, p, rot_z, in);
+  player_shoot(gs, p, in);
 }
 
-void player_shoot(edict_t *ed, entity_t p, const input_t in)
+void player_shoot(game_t *gs, entity_t p, const input_t in)
 {
-  actor_t *a = entity_get_component(ed, p, actor);
+  actor_t *a = entity_get_component(gs, p, actor);
   
   if (input_is_mouse_pressed(in, 1)) {
     actor_start(a, 0);
@@ -62,11 +60,11 @@ void player_shoot(edict_t *ed, entity_t p, const input_t in)
   }
 }
 
-void player_move(edict_t *ed, entity_t p, float rot_z, const input_t in)
+void player_move(game_t *gs, entity_t p, float rot_z, const input_t in)
 {
-  sprite_t *ps = entity_get_component(ed, p, sprite);
-  transform_t *pt = entity_get_component(ed, p, transform);
-  rigidbody_t *rb = entity_get_component(ed, p, rigidbody);
+  sprite_t *ps = entity_get_component(gs, p, sprite);
+  transform_t *pt = entity_get_component(gs, p, transform);
+  rigidbody_t *rb = entity_get_component(gs, p, rigidbody);
   
   float speed = 5.0;
   vector walk = vec2(0, 0);
@@ -91,40 +89,40 @@ void player_move(edict_t *ed, entity_t p, float rot_z, const input_t in)
   }
 }
 
-void shoot_player_bullet(edict_t *ed, entity_t p)
+void shoot_player_bullet(game_t *gs, entity_t p)
 {
-  transform_t *pt = entity_get_component(ed, p, transform);
+  transform_t *pt = entity_get_component(gs, p, transform);
   
-  entity_t e = edict_add(ed);
-  entity_add_component(ed, e, transform);
-    transform_t *t = entity_get_component(ed, e, transform);
+  entity_t e = entity_add(gs);
+  entity_add_component(gs, e, transform);
+    transform_t *t = entity_get_component(gs, e, transform);
     t->position = pt->position;
-  entity_add_component(ed, e, rigidbody);
-    rigidbody_t *rb = entity_get_component(ed, e, rigidbody);
+  entity_add_component(gs, e, rigidbody);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->velocity = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
-  entity_add_component(ed, e, sprite);
-    sprite_t *s = entity_get_component(ed, e, sprite);
+  entity_add_component(gs, e, sprite);
+    sprite_t *s = entity_get_component(gs, e, sprite);
     s->tx = 0;
     s->ty = 0;
     s->orient = 0;
     s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
-  entity_add_component(ed, e, actor);
-    actor_t *a = entity_get_component(ed, e, actor);
+  entity_add_component(gs, e, actor);
+    actor_t *a = entity_get_component(gs, e, actor);
     actor_set(a, 0, 0.4, 1);
     actor_start(a, 0);
-  entity_add_component(ed, e, listen);
-    listen_t *ls = entity_get_component(ed, e, listen);
+  entity_add_component(gs, e, listen);
+    listen_t *ls = entity_get_component(gs, e, listen);
     ls->invoke = bullet_invoke;
 }
 
-void bullet_invoke(edict_t *ed, entity_t e, event_t ev)
+void bullet_invoke(game_t *gs, entity_t e, event_t ev)
 {
   switch (ev.type) {
   case EV_ACT0:
-    edict_kill(ed, e);
+    entity_kill(gs, e);
     break;
   case EV_MAP_COLLIDE:
-    edict_kill(ed, e);
+    entity_kill(gs, e);
     break;
   }
 }

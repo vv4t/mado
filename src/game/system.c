@@ -1,15 +1,15 @@
 #include <game/system.h>
 #include <stdio.h>
 
-void system_perform(edict_t *ed)
+void system_perform(game_t *gs)
 {
-  for (entity_t e = 0; e < ed->num_entities; e++) {
-    if (!entity_match(ed, e, C_actor | C_listen)) {
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_actor | C_listen)) {
       continue;
     }
     
-    actor_t *a = entity_get_component(ed, e, actor);
-    listen_t *ls = entity_get_component(ed, e, listen);
+    actor_t *a = entity_get_component(gs, e, actor);
+    listen_t *ls = entity_get_component(gs, e, listen);
     
     for (int i = 0; i < ACTION_MAX; i++) {
       action_t *action = &a->action[i];
@@ -20,7 +20,7 @@ void system_perform(edict_t *ed)
       
       if (action->time <= 0.0) {
         event_t ev = (event_t) { .type = EV_ACT0 + i };
-        ls->invoke(ed, e, ev);
+        ls->invoke(gs, e, ev);
         
         action->time = action->max_time;
         
@@ -34,16 +34,16 @@ void system_perform(edict_t *ed)
   }
 }
 
-void system_integrate(edict_t *ed, map_t map)
+void system_integrate(game_t *gs)
 {
-  for (entity_t e = 0; e < ed->num_entities; e++) {
-    if (!entity_match(ed, e, C_transform | C_rigidbody)) {
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_transform | C_rigidbody)) {
       continue;
     }
     
-    transform_t *t = entity_get_component(ed, e, transform);
-    rigidbody_t *rb = entity_get_component(ed, e, rigidbody);
-    listen_t *ls = entity_get_component(ed, e, listen);
+    transform_t *t = entity_get_component(gs, e, transform);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    listen_t *ls = entity_get_component(gs, e, listen);
     
     vector new_p = vaddv(t->position, fdotv(0.015, rb->velocity));
     vector new_x = vec2(new_p.x, t->position.y);
@@ -51,32 +51,32 @@ void system_integrate(edict_t *ed, map_t map)
     
     float d = 0.25;
     
-    int hit_x = map_collide(map, new_x, vec2(d, d));
-    int hit_y = map_collide(map, new_y, vec2(d, d));
-    int hit_p = map_collide(map, new_p, vec2(d, d));
+    int hit_x = map_collide(gs->map, new_x, vec2(d, d));
+    int hit_y = map_collide(gs->map, new_y, vec2(d, d));
+    int hit_p = map_collide(gs->map, new_p, vec2(d, d));
     int hit = hit_x || hit_y || hit_p;
     
     if (hit_x) new_p.x = t->position.x;
-    if (hit_y) new_p.y = t->position.y;
-    if (!hit_x && !hit_y && hit_p) new_p = t->position;
+    else if (hit_y) new_p.y = t->position.y;
+    else if (hit_p) new_p = t->position;
     
-    if (hit && entity_match(ed, e, C_listen)) {
+    if (hit && entity_match(gs, e, C_listen)) {
       event_t ev = (event_t) { .type = EV_MAP_COLLIDE };
-      ls->invoke(ed, e, ev);
+      ls->invoke(gs, e, ev);
     }
     
     t->position = new_p;
   }
 }
 
-void system_animate(edict_t *ed)
+void system_animate(game_t *gs)
 {
-  for (entity_t e = 0; e < ed->num_entities; e++) {
-    if (!entity_match(ed, e, C_sprite)) {
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_sprite)) {
       continue;
     }
     
-    sprite_t *s = entity_get_component(ed, e, sprite);
+    sprite_t *s = entity_get_component(gs, e, sprite);
     
     if (s->single) {
       s->tx = s->single->tx + (int) s->time * s->single->tw;

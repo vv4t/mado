@@ -57,8 +57,8 @@ void r_sprite_draw(const game_t *gs)
   
   matrix V = inverse(mat3_from_mat4(camera_get_view()));
   
-  for (entity_t e = 0; e < gs->edict.num_entities; e++) {
-    if (!entity_match(&gs->edict, e, C_transform | C_sprite)) {
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_transform | C_sprite)) {
       continue;
     }
     
@@ -66,8 +66,8 @@ void r_sprite_draw(const game_t *gs)
       continue;
     }
     
-    const transform_t *t = entity_get_component(&gs->edict, e, transform);
-    const sprite_t *s = entity_get_component(&gs->edict, e, sprite);
+    const transform_t *t = entity_get_component(gs, e, transform);
+    const sprite_t *s = entity_get_component(gs, e, sprite);
     
     matrix T_p = mat3(
       vec3( 1,  0,  0),
