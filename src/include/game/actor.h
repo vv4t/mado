@@ -1,14 +1,18 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
+#include <stdint.h>
+
 #define ACTION_MAX 8
+#define ACT_STATIC 255
 
 typedef struct {
-  float time;
-  int   count;
-  float max_time;
-  int   max_count;
-  int   active;
+  uint8_t name;
+  uint8_t active;
+  uint8_t count;
+  uint8_t max_count;
+  float   time;
+  float   max_time;
 } action_t;
 
 typedef struct {
@@ -20,6 +24,7 @@ inline static actor_t create_actor()
   return (actor_t) {0};
 }
 
+// fix actions to an id
 inline static void actor_set(actor_t *a, int id, float time, int count)
 {
   if (id >= ACTION_MAX) {
@@ -27,12 +32,32 @@ inline static void actor_set(actor_t *a, int id, float time, int count)
   }
   
   a->action[id] = (action_t) {
-    .time = time,
+    .name = ACT_STATIC,
+    .active = 0,
     .count = count,
-    .max_time = time,
     .max_count = count,
-    .active = 0
+    .time = time,
+    .max_time = time
   };
+}
+
+// do a temporary action which invokes EV_ACT with act.name = name
+inline static int actor_do(actor_t *a, int name, float time, int count)
+{
+  for (int i = 0; i < ACTION_MAX; i++) {
+    if (a->action[i].name == 0) {
+      a->action[i] = (action_t) {
+        .name = name,
+        .active = 1,
+        .count = count,
+        .max_count = count,
+        .time = time,
+        .max_time = time
+      };
+      
+      return i;
+    }
+  }
 }
 
 inline static void actor_start(actor_t *a, int id)

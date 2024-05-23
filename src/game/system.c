@@ -18,12 +18,21 @@ void system_perform(game_t *gs)
       if (!action->active) continue;
       
       if (action->time <= 0.0) {
-        event_t ev = (event_t) { .type = EV_ACT0 + i };
-        entity_invoke(gs, e, ev);
+        if (action->name == ACT_STATIC) {
+          entity_invoke(gs, e, (event_t) { .type = EV_ACT0 + i });
+        } else {
+          entity_invoke(gs, e, (event_t) {
+            .act.name = action->name,
+            .type = EV_ACT
+          });
+        }
         
         action->time = action->max_time;
         
         if (action->count == 1) {
+          if (action->name != ACT_STATIC) {
+            action->name = 0;
+          }
           action->active = 0;
         } else if (action->count > 1) {
           action->count--;
@@ -105,6 +114,7 @@ void system_update_bullet(game_t *gs)
     }
     
     bullet_t *b = entity_get_component(gs, e, bullet);
+    sprite_t *s = entity_get_component(gs, e, sprite);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     
     if (!b->flight) {
@@ -113,6 +123,7 @@ void system_update_bullet(game_t *gs)
     
     vector x = b->flight(b->time, b->a1, b->a2);
     rb->velocity = vaddv(fdotv(x.x, b->side), fdotv(x.y, b->forward));
+    s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
     b->time += 0.015;
   }
 }

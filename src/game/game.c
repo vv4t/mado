@@ -14,6 +14,7 @@ void game_init(game_t *gs)
   
   player_init(gs);
   enemy_spawn_archmage(gs);
+  // enemy_spawn_warrior(gs);
 }
 
 void game_update(game_t *gs, const input_t in)

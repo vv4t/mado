@@ -29,7 +29,6 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
     s->tw = sh->tw;
     s->th = sh->th;
     s->orient = 0;
-    s->rotation = atan2(fwd.y, fwd.x) - M_PI / 2.0;
   entity_add_component(gs, e, bullet);
     bullet_t *b = entity_get_component(gs, e, bullet);
     b->flight = fl;
