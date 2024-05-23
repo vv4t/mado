@@ -13,7 +13,7 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  enemy_spawn_warrior(gs);
+  enemy_spawn_archmage(gs);
 }
 
 void game_update(game_t *gs, const input_t in)

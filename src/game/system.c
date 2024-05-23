@@ -79,6 +79,8 @@ void system_animate(game_t *gs)
     if (s->single) {
       s->tx = s->single->tx + (int) s->time * s->single->tw;
       s->ty = s->single->ty;
+      s->tw = s->single->tw;
+      s->th = s->single->th;
       s->time += 0.015 / s->single->frametime;
       
       if ((int) s->time == s->single->framecount) {
@@ -88,6 +90,8 @@ void system_animate(game_t *gs)
       int frame = (int) s->time % s->repeat->framecount;
       s->tx = s->repeat->tx + frame * s->repeat->tw;
       s->ty = s->repeat->ty;
+      s->tw = s->repeat->tw;
+      s->th = s->repeat->th;
       s->time += 0.015 / s->repeat->frametime;
     }
   }

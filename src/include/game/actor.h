@@ -64,13 +64,4 @@ inline static void actor_redo(actor_t *a, int id)
   a->action[id].active = 1;
 }
 
-inline static void actor_do_now(actor_t *a, int id)
-{
-  if (id >= ACTION_MAX) {
-    return;
-  }
-  
-  a->action[id].time = 0.0;
-}
-
 #endif

@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 
-#define FOV (1.0 / 6.0)
+#define FOV (1.0 / 8.0)
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
