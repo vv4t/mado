@@ -1,4 +1,5 @@
 #include <renderer/r_sprite.h>
+#include <renderer/r_def.h>
 #include <renderer/camera.h>
 #include <renderer/mesh.h>
 #include <renderer/shader.h>
@@ -84,7 +85,7 @@ void r_sprite_draw(const game_t *gs)
     matrix T_uv = identity();
     T_uv = mdotm(T_uv, scale(vec3(s->tw, s->th, 1)));
     T_uv = mdotm(T_uv, translate(vec2(s->tx, s->ty)));
-    T_uv = mdotm(T_uv, fscale(1.0 / 8.0));
+    T_uv = mdotm(T_uv, fscale(1.0 / SHEET_SIZE));
     
     spritedata.sprite[spritedata.num_sprite++] = (ub_sprite_t) {
       .T_p = T_p,

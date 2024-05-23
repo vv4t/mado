@@ -1,4 +1,5 @@
 #include <renderer/r_map.h>
+#include <renderer/r_def.h>
 #include <renderer/camera.h>
 #include <renderer/mesh.h>
 #include <renderer/shader.h>
@@ -55,7 +56,7 @@ void r_map_load(map_t map)
 void add_tile(meshdata_t md, int x, int y)
 {
   matrix T_p = mdotm(fscale(0.5), translate(vec2(x + 0.5, y + 0.5)));
-  matrix T_uv = mdotm(translate(vec2(1, 7)), fscale(1.0 / 8.0));
+  matrix T_uv = mdotm(translate(vec2(1, 7)), fscale(1.0 / SHEET_SIZE));
   meshdata_add_quad(md, T_p, T_uv);
 }
 
@@ -77,12 +78,12 @@ void add_block(meshdata_t md, int x, int y)
     T_p = mdotm(T_p, translate(vec3(0, 0,-1)));
     T_p = mdotm(T_p, fscale(0.5));
     T_p = mdotm(T_p, translate(vec2(x + 0.5, y + 0.5)));
-    matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / 8.0));
+    matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / SHEET_SIZE));
     meshdata_add_quad(md, T_p, T_uv);
   }
   
   matrix T_p = mdotm(fscale(0.5), translate(vec3(x + 0.5, y + 0.5, -1)));
-  matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / 8.0));
+  matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / SHEET_SIZE));
   meshdata_add_quad(md, T_p, T_uv);
 }
 
