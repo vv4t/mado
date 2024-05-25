@@ -1,6 +1,36 @@
 #include <game/system.h>
 #include <stdio.h>
 
+void system_collide(game_t *gs)
+{
+  for (entity_t b = 0; b < gs->num_entities; b++) {
+    if (!entity_match(gs, b, C_transform | C_bullet)) {
+      continue;
+    }
+    vector b_pos = entity_get_component(gs, b, transform)->position;
+    target_t b_target = entity_get_component(gs, b, bullet)->target;
+
+    for (entity_t e = 0; e < gs->num_entities; e++) {
+      if (!entity_match(gs, e, C_transform | C_collider)) {
+        continue;
+      }
+
+      vector e_pos = entity_get_component(gs, e, transform)->position;
+      float e_radius = entity_get_component(gs, e, collider)->radius;
+      target_t e_type = entity_get_component(gs, e, collider)->type;
+
+      if (length(vsubv(e_pos, b_pos)) <= e_radius) {
+        event_t ev = (event_t) { .type = EV_ENTITY_COLLIDE };
+
+        if (b_target == e_type) {
+          entity_invoke(gs, b, ev);
+          entity_invoke(gs, e, ev);
+        }
+      }
+    }
+  }
+}
+
 void system_perform(game_t *gs)
 {
   for (entity_t e = 0; e < gs->num_entities; e++) {
@@ -121,8 +151,8 @@ void system_update_bullet(game_t *gs)
       continue;
     }
     
-    vector x = b->flight(b->time, b->a1, b->a2);
-    rb->velocity = vaddv(fdotv(x.x, b->side), fdotv(x.y, b->forward));
+    vector v = b->flight(b->time, b->a1, b->a2);
+    rb->velocity = vaddv(fdotv(v.x, b->side), fdotv(v.y, b->forward));
     s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
     b->time += 0.015;
   }

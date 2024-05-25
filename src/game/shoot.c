@@ -5,17 +5,17 @@ vector flight_linear(float time, float a1, float a2);
 vector flight_wave(float time, float a1, float a2);
 void bullet_invoke(game_t *gs, entity_t e, event_t ev);
 
-entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd)
+entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target)
 {
-  shoot(gs, sh, o, fwd, 1.0, flight_linear, 0.0, 0.0);
+  shoot(gs, sh, o, fwd, target, 1.0, flight_linear, 0.0, 0.0);
 }
 
-entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, float amp, float freq, float phase)
+entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, float amp, float freq, float phase)
 {
-  shoot(gs, sh, o, fwd, amp, flight_wave, freq, phase);
+  shoot(gs, sh, o, fwd, target, amp, flight_wave, freq, phase);
 }
 
-entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2)
+entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, float side, flight_t fl, float a1, float a2)
 {
   entity_t e = entity_add(gs);
   entity_add_component(gs, e, rigidbody);
@@ -36,6 +36,7 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
     b->side = cross(b->forward, vec3(0, 0, side));
     b->a1 = a1;
     b->a2 = a2;
+    b->target = target;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_set(a, 0, sh->ttl, 1);
@@ -52,6 +53,9 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
     entity_kill(gs, e);
     break;
   case EV_MAP_COLLIDE:
+    entity_kill(gs, e);
+    break;
+  case EV_ENTITY_COLLIDE:
     entity_kill(gs, e);
     break;
   }

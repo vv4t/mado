@@ -3,8 +3,8 @@
 #include <game/game.h>
 #include <stdio.h>
 
-static const animation_t archmage_idle   = { .tx = 0, .ty = 3, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.2 };
-static const animation_t archmage_attack = { .tx = 2, .ty = 3, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.2 };
+static const animation_t archmage_idle   = { .tx = 8, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.5 };
+static const animation_t archmage_attack = { .tx = 8, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.4 };
 
 static shooter_t archmage_shooter = {
   .tx = 2, .ty = 0,
@@ -25,7 +25,7 @@ entity_t enemy_spawn_archmage(game_t *gs)
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->scale = vec3(2.0, 2.0, 2.0);
-    t->position = vec2(3, 3);
+    t->position = vec2(5, 5);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &archmage_idle);
@@ -37,12 +37,16 @@ entity_t enemy_spawn_archmage(game_t *gs)
     actor_set(a, 3, 6.0, 1);
     actor_start(a, 0);
     a->action[0].time = 2.0;
+  entity_add_component(gs, e, collider);
+    collider_t *c = entity_get_component(gs, e, collider);
+    c->radius = 0.8;
+    c->type = TARGET_ENEMY;
   entity_bind(gs, e, archmage_invoke);
   return e;
 }
 
 vector flight_archmage_bullet(float time, float radius, float speed) {
-  float t1 = 1.0 / speed * radius;
+  float t1 = radius / speed;
   
   if (time < t1) {
     return vec2(0, -1);
@@ -50,7 +54,7 @@ vector flight_archmage_bullet(float time, float radius, float speed) {
   
   time -= t1;
   
-  float r = 1.0 / radius * speed;
+  float r = speed / radius;
   return vec2(cos(time * r), sin(time * r));
 }
 
@@ -89,9 +93,8 @@ void archmage_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ARCHMAGE_ACT_SHOOT, 0.125, 12);
       break;
     case ARCHMAGE_ACT_SHOOT:
-      shoot(gs, &archmage_shooter, t->position, vec2(0, 12), a2, flight_archmage_bullet, 2.0 + a1, 12.0);
+      shoot(gs, &archmage_shooter, t->position, vec2(0, 12), TARGET_PLAYER, a2, flight_archmage_bullet, 2.0 + a1, 12.0);
       break;
     }
-    break;
   }
 }
