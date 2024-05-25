@@ -9,7 +9,8 @@ static const animation_t archmage_attack = { .tx = 8, .ty = 4, .tw = 2, .th = 2,
 static shooter_t archmage_shooter = {
   .tx = 2, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 5.0
+  .ttl = 5.0,
+  .target = ENT_PLAYER
 };
 
 static void archmage_invoke(game_t *gs, entity_t e, event_t ev);
@@ -21,7 +22,7 @@ enum {
 
 entity_t enemy_spawn_archmage(game_t *gs)
 {
-  entity_t e = entity_add(gs);
+  entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->scale = vec3(2.0, 2.0, 2.0);
@@ -29,6 +30,9 @@ entity_t enemy_spawn_archmage(game_t *gs)
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &archmage_idle);
+  entity_add_component(gs, e, rigidbody);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    rb->radius = 1.0;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_set(a, 0, 10.0, 0);
@@ -37,10 +41,6 @@ entity_t enemy_spawn_archmage(game_t *gs)
     actor_set(a, 3, 6.0, 1);
     actor_start(a, 0);
     a->action[0].time = 2.0;
-  entity_add_component(gs, e, collider);
-    collider_t *c = entity_get_component(gs, e, collider);
-    c->radius = 0.8;
-    c->type = TARGET_ENEMY;
   entity_bind(gs, e, archmage_invoke);
   return e;
 }
@@ -58,7 +58,6 @@ vector flight_archmage_bullet(float time, float radius, float speed) {
   return vec2(cos(time * r), sin(time * r));
 }
 
-// temporary arguments for now
 float a1 = 0.0;
 float a2 = 1.0;
 
@@ -71,7 +70,6 @@ void archmage_invoke(game_t *gs, entity_t e, event_t ev)
   actor_t *a = entity_get_component(gs, e, actor);
   
   switch (ev.type) {
-  // fixed actions by id
   case EV_ACT0:
     a1 = 0.0;
     actor_redo(a, 1);
@@ -82,18 +80,17 @@ void archmage_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT2:
   case EV_ACT3:
     sprite_play(s, &archmage_attack);
-    actor_do(a, ARCHMAGE_ACT_ATTACK, 0.3, 1); // wait for the animation to play first
+    actor_do(a, ARCHMAGE_ACT_ATTACK, 0.3, 1);
     a1 += 1.0;
     a2 = -a2;
     break;
-  // dynamic actions, identified by "name"
   case EV_ACT:
     switch (ev.act.name) {
     case ARCHMAGE_ACT_ATTACK:
       actor_do(a, ARCHMAGE_ACT_SHOOT, 0.125, 12);
       break;
     case ARCHMAGE_ACT_SHOOT:
-      shoot(gs, &archmage_shooter, t->position, vec2(0, 12), TARGET_PLAYER, a2, flight_archmage_bullet, 2.0 + a1, 12.0);
+      shoot(gs, &archmage_shooter, t->position, vec2(0, 12), a2, flight_archmage_bullet, 2.0 + a1, 12.0);
       break;
     }
   }

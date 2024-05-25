@@ -13,16 +13,16 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  enemy_spawn_scytheman(gs);
+  enemy_spawn_archmage(gs);
 }
 
 void game_update(game_t *gs, const input_t in)
 {
   player_update(gs, in);
   system_animate(gs);
-  system_integrate(gs);
-  system_perform(gs);
   system_update_bullet(gs);
+  system_perform(gs);
+  system_integrate(gs);
   system_collide(gs);
   game_move_camera(gs, in);
   gs->time += 0.015;
@@ -43,19 +43,31 @@ void game_move_camera(game_t *gs, const input_t in)
   gs->view_position = pt->position;
 }
 
-entity_t entity_add(game_t *gs)
+entity_t entity_add(game_t *gs, entname_t name)
 {
+  entity_t e = gs->num_entities;
+  
   for (int i = 0; i < gs->num_entities; i++) {
-    if (gs->edict[i] == 0) {
-      return i;
+    if (gs->entdict[i] == 0) {
+      e = i;
+      break;
     }
   }
   
-  if (gs->num_entities >= ENTITY_MAX) {
-    LOG_ERROR("edict: out of memory");
+  if (e == gs->num_entities) {
+    gs->num_entities++;
   }
   
-  return gs->num_entities++;
+  if (e >= ENTITY_MAX) {
+    LOG_ERROR("entdict: out of memory");
+  }
+  
+  gs->entdata[e] = (entdata_t) {
+    .name = name,
+    .invoke = NULL
+  };
+  
+  return e;
 }
 
 void entity_kill(game_t *gs, entity_t e)
@@ -64,17 +76,34 @@ void entity_kill(game_t *gs, entity_t e)
     return;
   }
   
-  gs->edict[e] = 0;
+  gs->entdict[e] = 0;
 }
 
 void entity_invoke(game_t *gs, entity_t e, event_t ev)
 {
-  if (gs->invoke) {
-    gs->invoke[e](gs, e, ev);
+  if (e >= ENTITY_MAX) {
+    return;
+  }
+  
+  if (gs->entdata[e].invoke) {
+    gs->entdata[e].invoke(gs, e, ev);
   }
 }
 
 void entity_bind(game_t *gs, entity_t e, invoke_t invoke)
 {
-  gs->invoke[e] = invoke;
+  if (e >= ENTITY_MAX) {
+    return;
+  }
+  
+  gs->entdata[e].invoke = invoke;
+}
+
+entname_t entity_get_name(game_t *gs, entity_t e)
+{
+  if (e >= ENTITY_MAX) {
+    return ENT_ANY;
+  }
+  
+  return gs->entdata[e].name;
 }

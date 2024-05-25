@@ -3,31 +3,63 @@
 
 void system_collide(game_t *gs)
 {
-  for (entity_t b = 0; b < gs->num_entities; b++) {
-    if (!entity_match(gs, b, C_transform | C_bullet)) {
+  for (entity_t a = 0; a < gs->num_entities; a++) {
+    if (!entity_match(gs, a, C_transform | C_rigidbody)) {
       continue;
     }
-    vector b_pos = entity_get_component(gs, b, transform)->position;
-    target_t b_target = entity_get_component(gs, b, bullet)->target;
-
-    for (entity_t e = 0; e < gs->num_entities; e++) {
-      if (!entity_match(gs, e, C_transform | C_collider)) {
+    
+    transform_t *at = entity_get_component(gs, a, transform);
+    rigidbody_t *a_rb = entity_get_component(gs, a, rigidbody);
+    
+    vector new_x = vec2(at->position.x, a_rb->prev_pos.y);
+    vector new_y = vec2(a_rb->prev_pos.x, at->position.y);
+    
+    float d = 0.45;
+    
+    int hit_x = map_collide(gs->map, new_x, vec2(d, d));
+    int hit_y = map_collide(gs->map, new_y, vec2(d, d));
+    int hit_p = map_collide(gs->map, at->position, vec2(d, d));
+    int hit = hit_x || hit_y || hit_p;
+    
+    if (hit_p) {
+      if (!hit_x) at->position.y = a_rb->prev_pos.y;
+      if (!hit_y) at->position.x = a_rb->prev_pos.x;
+    }
+    
+    if (hit) {
+      entity_invoke(gs, a, (event_t) { .type = EV_MAP_COLLIDE });
+    }
+    
+    // bullet_t *ab = entity_get_component(gs, a, bullet);
+    
+    for (entity_t b = a + 1; b < gs->num_entities; b++) {
+      if (!entity_match(gs, b, C_transform | C_rigidbody)) {
         continue;
       }
-
-      vector e_pos = entity_get_component(gs, e, transform)->position;
-      float e_radius = entity_get_component(gs, e, collider)->radius;
-      target_t e_type = entity_get_component(gs, e, collider)->type;
-
-      if (length(vsubv(e_pos, b_pos)) <= e_radius) {
-        event_t ev = (event_t) { .type = EV_ENTITY_COLLIDE };
-
-        if (b_target == e_type) {
-          entity_invoke(gs, b, ev);
-          entity_invoke(gs, e, ev);
-        }
+      
+      transform_t *bt = entity_get_component(gs, b, transform);
+      rigidbody_t *b_rb = entity_get_component(gs, b, rigidbody);
+      
+      if (length(vsubv(bt->position, at->position)) <= a_rb->radius + b_rb->radius) {
+        entity_invoke(gs, a, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = b });
+        entity_invoke(gs, b, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = a });
       }
     }
+  }
+}
+
+void system_integrate(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_transform | C_rigidbody)) {
+      continue;
+    }
+    
+    transform_t *t = entity_get_component(gs, e, transform);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    
+    rb->prev_pos = t->position;
+    t->position = vaddv(t->position, fdotv(0.015, rb->velocity));
   }
 }
 
@@ -69,40 +101,6 @@ void system_perform(game_t *gs)
         }
       }
     }
-  }
-}
-
-void system_integrate(game_t *gs)
-{
-  for (entity_t e = 0; e < gs->num_entities; e++) {
-    if (!entity_match(gs, e, C_transform | C_rigidbody)) {
-      continue;
-    }
-    
-    transform_t *t = entity_get_component(gs, e, transform);
-    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    
-    vector new_p = vaddv(t->position, fdotv(0.015, rb->velocity));
-    vector new_x = vec2(new_p.x, t->position.y);
-    vector new_y = vec2(t->position.x, new_p.y);
-    
-    float d = 0.45;
-    
-    int hit_x = map_collide(gs->map, new_x, vec2(d, d));
-    int hit_y = map_collide(gs->map, new_y, vec2(d, d));
-    int hit_p = map_collide(gs->map, new_p, vec2(d, d));
-    int hit = hit_x || hit_y || hit_p;
-    
-    if (hit_x) new_p.x = t->position.x;
-    else if (hit_y) new_p.y = t->position.y;
-    else if (hit_p) new_p = t->position;
-    
-    if (hit) {
-      event_t ev = (event_t) { .type = EV_MAP_COLLIDE };
-      entity_invoke(gs, e, ev);
-    }
-    
-    t->position = new_p;
   }
 }
 

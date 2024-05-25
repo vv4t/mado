@@ -5,7 +5,7 @@ vector flight_linear(float time, float a1, float a2);
 vector flight_wave(float time, float a1, float a2);
 void bullet_invoke(game_t *gs, entity_t e, event_t ev);
 
-entity_t shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, int wall_bits, int length, float sep)
+entity_t shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, int wall_bits, int length, float sep)
 {
   vector v = {
     .x = fwd.x * cos(-M_PI / 2) - fwd.y * sin(-M_PI / 2),
@@ -17,12 +17,12 @@ entity_t shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, targe
 
   for (int i = 0; i < length; i++) {
     if ((wall_bits >> i) & 1) {
-      shoot(gs, sh, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, target, 1.0, flight_linear, 0.0, 0.0);      
+      shoot(gs, sh, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, 1.0, flight_linear, 0.0, 0.0);      
     }
   }
 }
 
-entity_t shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, int count)
+entity_t shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count)
 {
   for (int i = 0; i < count; i++) {
     float rot = i * (2 * M_PI / count);
@@ -32,11 +32,11 @@ entity_t shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, tar
       .y = fwd.x * sin(rot) + fwd.y * cos(rot)
     };
 
-    shoot(gs, sh, o, u, target, 1.0, flight_linear, 0.0, 0.0);
+    shoot(gs, sh, o, u, 1.0, flight_linear, 0.0, 0.0);
   }
 }
 
-entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, int count, float cone)
+entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count, float cone)
 {
   vector v = {
     .x = fwd.x * cos(-cone / 2) - fwd.y * sin(-cone / 2),
@@ -50,24 +50,26 @@ entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, ta
       .y = v.x * sin(rot) + v.y * cos(rot)
     };
 
-    shoot(gs, sh, o, u, target, 1.0, flight_linear, 0.0, 0.0);
+    shoot(gs, sh, o, u, 1.0, flight_linear, 0.0, 0.0);
   }
 }
 
-entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target)
+entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd)
 {
-  shoot(gs, sh, o, fwd, target, 1.0, flight_linear, 0.0, 0.0);
+  shoot(gs, sh, o, fwd, 1.0, flight_linear, 0.0, 0.0);
 }
 
-entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, float amp, float freq, float phase)
+entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, float amp, float freq, float phase)
 {
-  shoot(gs, sh, o, fwd, target, amp, flight_wave, freq, phase);
+  shoot(gs, sh, o, fwd, amp, flight_wave, freq, phase);
 }
 
-entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t target, float side, flight_t fl, float a1, float a2)
+entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2)
 {
-  entity_t e = entity_add(gs);
+  entity_t e = entity_add(gs, ENT_BULLET);
   entity_add_component(gs, e, rigidbody);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    rb->radius = 0.25;
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->position = o;
@@ -85,7 +87,7 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t t
     b->side = cross(b->forward, vec3(0, 0, side));
     b->a1 = a1;
     b->a2 = a2;
-    b->target = target;
+    b->target = sh->target;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_set(a, 0, sh->ttl, 1);
@@ -97,6 +99,12 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, target_t t
 
 void bullet_invoke(game_t *gs, entity_t e, event_t ev)
 {
+  if (!entity_match(gs, e, C_bullet)) {
+    return;
+  }
+  
+  bullet_t *b = entity_get_component(gs, e, bullet);
+  
   switch (ev.type) {
   case EV_ACT0:
     entity_kill(gs, e);
@@ -105,7 +113,9 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
     entity_kill(gs, e);
     break;
   case EV_ENTITY_COLLIDE:
-    entity_kill(gs, e);
+    if (b->target == entity_get_name(gs, ev.entcol.e)) {
+      entity_kill(gs, e);
+    }
     break;
   }
 }

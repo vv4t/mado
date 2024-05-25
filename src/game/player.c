@@ -14,12 +14,13 @@ static const animation_t walk_right   = { .tx = 0, .ty = 2, .tw = 1, .th = 1, .f
 static shooter_t player_shooter = {
   .tx = 0, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 0.6
+  .ttl = 0.6,
+  .target = ENT_ENEMY
 };
 
 void player_init(game_t *gs)
 {
-  entity_t e = entity_add(gs);
+  entity_t e = entity_add(gs, ENT_PLAYER);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->position = vec2(1, 1);
@@ -31,10 +32,7 @@ void player_init(game_t *gs)
     actor_set(a, 0, 0.15, 0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-  entity_add_component(gs, e, collider);
-    collider_t *c = entity_get_component(gs, e, collider);
-    c->radius = 0.7;
-    c->type = TARGET_PLAYER;
+    rb->radius = 1.0;
   entity_bind(gs, e, player_invoke);
   gs->player = e;
 }
@@ -48,8 +46,8 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   
   switch (ev.type) {
   case EV_ACT0:
-    shoot_wave(gs, &player_shooter, pt->position, forward, TARGET_ENEMY, 1.0, 22.0, 0.0);
-    shoot_wave(gs, &player_shooter, pt->position, forward, TARGET_ENEMY, 1.0, 22.0, M_PI);
+    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, 0.0);
+    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
     break;
   case EV_ENTITY_COLLIDE:
     break;
