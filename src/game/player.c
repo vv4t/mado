@@ -29,10 +29,11 @@ void player_init(game_t *gs)
     sprite_repeat(s, &walk_forward);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_set(a, 0, 0.15, 0);
+    actor_repeat(a, ACT0, 0.0, 0, 0.15);
+    actor_stop(a, ACT0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    rb->radius = 1.0;
+    rb->radius = 0.5;
   entity_bind(gs, e, player_invoke);
   gs->player = e;
 }
@@ -45,11 +46,13 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   vector forward = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
   
   switch (ev.type) {
-  case EV_ACT0:
-    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, 0.0);
-    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
-    break;
-  case EV_ENTITY_COLLIDE:
+  case EV_ACT:
+    switch (ev.act.name) {
+    case ACT0:
+      shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, 0.0);
+      shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
+      break;
+    }
     break;
   }
 }
@@ -65,9 +68,9 @@ void player_attack(game_t *gs, const input_t in)
   actor_t *a = entity_get_component(gs, gs->player, actor);
   
   if (input_is_mouse_pressed(in, 1)) {
-    actor_start(a, 0);
+    actor_start(a, ACT0);
   } else {
-    actor_stop(a, 0);
+    actor_stop(a, ACT0);
   }
 }
 

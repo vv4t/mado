@@ -35,12 +35,7 @@ entity_t enemy_spawn_archmage(game_t *gs)
     rb->radius = 1.0;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_set(a, 0, 10.0, 0);
-    actor_set(a, 1, 2.0, 1);
-    actor_set(a, 2, 4.0, 1);
-    actor_set(a, 3, 6.0, 1);
-    actor_start(a, 0);
-    a->action[0].time = 2.0;
+    actor_repeat(a, 0, 2.0, 0, 10.0);
   entity_bind(gs, e, archmage_invoke);
   return e;
 }
@@ -70,28 +65,26 @@ void archmage_invoke(game_t *gs, entity_t e, event_t ev)
   actor_t *a = entity_get_component(gs, e, actor);
   
   switch (ev.type) {
-  case EV_ACT0:
-    a1 = 0.0;
-    actor_redo(a, 1);
-    actor_redo(a, 2);
-    actor_redo(a, 3);
-    break;
-  case EV_ACT1:
-  case EV_ACT2:
-  case EV_ACT3:
-    sprite_play(s, &archmage_attack);
-    actor_do(a, ARCHMAGE_ACT_ATTACK, 0.3, 1);
-    a1 += 1.0;
-    a2 = -a2;
-    break;
   case EV_ACT:
     switch (ev.act.name) {
-    case ARCHMAGE_ACT_ATTACK:
-      actor_do(a, ARCHMAGE_ACT_SHOOT, 0.125, 12);
+    case ACT0:
+      a1 = 0.0;
+      actor_do(a, ACT1, 2.0);
+      actor_do(a, ACT2, 4.0);
+      actor_do(a, ACT3, 6.0);
       break;
-    case ARCHMAGE_ACT_SHOOT:
+    case ACT1:
+    case ACT2:
+    case ACT3:
+      sprite_play(s, &archmage_attack);
+      actor_repeat(a, ACT4, 0.5, 6, 0.25);
+      a1 += 1.0;
+      a2 = -a2;
+      break;
+    case ACT4:
       shoot(gs, &archmage_shooter, t->position, vec2(0, 12), a2, flight_archmage_bullet, 2.0 + a1, 12.0);
       break;
     }
+    break;
   }
 }

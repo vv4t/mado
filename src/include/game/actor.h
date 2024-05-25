@@ -4,13 +4,14 @@
 #include <stdint.h>
 
 #define ACTION_MAX 8
-#define ACT_STATIC 255
+
+typedef enum {
+  ACT0, ACT1, ACT2, ACT3, ACT4, ACT5, ACT6, ACT7
+} actname_t;
 
 typedef struct {
-  uint8_t name;
   uint8_t active;
   uint8_t count;
-  uint8_t max_count;
   float   time;
   float   max_time;
 } action_t;
@@ -24,43 +25,35 @@ inline static actor_t create_actor()
   return (actor_t) {0};
 }
 
-// fix actions to an id
-inline static void actor_set(actor_t *a, int id, float time, int count)
+inline static void actor_do(actor_t *a, actname_t id, float time)
 {
   if (id >= ACTION_MAX) {
     return;
   }
   
   a->action[id] = (action_t) {
-    .name = ACT_STATIC,
-    .active = 0,
-    .count = count,
-    .max_count = count,
+    .active = 1,
+    .count = 1,
     .time = time,
     .max_time = time
   };
 }
 
-// do a temporary action which invokes EV_ACT with act.name = name
-inline static int actor_do(actor_t *a, int name, float time, int count)
+inline static void actor_repeat(actor_t *a, actname_t id, float after, int count, float time)
 {
-  for (int i = 0; i < ACTION_MAX; i++) {
-    if (a->action[i].name == 0) {
-      a->action[i] = (action_t) {
-        .name = name,
-        .active = 1,
-        .count = count,
-        .max_count = count,
-        .time = time,
-        .max_time = time
-      };
-      
-      return i;
-    }
+  if (id >= ACTION_MAX) {
+    return;
   }
+  
+  a->action[id] = (action_t) {
+    .active = 1,
+    .count = count,
+    .time = after,
+    .max_time = time
+  };
 }
 
-inline static void actor_start(actor_t *a, int id)
+inline static void actor_start(actor_t *a, actname_t id)
 {
   if (id >= ACTION_MAX) {
     return;
@@ -69,24 +62,13 @@ inline static void actor_start(actor_t *a, int id)
   a->action[id].active = 1;
 }
 
-inline static void actor_stop(actor_t *a, int id)
+inline static void actor_stop(actor_t *a, actname_t id)
 {
   if (id >= ACTION_MAX) {
     return;
   }
   
   a->action[id].active = 0;
-}
-
-inline static void actor_redo(actor_t *a, int id)
-{
-  if (id >= ACTION_MAX) {
-    return;
-  }
-  
-  a->action[id].count = a->action[id].max_count;
-  a->action[id].time = a->action[id].max_time;
-  a->action[id].active = 1;
 }
 
 #endif

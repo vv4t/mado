@@ -5,8 +5,6 @@ struct game_s;
 
 typedef enum {
   EV_ACT,
-  EV_ACT0, EV_ACT1, EV_ACT2, EV_ACT3,
-  EV_ACT4, EV_ACT5, EV_ACT6, EV_ACT7,
   EV_MAP_COLLIDE,
   EV_ENTITY_COLLIDE
 } event_type_t;

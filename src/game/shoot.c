@@ -42,6 +42,7 @@ entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, in
     .x = fwd.x * cos(-cone / 2) - fwd.y * sin(-cone / 2),
     .y = fwd.x * sin(-cone / 2) + fwd.y * cos(-cone / 2)
   };
+  
   for (int i = 0; i < count; i++) {
     float rot = i * (cone / (count - 1));
 
@@ -90,8 +91,7 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
     b->target = sh->target;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_set(a, 0, sh->ttl, 1);
-    actor_start(a, 0);
+    actor_do(a, ACT0, sh->ttl);
   entity_bind(gs, e, bullet_invoke);
   
   return e;
@@ -106,8 +106,12 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
   bullet_t *b = entity_get_component(gs, e, bullet);
   
   switch (ev.type) {
-  case EV_ACT0:
-    entity_kill(gs, e);
+  case EV_ACT:
+    switch (ev.act.name) {
+    case ACT0:
+      entity_kill(gs, e);
+      break;
+    }
     break;
   case EV_MAP_COLLIDE:
     entity_kill(gs, e);

@@ -30,8 +30,6 @@ void system_collide(game_t *gs)
       entity_invoke(gs, a, (event_t) { .type = EV_MAP_COLLIDE });
     }
     
-    // bullet_t *ab = entity_get_component(gs, a, bullet);
-    
     for (entity_t b = a + 1; b < gs->num_entities; b++) {
       if (!entity_match(gs, b, C_transform | C_rigidbody)) {
         continue;
@@ -72,7 +70,7 @@ void system_perform(game_t *gs)
     
     actor_t *a = entity_get_component(gs, e, actor);
     
-    for (int i = 0; i < ACTION_MAX; i++) {
+    for (actname_t i = 0; i < ACTION_MAX; i++) {
       action_t *action = &a->action[i];
       
       if (action->time > 0.0) action->time -= 0.015;
@@ -80,21 +78,10 @@ void system_perform(game_t *gs)
       if (!action->active) continue;
       
       if (action->time <= 0.0) {
-        if (action->name == ACT_STATIC) {
-          entity_invoke(gs, e, (event_t) { .type = EV_ACT0 + i });
-        } else {
-          entity_invoke(gs, e, (event_t) {
-            .act.name = action->name,
-            .type = EV_ACT
-          });
-        }
-        
+        entity_invoke(gs, e, (event_t) { .type = EV_ACT, .act.name = i });
         action->time = action->max_time;
         
         if (action->count == 1) {
-          if (action->name != ACT_STATIC) {
-            action->name = 0;
-          }
           action->active = 0;
         } else if (action->count > 1) {
           action->count--;

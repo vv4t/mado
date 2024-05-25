@@ -27,10 +27,7 @@ entity_t enemy_spawn_warrior(game_t *gs)
     sprite_repeat(s, &warrior_idle);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_set(a, 0, 4.0, 0);
-    actor_set(a, 1, 0.30, 6);
-    actor_set(a, 2, 0.15, 1);
-    actor_start(a, 0);
+    actor_repeat(a, ACT0, 2.0, 0, 4.0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -47,17 +44,21 @@ void warrior_invoke(game_t *gs, entity_t e, event_t ev)
   actor_t *a = entity_get_component(gs, e, actor);
   
   vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
-
+  
   switch (ev.type) {
-  case EV_ACT0:
-    actor_redo(a, 1);
-    break;
-  case EV_ACT1:
-    sprite_play(s, &warrior_attack);
-    actor_redo(a, 2);
-    break;
-  case EV_ACT2:
-    shoot_linear(gs, &warrior_shooter, t->position, forward);
+  case EV_ACT:
+    switch (ev.act.name) {
+    case ACT0:
+      actor_repeat(a, ACT1, 0.0, 6, 0.3);
+      break;
+    case ACT1:
+      sprite_play(s, &warrior_attack);
+      actor_do(a, ACT2, 0.15);
+      break;
+    case ACT2:
+      shoot_linear(gs, &warrior_shooter, t->position, forward);
+      break;
+    }
     break;
   }
 }
