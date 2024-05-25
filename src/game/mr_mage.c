@@ -13,6 +13,12 @@ static shooter_t mr_mage_shooter = {
   .target = ENT_PLAYER
 };
 
+struct magectx {
+  float orbit_radius;
+  float orbit_direction;
+  float shoot_angle;
+};
+
 static void mr_mage_invoke(game_t *gs, entity_t e, event_t ev);
 
 entity_t enemy_spawn_mr_mage(game_t *gs)
@@ -30,7 +36,7 @@ entity_t enemy_spawn_mr_mage(game_t *gs)
     rb->radius = 1.0;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, 0, 2.0, 0, 10.0);
+    actor_repeat(a, ACT0, 2.0, 0, 14.0);
   entity_bind(gs, e, mr_mage_invoke);
   return e;
 }
@@ -48,9 +54,6 @@ vector flight_mr_mage_bullet(float time, float radius, float speed) {
   return vec2(cos(time * r), sin(time * r));
 }
 
-float a1 = 0.0;
-float a2 = 1.0;
-
 void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
 {
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -59,25 +62,37 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
   
+  float speed = 12.0;
+  
+  struct magectx *magectx = entity_get_context(gs, e, sizeof(struct magectx));
+  vector forward = mdotv(rotate_z(magectx->shoot_angle), vec2(0, speed));
+  
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      a1 = 0.0;
+      magectx->orbit_radius = 8.0;
+      magectx->orbit_direction = 1.0;
       actor_do(a, ACT1, 2.0);
-      actor_do(a, ACT2, 4.0);
-      actor_do(a, ACT3, 6.0);
+      actor_do(a, ACT2, 5.0);
+      actor_do(a, ACT3, 8.0);
       break;
     case ACT1:
     case ACT2:
     case ACT3:
       sprite_play(s, &mr_mage_attack);
-      actor_repeat(a, ACT4, 0.5, 6, 0.25);
-      a1 += 1.0;
-      a2 = -a2;
+      actor_repeat(a, ACT4, 0.5, 12, 0.125);
+      magectx->orbit_radius -= 1.5;
+      magectx->orbit_direction *= -1.0;
+      magectx->shoot_angle = (rand() % 256) / 256.0 * 2 * M_PI;
       break;
     case ACT4:
-      shoot(gs, &mr_mage_shooter, t->position, vec2(0, 12), a2, flight_mr_mage_bullet, 2.0 + a1, 12.0);
+      shoot(
+        gs, &mr_mage_shooter, t->position,
+        forward, magectx->orbit_direction,
+        flight_mr_mage_bullet,
+        magectx->orbit_radius, speed
+      );
       break;
     }
     break;

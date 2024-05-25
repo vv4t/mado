@@ -124,19 +124,20 @@ void system_animate(game_t *gs)
 void system_update_bullet(game_t *gs)
 {
   for (entity_t e = 0; e < gs->num_entities; e++) {
-    if (!entity_match(gs, e, C_rigidbody | C_bullet)) {
+    if (!entity_match(gs, e, C_rigidbody | C_bullet | C_sprite)) {
       continue;
     }
     
     bullet_t *b = entity_get_component(gs, e, bullet);
     sprite_t *s = entity_get_component(gs, e, sprite);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    struct bulletctx *bulletctx = entity_get_context(gs, e, sizeof(struct bulletctx));
     
     if (!b->flight) {
       continue;
     }
     
-    vector v = b->flight(b->time, b->a1, b->a2);
+    vector v = b->flight(b->time, bulletctx->a1, bulletctx->a2);
     rb->velocity = vaddv(fdotv(v.x, b->side), fdotv(v.y, b->forward));
     s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
     b->time += 0.015;

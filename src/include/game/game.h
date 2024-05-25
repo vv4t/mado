@@ -49,6 +49,7 @@ void      entity_kill(game_t *gs, entity_t e);
 void      entity_bind(game_t *gs, entity_t e, invoke_t invoke);
 void      entity_invoke(game_t *gs, entity_t e, event_t ev);
 entname_t entity_get_name(game_t *gs, entity_t e);
+void      *entity_get_context(game_t *gs, entity_t e, int context_size);
 
 #define entity_add_component(gs, e, component) \
 {\

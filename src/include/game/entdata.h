@@ -1,6 +1,8 @@
 #ifndef ENTDATA_H
 #define ENTDATA_H
 
+#define ENT_CONTEXT_WORD_MAX 4
+
 struct game_s;
 
 typedef enum {
@@ -29,6 +31,7 @@ typedef enum {
 typedef struct {
   entname_t name;
   invoke_t  invoke;
+  int       context[ENT_CONTEXT_WORD_MAX];
 } entdata_t;
 
 #endif

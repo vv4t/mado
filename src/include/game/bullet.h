@@ -4,6 +4,10 @@
 #include <game/entdata.h>
 #include <lib/math3d.h>
 
+struct bulletctx {
+  float a1, a2;
+};
+
 typedef vector (*flight_t)(float time, float a1, float a2);
 
 typedef struct {
@@ -11,8 +15,6 @@ typedef struct {
   vector    forward;
   vector    side;
   float     time;
-  float     a1;
-  float     a2;
   entname_t target;
 } bullet_t;
 
@@ -23,8 +25,6 @@ inline static bullet_t create_bullet()
     .forward  = vec2(0.0, 1.0),
     .side     = vec2(1.0, 0.0),
     .time     = 0.0,
-    .a1       = 0.0,
-    .a2       = 0.0,
     .target   = ENT_ANY
   };
 }

@@ -86,14 +86,14 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
     b->flight = fl;
     b->forward = fwd;
     b->side = cross(b->forward, vec3(0, 0, side));
-    b->a1 = a1;
-    b->a2 = a2;
     b->target = sh->target;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_do(a, ACT0, sh->ttl);
+  struct bulletctx *bulletctx = entity_get_context(gs, e, sizeof(struct bulletctx));
+    bulletctx->a1 = a1;
+    bulletctx->a2 = a2;
   entity_bind(gs, e, bullet_invoke);
-  
   return e;
 }
 
