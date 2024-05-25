@@ -3,24 +3,19 @@
 #include <game/game.h>
 #include <stdio.h>
 
-static const animation_t archmage_idle   = { .tx = 8, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.5 };
-static const animation_t archmage_attack = { .tx = 8, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.4 };
+static const animation_t mr_mage_idle   = { .tx = 8, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.5 };
+static const animation_t mr_mage_attack = { .tx = 8, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.4 };
 
-static shooter_t archmage_shooter = {
+static shooter_t mr_mage_shooter = {
   .tx = 2, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 5.0,
   .target = ENT_PLAYER
 };
 
-static void archmage_invoke(game_t *gs, entity_t e, event_t ev);
+static void mr_mage_invoke(game_t *gs, entity_t e, event_t ev);
 
-enum {
-  ARCHMAGE_ACT_ATTACK = 1,
-  ARCHMAGE_ACT_SHOOT
-};
-
-entity_t enemy_spawn_archmage(game_t *gs)
+entity_t enemy_spawn_mr_mage(game_t *gs)
 {
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
@@ -29,18 +24,18 @@ entity_t enemy_spawn_archmage(game_t *gs)
     t->position = vec2(5, 5);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
-    sprite_repeat(s, &archmage_idle);
+    sprite_repeat(s, &mr_mage_idle);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 1.0;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_repeat(a, 0, 2.0, 0, 10.0);
-  entity_bind(gs, e, archmage_invoke);
+  entity_bind(gs, e, mr_mage_invoke);
   return e;
 }
 
-vector flight_archmage_bullet(float time, float radius, float speed) {
+vector flight_mr_mage_bullet(float time, float radius, float speed) {
   float t1 = radius / speed;
   
   if (time < t1) {
@@ -56,7 +51,7 @@ vector flight_archmage_bullet(float time, float radius, float speed) {
 float a1 = 0.0;
 float a2 = 1.0;
 
-void archmage_invoke(game_t *gs, entity_t e, event_t ev)
+void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
 {
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   
@@ -76,13 +71,13 @@ void archmage_invoke(game_t *gs, entity_t e, event_t ev)
     case ACT1:
     case ACT2:
     case ACT3:
-      sprite_play(s, &archmage_attack);
+      sprite_play(s, &mr_mage_attack);
       actor_repeat(a, ACT4, 0.5, 6, 0.25);
       a1 += 1.0;
       a2 = -a2;
       break;
     case ACT4:
-      shoot(gs, &archmage_shooter, t->position, vec2(0, 12), a2, flight_archmage_bullet, 2.0 + a1, 12.0);
+      shoot(gs, &mr_mage_shooter, t->position, vec2(0, 12), a2, flight_mr_mage_bullet, 2.0 + a1, 12.0);
       break;
     }
     break;
