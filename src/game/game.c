@@ -13,8 +13,11 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
+  enemy_spawn_scytheman(gs);
+  enemy_spawn_warrior(gs);
   enemy_spawn_archmage(gs);
-  // enemy_spawn_warrior(gs);
+
+  enemy_spawn_dummy(gs);
 }
 
 void game_update(game_t *gs, const input_t in)
@@ -24,6 +27,7 @@ void game_update(game_t *gs, const input_t in)
   system_integrate(gs);
   system_perform(gs);
   system_update_bullet(gs);
+  system_collide(gs);
   game_move_camera(gs, in);
   gs->time += 0.015;
 }

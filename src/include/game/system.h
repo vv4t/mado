@@ -8,5 +8,6 @@ void system_animate(game_t *gs);
 void system_integrate(game_t *gs);
 void system_perform(game_t *gs);
 void system_update_bullet(game_t *gs);
+void system_collide(game_t *gs);
 
 #endif

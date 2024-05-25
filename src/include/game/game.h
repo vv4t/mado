@@ -4,6 +4,7 @@
 #include <game/transform.h>
 #include <game/sprite.h>
 #include <game/rigidbody.h>
+#include <game/collider.h>
 #include <game/actor.h>
 #include <game/bullet.h>
 #include <lib/input.h>
@@ -19,7 +20,8 @@ typedef enum {
   EV_ACT,
   EV_ACT0, EV_ACT1, EV_ACT2, EV_ACT3,
   EV_ACT4, EV_ACT5, EV_ACT6, EV_ACT7,
-  EV_MAP_COLLIDE
+  EV_MAP_COLLIDE,
+  EV_ENTITY_COLLIDE
 } event_type_t;
 
 typedef struct {
@@ -36,7 +38,8 @@ typedef enum {
   C_sprite    = 1 << 1,
   C_rigidbody = 1 << 2,
   C_actor     = 1 << 3,
-  C_bullet    = 1 << 4
+  C_bullet    = 1 << 4,
+  C_collider  = 1 << 5
 } component_t;
 
 typedef struct game_s {
@@ -45,6 +48,7 @@ typedef struct game_s {
   rigidbody_t rigidbody[ENTITY_MAX];
   actor_t     actor[ENTITY_MAX];
   bullet_t    bullet[ENTITY_MAX];
+  collider_t  collider[ENTITY_MAX];
   invoke_t    invoke[ENTITY_MAX];
   component_t edict[ENTITY_MAX];
   int         num_entities;

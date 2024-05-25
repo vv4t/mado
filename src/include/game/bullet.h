@@ -5,6 +5,12 @@
 
 typedef vector (*flight_t)(float time, float a1, float a2);
 
+typedef enum {
+  TARGET_NONE,
+  TARGET_PLAYER,
+  TARGET_ENEMY
+} target_t;
+
 typedef struct {
   flight_t  flight;
   vector    forward;
@@ -12,6 +18,7 @@ typedef struct {
   float     time;
   float     a1;
   float     a2;
+  target_t  target;
 } bullet_t;
 
 inline static bullet_t create_bullet()
@@ -22,7 +29,8 @@ inline static bullet_t create_bullet()
     .side     = vec2(1.0, 0.0),
     .time     = 0.0,
     .a1       = 0.0,
-    .a2       = 0.0
+    .a2       = 0.0,
+    .target   = TARGET_NONE
   };
 }
 

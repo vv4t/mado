@@ -31,8 +31,11 @@ void player_init(game_t *gs)
     actor_set(a, 0, 0.15, 0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+  entity_add_component(gs, e, collider);
+    collider_t *c = entity_get_component(gs, e, collider);
+    c->radius = 0.5;
+    c->type = TARGET_PLAYER;
   entity_bind(gs, e, player_invoke);
-  
   gs->player = e;
 }
 
@@ -45,8 +48,10 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   
   switch (ev.type) {
   case EV_ACT0:
-    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, 0.0);
-    shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
+    shoot_wave(gs, &player_shooter, pt->position, forward, TARGET_ENEMY, 1.0, 22.0, 0.0);
+    shoot_wave(gs, &player_shooter, pt->position, forward, TARGET_ENEMY, 1.0, 22.0, M_PI);
+    break;
+  case EV_ENTITY_COLLIDE:
     break;
   }
 }
