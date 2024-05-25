@@ -57,7 +57,7 @@ void scytheman_invoke(game_t *gs, entity_t e, event_t ev)
     actor_redo(a, 2);
     break;
   case EV_ACT2:
-    shoot_linear(gs, &scytheman_shooter, t->position, forward, TARGET_PLAYER);
+    shoot_wall(gs, &scytheman_shooter, t->position, forward, TARGET_PLAYER, 0b1011101, 7, 1.0);
     break;
   }
 }

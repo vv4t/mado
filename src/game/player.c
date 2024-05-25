@@ -33,7 +33,7 @@ void player_init(game_t *gs)
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
   entity_add_component(gs, e, collider);
     collider_t *c = entity_get_component(gs, e, collider);
-    c->radius = 0.5;
+    c->radius = 0.7;
     c->type = TARGET_PLAYER;
   entity_bind(gs, e, player_invoke);
   gs->player = e;
