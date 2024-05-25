@@ -1,11 +1,10 @@
 #include <game/shoot.h>
 #include <stdio.h>
 
-vector flight_linear(float time, float a1, float a2);
-vector flight_wave(float time, float a1, float a2);
-void bullet_invoke(game_t *gs, entity_t e, event_t ev);
+static vector flight_linear(float time, float a1, float a2);
+static vector flight_wave(float time, float a1, float a2);
 
-entity_t shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, int wall_bits, int length, float sep)
+void shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, int wall_bits, int length, float sep)
 {
   vector v = {
     .x = fwd.x * cos(-M_PI / 2) - fwd.y * sin(-M_PI / 2),
@@ -22,7 +21,7 @@ entity_t shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, int w
   }
 }
 
-entity_t shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count)
+void shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count)
 {
   for (int i = 0; i < count; i++) {
     float rot = i * (2 * M_PI / count);
@@ -36,7 +35,7 @@ entity_t shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, int
   }
 }
 
-entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count, float cone)
+void shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count, float cone)
 {
   vector v = {
     .x = fwd.x * cos(-cone / 2) - fwd.y * sin(-cone / 2),
@@ -57,12 +56,12 @@ entity_t shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, in
 
 entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd)
 {
-  shoot(gs, sh, o, fwd, 1.0, flight_linear, 0.0, 0.0);
+  return shoot(gs, sh, o, fwd, 1.0, flight_linear, 0.0, 0.0);
 }
 
 entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, float amp, float freq, float phase)
 {
-  shoot(gs, sh, o, fwd, amp, flight_wave, freq, phase);
+  return shoot(gs, sh, o, fwd, amp, flight_wave, freq, phase);
 }
 
 entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2)
