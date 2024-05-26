@@ -16,6 +16,7 @@ typedef struct {
   vector    side;
   float     time;
   entname_t target;
+  float     damage;
 } bullet_t;
 
 inline static bullet_t create_bullet()
@@ -25,7 +26,8 @@ inline static bullet_t create_bullet()
     .forward  = vec2(0.0, 1.0),
     .side     = vec2(1.0, 0.0),
     .time     = 0.0,
-    .target   = ENT_ANY
+    .target   = ENT_ANY,
+    .damage   = 0.0
   };
 }
 

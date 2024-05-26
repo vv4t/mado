@@ -6,7 +6,7 @@
 
 typedef struct {
   entname_t target;
-  // int damage;
+  int damage;
   int tx, ty, tw, th;
   float ttl;
 } shooter_t;

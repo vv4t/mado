@@ -8,7 +8,9 @@ struct game_s;
 typedef enum {
   EV_ACT,
   EV_MAP_COLLIDE,
-  EV_ENTITY_COLLIDE
+  EV_ENTITY_COLLIDE,
+  EV_HIT,
+  EV_NO_HEALTH
 } event_type_t;
 
 typedef struct {

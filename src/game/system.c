@@ -143,3 +143,17 @@ void system_update_bullet(game_t *gs)
     b->time += 0.015;
   }
 }
+
+void system_update_health(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_health)) {
+      continue;
+    }
+    
+    health_t *h = entity_get_component(gs, e, health);
+    if (h->hp <= 0) {
+      entity_invoke(gs, e, (event_t) { .type = EV_NO_HEALTH });
+    }
+  }
+}

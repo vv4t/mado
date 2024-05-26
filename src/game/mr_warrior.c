@@ -10,7 +10,8 @@ static shooter_t mr_warrior_shooter = {
   .tx = 3, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 1.0,
-  .target = ENT_PLAYER
+  .target = ENT_PLAYER,
+  .damage = 20
 };
 
 static void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev);
@@ -31,6 +32,9 @@ entity_t enemy_spawn_mr_warrior(game_t *gs)
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
+  entity_add_component(gs, e, health);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp = 100;
   entity_bind(gs, e, mr_warrior_invoke);
   return e;
 }
@@ -56,9 +60,17 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT2, 0.15);
       break;
     case ACT2:
-      shoot_linear(gs, &mr_warrior_shooter, t->position, forward);
+      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 5, M_PI / 3);
       break;
     }
+    break;
+  case EV_HIT:
+    bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp -= b->damage;
+    break;
+  case EV_NO_HEALTH:
+    entity_kill(gs, e);
     break;
   }
 }
