@@ -6,6 +6,7 @@
 #include <game/rigidbody.h>
 #include <game/actor.h>
 #include <game/bullet.h>
+#include <game/health.h>
 #include <lib/input.h>
 #include <lib/map.h>
 
@@ -18,7 +19,8 @@ typedef enum {
   C_sprite    = 1 << 1,
   C_rigidbody = 1 << 2,
   C_actor     = 1 << 3,
-  C_bullet    = 1 << 4
+  C_bullet    = 1 << 4,
+  C_health    = 1 << 5
 } component_t;
 
 typedef struct game_s {
@@ -27,6 +29,7 @@ typedef struct game_s {
   rigidbody_t rigidbody[ENTITY_MAX];
   actor_t     actor[ENTITY_MAX];
   bullet_t    bullet[ENTITY_MAX];
+  health_t    health[ENTITY_MAX];
   entdata_t   entdata[ENTITY_MAX];
   component_t entdict[ENTITY_MAX];
   int         num_entities;

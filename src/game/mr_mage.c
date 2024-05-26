@@ -10,7 +10,8 @@ static shooter_t mr_mage_shooter = {
   .tx = 2, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 5.0,
-  .target = ENT_PLAYER
+  .target = ENT_PLAYER,
+  .damage = 20
 };
 
 struct magectx {
@@ -37,6 +38,9 @@ entity_t enemy_spawn_mr_mage(game_t *gs)
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_repeat(a, ACT0, 2.0, 0, 14.0);
+  entity_add_component(gs, e, health);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp = 100;
   entity_bind(gs, e, mr_mage_invoke);
   return e;
 }
@@ -95,6 +99,14 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
       );
       break;
     }
+    break;
+  case EV_HIT:
+    bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp -= b->damage;
+    break;
+  case EV_NO_HEALTH:
+    entity_kill(gs, e);
     break;
   }
 }

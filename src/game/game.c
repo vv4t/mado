@@ -13,7 +13,7 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  enemy_spawn_mr_dummy(gs);
+  enemy_spawn_mr_warrior(gs);
 }
 
 void game_update(game_t *gs, const input_t in)
@@ -24,6 +24,7 @@ void game_update(game_t *gs, const input_t in)
   system_perform(gs);
   system_integrate(gs);
   system_collide(gs);
+  system_update_health(gs);
   game_move_camera(gs, in);
   gs->time += 0.015;
 }

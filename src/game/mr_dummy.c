@@ -11,7 +11,8 @@ static shooter_t mr_dummy_shooter = {
   .tx = 0, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 1.0,
-  .target = ENT_PLAYER
+  .target = ENT_PLAYER,
+  .damage = 20
 };
 
 void test_shoot(game_t *gs, vector o, vector forward);
@@ -33,6 +34,9 @@ entity_t enemy_spawn_mr_dummy(game_t *gs)
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
     actor_do(a, ACT0, 2.0);
+  entity_add_component(gs, e, health);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp = 100;
   entity_bind(gs, e, mr_dummy_invoke);
   return e;
 }
@@ -48,6 +52,14 @@ void mr_dummy_invoke(game_t *gs, entity_t e, event_t ev)
       test_shoot(gs, t->position, vec2(0, 3));
       break;
     }
+    break;
+  case EV_HIT:
+    bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp -= b->damage;
+    break;
+  case EV_NO_HEALTH:
+    entity_kill(gs, e);
     break;
   }
 }
