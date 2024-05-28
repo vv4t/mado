@@ -34,8 +34,7 @@ entity_t enemy_spawn_mr_warrior(game_t *gs)
     sprite_repeat(s, &mr_warrior_idle);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT0, 5.0, 0, 2.5);
-    actor_repeat(a, ACT3, 5.0, 0, 10.0);
+    actor_repeat(a, ACT0, 0.0, 0, 5.0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -65,7 +64,10 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
+      m->a1 = WARRIOR_CHASE_SPEED;
+      m->movement = movement_chase;
       actor_repeat(a, ACT1, 0.0, 6, 0.3);
+      actor_do(a, ACT3, 2.5);
       break;
     case ACT1:
       sprite_play(s, &mr_warrior_attack);
@@ -75,15 +77,18 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 5, M_PI / 3);
       break;
     case ACT3:
-      m->a1 = WARRIOR_CHASE_SPEED;
-      m->movement = movement_chase;
-      actor_do(a, ACT4, 5.0);
-      break;
-    case ACT4:
       m->a1 = WARRIOR_PIVOT_RADIUS;
       m->a2 = WARRIOR_PIVOT_TIME;
       m->v1 = t->position;
       m->movement = movement_pivot;
+      actor_repeat(a, ACT4, 0.0, 6, 0.3);
+      break;
+    case ACT4:
+      sprite_play(s, &mr_warrior_attack);
+      actor_do(a, ACT5, 0.15);
+      break;
+    case ACT5:
+      shoot_radial(gs, &mr_warrior_shooter, t->position, forward, 10);      
       break;
     }
     break;
