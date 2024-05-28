@@ -22,7 +22,7 @@ typedef enum {
   C_actor     = 1 << 3,
   C_bullet    = 1 << 4,
   C_health    = 1 << 5,
-  C_botmove   = 1 << 5
+  C_botmove   = 1 << 6
 } component_t;
 
 typedef struct game_s {
