@@ -19,6 +19,7 @@ void game_init(game_t *gs)
 void game_update(game_t *gs, const input_t in)
 {
   player_update(gs, in);
+  system_update_botmove(gs);
   system_animate(gs);
   system_update_bullet(gs);
   system_perform(gs);
