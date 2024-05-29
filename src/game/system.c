@@ -23,7 +23,8 @@ void system_collide(game_t *gs)
     
     if (hit_p) {
       if (!hit_x) at->position.y = a_rb->prev_pos.y;
-      if (!hit_y) at->position.x = a_rb->prev_pos.x;
+      else if (!hit_y) at->position.x = a_rb->prev_pos.x;
+      else at->position = a_rb->prev_pos;
     }
     
     if (hit) {
