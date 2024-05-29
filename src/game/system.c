@@ -157,3 +157,17 @@ void system_update_health(game_t *gs)
     }
   }
 }
+
+void system_update_botmove(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_botmove | C_transform)) {
+      continue;
+    }
+
+    rigidbody_t *r = entity_get_component(gs, e, rigidbody);
+    botmove_t *m = entity_get_component(gs, e, botmove);
+
+    r->velocity = m->movement(gs, e, m->a1, m->a2, m->v1, m->v2);
+  }
+}

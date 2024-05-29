@@ -10,5 +10,6 @@ void system_perform(game_t *gs);
 void system_update_bullet(game_t *gs);
 void system_collide(game_t *gs);
 void system_update_health(game_t *gs);
+void system_update_botmove(game_t *gs);
 
 #endif

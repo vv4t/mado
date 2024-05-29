@@ -5,8 +5,6 @@
 
 static const animation_t mr_dummy_idle = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 
-static void mr_dummy_invoke(game_t *gs, entity_t e, event_t ev);
-
 static shooter_t mr_dummy_shooter = {
   .tx = 0, .ty = 0,
   .tw = 1, .th = 1,
@@ -14,6 +12,8 @@ static shooter_t mr_dummy_shooter = {
   .target = ENT_PLAYER,
   .damage = 20
 };
+
+static void mr_dummy_invoke(game_t *gs, entity_t e, event_t ev);
 
 void test_shoot(game_t *gs, vector o, vector forward);
 void test_invoke(game_t *gs, entity_t e, event_t ev);
