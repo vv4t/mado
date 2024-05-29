@@ -8,13 +8,20 @@
 #include <GL/glew.h>
 #include <stdio.h>
 
+enum {
+  SKIP_UP     = 0b0001,
+  SKIP_DOWN   = 0b0010,
+  SKIP_LEFT   = 0b0100,
+  SKIP_RIGHT  = 0b1000
+};
+
 struct {
   mesh_t mesh;
   shader_t shader;
 } r_map;
 
 static void add_tile(meshdata_t md, int x, int y);
-static void add_block(meshdata_t md, int x, int y);
+static void add_block(meshdata_t md, int x, int y, int wall);
 
 void r_map_init()
 {
@@ -39,10 +46,15 @@ void r_map_load(map_t map)
   
   for (int i = 0; i < map_get_width(map); i++) {
     for (int j = 0; j < map_get_height(map); j++) {
-      int tile = map_get(map, i, j);
-      
-      if (tile > 0) {
-        add_block(md, i, j);
+      if (map_get(map, i, j) > 0) {
+        int skip = 0b0000;
+        
+        if (map_get(map, i + 1, j) > 0) skip |= SKIP_RIGHT;
+        if (map_get(map, i - 1, j) > 0) skip |= SKIP_LEFT;
+        if (map_get(map, i, j + 1) > 0) skip |= SKIP_UP;
+        if (map_get(map, i, j - 1) > 0) skip |= SKIP_DOWN;
+        
+        add_block(md, i, j, skip);
       } else {
         add_tile(md, i, j);
       }
@@ -60,7 +72,7 @@ void add_tile(meshdata_t md, int x, int y)
   meshdata_add_quad(md, T_p, T_uv);
 }
 
-void add_block(meshdata_t md, int x, int y)
+void add_block(meshdata_t md, int x, int y, int skip)
 {
   vector N[] = {
     vec3(+1,  0,  0),
@@ -69,7 +81,18 @@ void add_block(meshdata_t md, int x, int y)
     vec3( 0, -1,  0)
   };
   
+  int check[] = {
+    SKIP_RIGHT,
+    SKIP_LEFT,
+    SKIP_UP,
+    SKIP_DOWN
+  };
+  
   for (int i = 0; i < 4; i++) {
+    if ((skip & check[i]) > 0) {
+      continue;
+    }
+    
     vector T = vec3(0, 0, -1);
     vector B = cross(T, N[i]);
     
