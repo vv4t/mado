@@ -37,9 +37,8 @@ int main(int argc, char *argv[])
     while (lag_time > 15) {
       lag_time -= 15;
       game_update(&mado.gs, mado.in);
+      renderer_render(&mado.gs);
     }
-    
-    renderer_render(&mado.gs);
     
   }
   
