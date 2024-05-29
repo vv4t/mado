@@ -26,17 +26,24 @@ int main(int argc, char *argv[])
   renderer_load_map(map);
   game_load_map(&mado.gs, map);
   
-  while (window_loop(mado.in)) update();
+  int prev_time = window_get_time();
+  int lag_time = 0;
+  
+  while (window_loop(mado.in)) {
+    int now_time = window_get_time();
+    lag_time += now_time - prev_time;
+    prev_time = now_time;
+    
+    while (lag_time > 15) {
+      lag_time -= 15;
+      game_update(&mado.gs, mado.in);
+      renderer_render(&mado.gs);
+    }
+    
+  }
   
   renderer_deinit();
   window_deinit();
   
   return 0;
 }
-
-void update()
-{
-  game_update(&mado.gs, mado.in);
-  renderer_render(&mado.gs);
-}
-
