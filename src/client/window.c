@@ -107,3 +107,6 @@ void window_deinit()
   SDL_Quit();
 }
 
+int window_get_time() {
+  return SDL_GetTicks();
+}
