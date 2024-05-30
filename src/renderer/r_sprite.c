@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 #include <stdio.h>
 
-#define SPRITE_MAX 32
+#define SPRITE_MAX 2048
 
 typedef struct {
   matrix T_p;

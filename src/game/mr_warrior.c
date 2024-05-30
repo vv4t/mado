@@ -74,7 +74,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT2, 0.15);
       break;
     case ACT2:
-      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 5, M_PI / 3);
+      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
       break;
     case ACT3:
       m->a1 = WARRIOR_PIVOT_RADIUS;
@@ -88,7 +88,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT5, 0.15);
       break;
     case ACT5:
-      shoot_radial(gs, &mr_warrior_shooter, t->position, forward, 10);      
+      shoot_radial(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 10);      
       break;
     }
     break;
