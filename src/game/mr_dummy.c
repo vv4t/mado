@@ -61,6 +61,9 @@ void mr_dummy_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_NO_HEALTH:
     entity_kill(gs, e);
     break;
+  case EV_MAP_COLLIDE:
+  case EV_ENTITY_COLLIDE:
+    break;
   }
 }
 
@@ -88,6 +91,10 @@ void test_invoke(game_t *gs, entity_t e, event_t ev)
       test_shoot(gs, t->position, twice);
       break;
     }
+    break;
+  case EV_MAP_COLLIDE:
+  case EV_ENTITY_COLLIDE:
+  default:
     break;
   }
   

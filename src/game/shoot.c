@@ -103,6 +103,9 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
       entity_kill(gs, e);
     }
     break;
+  case EV_HIT:
+  case EV_NO_HEALTH:
+    break;
   }
 }
 

@@ -21,9 +21,6 @@ struct {
   mesh_t map;
 } renderer;
 
-static void renderer_init_assets();
-static void renderer_draw_sprites(const game_t *gs);
-
 void renderer_init()
 {
   camera_init();
