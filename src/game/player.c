@@ -81,7 +81,7 @@ void player_move(game_t *gs, const input_t in)
   transform_t *pt = entity_get_component(gs, gs->player, transform);
   rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
   
-  float speed = 5.0;
+  float speed = 9.0;
   vector walk = vec2(0, 0);
   
   if (input_is_key_pressed(in, 'w')) ps->repeat = &walk_forward;

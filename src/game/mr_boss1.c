@@ -101,13 +101,13 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
       // phase start
       switch (ctx->phase) {
         case SWORDBOSS_PHASE0:
-          m->a1 = 2.0;
+          m->a1 = 5.0;
           m->movement = movement_chase;
           actor_repeat(a, ACT2, 0.0, 0, 1.0);
           break;
         case SWORDBOSS_PHASE1:
           m->movement = movement_none;
-          actor_repeat(a, ACT2, 1.0, 0, 0.1);
+          actor_repeat(a, ACT2, 1.0, 0, 0.2);
           actor_repeat(a, ACT3, 1.0, 0, 1.0);
           break;
       }
@@ -119,7 +119,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
           shoot_linear(gs, &mr_swordboss_shooter, t->position, slow_fwd);
           break;
         case SWORDBOSS_PHASE1:
-          ctx->rot_offset += 0.005;
+          ctx->rot_offset += 0.01;
           vector v = fdotv(6.0, normalize(mdotv(rotate_z(ctx->rot_offset), slow_fwd)));
           shoot_radial(gs, &mr_swordboss_shooter, t->position, v, 4);
           break;
