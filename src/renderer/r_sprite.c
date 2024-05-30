@@ -23,31 +23,25 @@ typedef struct {
 struct {
   mesh_t    mesh;
   shader_t  shader;
-  texture_t sheet;
   GLuint    ubo;
 } r_sprite;
 
-void r_sprite_init()
+void r_sprite_init(mesh_t mesh)
 {
   char define_max[256];
-  snprintf(define_max, sizeof(define_max), "#define SPRITE_MAX %i", SPRITE_MAX);
-  
-  meshdata_t md = meshdata_create();
-    meshdata_add_quad(md, identity(), identity());
-    r_sprite.mesh = vbuffer_add(md);
-  meshdata_destroy(md);
+  snprintf(define_max, sizeof(define_max), "#define INSTANCED_MAX %i", SPRITE_MAX);
   
   shaderdata_t sd = shaderdata_create();
     camera_shader_import(sd);
     shaderdata_line(sd, define_max, SD_VERT);
-    shaderdata_source(sd, "assets/shader/sprite/shader.vert", SD_VERT);
-    shaderdata_source(sd, "assets/shader/sprite/shader.frag", SD_FRAG);
+    shaderdata_source(sd, "assets/shader/vertex/mvp_instanced.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/fragment/world.frag", SD_FRAG);
     r_sprite.shader = shader_load(sd);
     camera_shader_attach(r_sprite.shader);
     glUniformBlockBinding(r_sprite.shader, glGetUniformBlockIndex(r_sprite.shader, "spritedata"), 1);
   shaderdata_destroy(sd);
   
-  r_sprite.sheet = texture_load_image("assets/sheet/1.png");
+  r_sprite.mesh = mesh;
   
   glGenBuffers(1, &r_sprite.ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
@@ -60,7 +54,6 @@ void r_sprite_draw(const game_t *gs)
   static ub_spritedata_t spritedata;
   
   shader_bind(r_sprite.shader);
-  texture_bind(r_sprite.sheet, GL_TEXTURE_2D, 0);
   
   matrix inv_view = inverse(mat3_from_mat4(camera_get_view()));
   
@@ -122,5 +115,4 @@ void r_sprite_draw(const game_t *gs)
 void r_sprite_deinit()
 {
   shader_destroy(r_sprite.shader);
-  texture_destroy(r_sprite.sheet);
 }

@@ -7,7 +7,7 @@ struct ub_sprite_t {
 };
 
 layout (std140) uniform spritedata {
-  ub_sprite_t sprite[SPRITE_MAX];
+  ub_sprite_t sprite[INSTANCED_MAX];
 };
 
 out vec2 vs_uv;

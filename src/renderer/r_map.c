@@ -27,8 +27,8 @@ void r_map_init()
 {
   shaderdata_t sd = shaderdata_create();
     camera_shader_import(sd);
-    shaderdata_source(sd, "assets/shader/map/shader.vert", SD_VERT);
-    shaderdata_source(sd, "assets/shader/map/shader.frag", SD_FRAG);
+    shaderdata_source(sd, "assets/shader/vertex/mvp.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/fragment/world.frag", SD_FRAG);
     r_map.shader = shader_load(sd);
     camera_shader_attach(r_map.shader);
   shaderdata_destroy(sd);
