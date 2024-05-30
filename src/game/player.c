@@ -41,7 +41,6 @@ void player_init(game_t *gs)
 
 void player_invoke(game_t *gs, entity_t e, event_t ev)
 {
-  actor_t *pa = entity_get_component(gs, e, actor);
   transform_t *pt = entity_get_component(gs, e, transform);
   
   vector forward = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
@@ -54,6 +53,11 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
       shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
       break;
     }
+    break;
+  case EV_MAP_COLLIDE:
+  case EV_ENTITY_COLLIDE:
+  case EV_HIT:
+  case EV_NO_HEALTH:
     break;
   }
 }

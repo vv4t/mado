@@ -16,8 +16,6 @@ struct {
   int max_vertices;
 } vbuffer;
 
-static void solve_tangent(vertex_t *v1, vertex_t *v2, vertex_t *v3);
-
 void vbuffer_init(int max_vertices)
 {
   glGenBuffers(1, &vbuffer.vbo);
@@ -97,8 +95,6 @@ void meshdata_add_quad(meshdata_t md, matrix T_p, matrix T_uv)
     vec2(+1, +1)
   };
   
-  matrix T_n;
-  T_n = mat3_from_mat4(T_p);
   T_uv = mdotm(mdotm(translate(vec2(1.0, 1.0)), scale(vec2(0.5, 0.5))), T_uv);
   
   meshdata_add_face(
