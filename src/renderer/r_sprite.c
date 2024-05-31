@@ -39,6 +39,7 @@ void r_sprite_init(mesh_t mesh)
     r_sprite.shader = shader_load(sd);
     camera_shader_attach(r_sprite.shader);
     glUniformBlockBinding(r_sprite.shader, glGetUniformBlockIndex(r_sprite.shader, "spritedata"), 1);
+    glUniform1i(glGetUniformLocation(r_sprite.shader, "emit"), 1);
   shaderdata_destroy(sd);
   
   r_sprite.mesh = mesh;

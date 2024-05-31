@@ -31,6 +31,7 @@ void r_map_init()
     shaderdata_source(sd, "assets/shader/fragment/world.frag", SD_FRAG);
     r_map.shader = shader_load(sd);
     camera_shader_attach(r_map.shader);
+    glUniform1i(glGetUniformLocation(r_map.shader, "emit"), 1);
   shaderdata_destroy(sd);
 }
 

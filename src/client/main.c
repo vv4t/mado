@@ -3,6 +3,7 @@
 #include <lib/map.h>
 #include <game/game.h>
 #include <renderer/renderer.h>
+#include <stdio.h>
 
 #define WIDTH 1280
 #define HEIGHT 960
@@ -30,16 +31,15 @@ int main(int argc, char *argv[])
   int lag_time = 0;
   
   while (window_loop(mado.in)) {
-    int now_time = window_get_time();
-    lag_time += now_time - prev_time;
-    prev_time = now_time;
-    
-    while (lag_time > 15) {
+    if (lag_time > 15) {
       lag_time -= 15;
       game_update(&mado.gs, mado.in);
       renderer_render(&mado.gs);
     }
     
+    int now_time = window_get_time();
+    lag_time += now_time - prev_time;
+    prev_time = now_time;
   }
   
   renderer_deinit();

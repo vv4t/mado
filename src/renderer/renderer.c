@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <GL/glew.h>
 
-#define FOV (1.0 / 8.0)
+#define FOV (1.0 / 12.0)
 
 #define SCR_WIDTH 1280
 #define SCR_HEIGHT 960
-#define SCR_SCALE 5
+#define SCR_SCALE 2
 #define ASPECT_RATIO ((float) SCR_WIDTH / (float) SCR_HEIGHT)
 
 #define VIEW_WIDTH (SCR_WIDTH / SCR_SCALE)
@@ -23,13 +23,18 @@
 
 struct {
   mesh_t quad;
+  
   shader_t shroud;
   shader_t dither;
   shader_t blur;
+  
   texture_t sheet;
+  texture_t emit;
+  
   texture_t depth;
   texture_t bloom;
   texture_t buffer[2];
+  
   target_t to_buffer[2];
   target_t to_buffer_and_bloom;
   target_t to_bloom;
@@ -68,6 +73,7 @@ void renderer_render(const game_t *gs)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     texture_bind(renderer.sheet, GL_TEXTURE_2D, 0);
+    texture_bind(renderer.emit, GL_TEXTURE_2D, 1);
     
     camera_isometric(FOV, FOV * ASPECT_RATIO);
     camera_update(identity());
@@ -82,7 +88,7 @@ void renderer_render(const game_t *gs)
   glDisable(GL_DEPTH_TEST);
   
   shader_bind(renderer.blur);
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 4; i++) {
     glUniform1i(renderer.ul_horizontal, i % 2);
     
     target_bind(renderer.to_buffer[1]);
@@ -119,7 +125,8 @@ void renderer_load_map(map_t map)
 
 void renderer_pipeline_init()
 {
-  renderer.sheet = texture_load_image("assets/sheet/1.png");
+  renderer.sheet = texture_load_image("assets/sheet/color.png");
+  renderer.emit = texture_load_image("assets/sheet/emit.png");
   
   renderer.depth = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
   renderer.bloom = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE);
@@ -141,7 +148,6 @@ void renderer_pipeline_init()
     GL_DEPTH_ATTACHMENT, renderer.depth
   );
     
-  
   renderer.shroud = frame_shader_load("assets/shader/fragment/shroud.frag");
   renderer.dither = frame_shader_load("assets/shader/fragment/dither.frag");
   renderer.blur = frame_shader_load("assets/shader/fragment/blur.frag");
