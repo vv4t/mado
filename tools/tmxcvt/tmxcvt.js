@@ -13,10 +13,16 @@ const xml = new XMLParser(opt).parse(text);
 const width = parseInt(xml.map.layer["@_width"]);
 const height = parseInt(xml.map.layer["@_height"]);
 
-const data = xml.map.layer.data["#text"].split(",").map((x) => {
-  if (x.trim() == "129") return 0;
-  if (x.trim() == "130") return 1;
-});
+const raw_data = xml.map.layer.data["#text"].split(",").map((x) => parseInt(x).toString(16));
 
 console.log(width, height);
+
+const data = [];
+
+for (let y = height - 1; y >= 0; y--) {
+  for (let x = 0; x < width; x++) {
+    data.push(raw_data[y * width + x]);
+  }
+}
+
 console.log(data.join(" "));

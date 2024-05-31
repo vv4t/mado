@@ -20,8 +20,9 @@ struct {
   shader_t shader;
 } r_map;
 
-static void add_tile(meshdata_t md, int x, int y);
-static void add_block(meshdata_t md, int x, int y, int wall);
+static int skip_wall_check(map_t map, int x, int y, int z);
+static void add_tile(meshdata_t md, int x, int y, int z, int tx, int ty);
+static void add_block(meshdata_t md, int x, int y, int z, int skip, int tx, int ty);
 
 void r_map_init()
 {
@@ -47,18 +48,29 @@ void r_map_load(map_t map)
   
   for (int i = 0; i < map_get_width(map); i++) {
     for (int j = 0; j < map_get_height(map); j++) {
-      if (map_get(map, i, j) > 0) {
+      tilename_t tilename = map_get(map, i, j);
+      
+      if (tilename == 0) {
+        continue;
+      }
+      
+      tile_t tile;
+      tile_get(&tile, tilename);
+      
+      int z = 0;
+      
+      for (z = 0; z < tile.num_block; z++) {
         int skip = 0b0000;
         
-        if (map_get(map, i + 1, j) > 0) skip |= SKIP_RIGHT;
-        if (map_get(map, i - 1, j) > 0) skip |= SKIP_LEFT;
-        if (map_get(map, i, j + 1) > 0) skip |= SKIP_UP;
-        if (map_get(map, i, j - 1) > 0) skip |= SKIP_DOWN;
+        if (skip_wall_check(map, i + 1, j, z) > 0) skip |= SKIP_RIGHT;
+        if (skip_wall_check(map, i - 1, j, z) > 0) skip |= SKIP_LEFT;
+        if (skip_wall_check(map, i, j + 1, z) > 0) skip |= SKIP_UP;
+        if (skip_wall_check(map, i, j - 1, z) > 0) skip |= SKIP_DOWN;
         
-        add_block(md, i, j, skip);
-      } else {
-        add_tile(md, i, j);
+        add_block(md, i, j, z, skip, tile.block[z].tx, tile.block[z].ty);
       }
+      
+      add_tile(md, i, j, z, tile.tx, tile.ty);
     }
   }
   
@@ -66,14 +78,24 @@ void r_map_load(map_t map)
   meshdata_destroy(md);
 }
 
-void add_tile(meshdata_t md, int x, int y)
+int skip_wall_check(map_t map, int x, int y, int z)
 {
-  matrix T_p = mdotm(fscale(0.5), translate(vec2(x + 0.5, y + 0.5)));
-  matrix T_uv = mdotm(translate(vec2(1, 7)), fscale(1.0 / SHEET_SIZE));
+  tilename_t tilename = map_get(map, x, y);
+  
+  tile_t tile;
+  tile_get(&tile, tilename);
+  
+  return tile.num_block > z;
+}
+
+void add_tile(meshdata_t md, int x, int y, int z, int tx, int ty)
+{
+  matrix T_p = mdotm(fscale(0.5), translate(vec3(x + 0.5, y + 0.5, -z)));
+  matrix T_uv = mdotm(translate(vec2(tx, ty)), fscale(1.0 / SHEET_SIZE));
   meshdata_add_quad(md, T_p, T_uv);
 }
 
-void add_block(meshdata_t md, int x, int y, int skip)
+void add_block(meshdata_t md, int x, int y, int z, int skip, int tx, int ty)
 {
   vector N[] = {
     vec3(+1,  0,  0),
@@ -99,16 +121,11 @@ void add_block(meshdata_t md, int x, int y, int skip)
     
     matrix T_p = mat3(T, B, N[i]);
     T_p = mdotm(mdotm(rotate_z(-M_PI / 2.0), translate(vec3(0, 0, 1))), T_p);
-    T_p = mdotm(T_p, translate(vec3(0, 0,-1)));
     T_p = mdotm(T_p, fscale(0.5));
-    T_p = mdotm(T_p, translate(vec2(x + 0.5, y + 0.5)));
-    matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / SHEET_SIZE));
+    T_p = mdotm(T_p, translate(vec3(x + 0.5, y + 0.5, -z - 0.5)));
+    matrix T_uv = mdotm(translate(vec2(tx, ty)), fscale(1.0 / SHEET_SIZE));
     meshdata_add_quad(md, T_p, T_uv);
   }
-  
-  matrix T_p = mdotm(fscale(0.5), translate(vec3(x + 0.5, y + 0.5, -1)));
-  matrix T_uv = mdotm(translate(vec2(0, 7)), fscale(1.0 / SHEET_SIZE));
-  meshdata_add_quad(md, T_p, T_uv);
 }
 
 void r_map_deinit()

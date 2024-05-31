@@ -47,8 +47,8 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs)
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
-    t->scale = vec3(2.0, 2.0, 2.0);
-    t->position = vec2(16, 16);
+    t->scale = vec3(2.5, 2.5, 2.5);
+    t->position = vec2(48/2, 48/2);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &mr_swordboss_idle);
@@ -145,7 +145,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
           ctx->rot_offset = 0.0;
           
           m->a1 = 10.0;
-          m->v1 = vec2(16.0, 16.0);
+          m->v1 = vec2(24.0, 24.0);
           m->movement = movement_travel;
           
           actor_repeat(a, ACT2, 1.0, 0, 0.1);
@@ -156,7 +156,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
           ctx->rot_offset = 0.0;
           
           m->a1 = 10.0;
-          m->v1 = vec2(16.0, 16.0);
+          m->v1 = vec2(24.0, 24.0);
           m->movement = movement_travel;
 
           actor_repeat(a, ACT4, 0.0, 0, 0.1);
@@ -171,14 +171,14 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
           shoot_shotgun(gs, &mr_swordboss_shooter2, t->position, slow_fwd, 1.0, flight_accelerate, 4.0, 0.0, 20, M_PI + M_PI/3);
           break;
         case SWORDBOSS_PHASE1:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             ctx->rot_offset = gs->time / 3.0;
             vector v = fdotv(6.0, normalize(mdotv(rotate_z(ctx->rot_offset), vec2(0.0, 1.0))));
             shoot_radial(gs, &mr_swordboss_shooter, t->position, v, 1.0, flight_linear, 0.0, 0.0, 5);
           }
           break;
         case SWORDBOSS_PHASE_ULT:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             ctx->rot_offset = gs->time / 1.0;
             vector v = fdotv(6.0, normalize(mdotv(rotate_z(M_PI), slow_fwd)));
             shoot_shotgun(gs, &mr_swordboss_shooter, t->position, v, 1.0, flight_wave, 2.0, 0.0, 15, 6 * M_PI / 4);
@@ -191,14 +191,14 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         case SWORDBOSS_PHASE0:
           break;
         case SWORDBOSS_PHASE1:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             sprite_play(s, &mr_swordboss_attack);
             shoot_radial(gs, &mr_swordboss_shooter2, t->position, vec2(0.0, 3.0), 1.0, flight_swordboss_curve, 3.0, 0.0, 10);
             actor_do(a, ACT5, 0.3);
           }
           break;
         case SWORDBOSS_PHASE_ULT:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             int wall =  0b10001100000000;
             switch(rand() % 3) {
               case 0:
@@ -221,12 +221,12 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         case SWORDBOSS_PHASE0:
           break;
         case SWORDBOSS_PHASE1:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             shoot_radial(gs, &mr_swordboss_shooter, t->position, vec2(0.0, 3.0), -1.0, flight_linear, 0.0, 0.0, 15);
           }
           break;
         case SWORDBOSS_PHASE_ULT:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             actor_stop(a, ACT4);
             sprite_repeat(s, &mr_swordboss_charging);
             actor_repeat(a, ACT2, 3.0, 0, 0.1);
@@ -243,7 +243,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         case SWORDBOSS_PHASE0:
           break;
         case SWORDBOSS_PHASE1:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             shoot_radial(gs, &mr_swordboss_shooter2, t->position, vec2(0.0, 3.0), -1.0, flight_swordboss_curve, 3.0, 0.0, 10);
           }
           break;
@@ -257,7 +257,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         case SWORDBOSS_PHASE0:
           break;
         case SWORDBOSS_PHASE1:
-          if (t->position.x == 16.0 && t->position.y == 16.0) {
+          if (t->position.x == 24.0 && t->position.y == 24.0) {
             shoot_radial(gs, &mr_swordboss_shooter2, t->position, vec2(0.0, 3.0), -1.0, flight_swordboss_curve, 3.0, 0.0, 10);
           }
           break;
