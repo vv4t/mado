@@ -107,6 +107,11 @@ inline static float dot(vector A, vector B)
   return A.x * B.x + A.y * B.y + A.z * B.z + A.w * B.w;
 }
 
+inline static float length_squared(vector x)
+{
+  return dot(x, x);
+}
+
 inline static float length(vector x)
 {
   return sqrt(dot(x, x));

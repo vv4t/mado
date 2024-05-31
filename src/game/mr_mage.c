@@ -60,8 +60,6 @@ vector flight_mr_mage_bullet(float time, float radius, float speed) {
 
 void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
 {
-  const transform_t *pt = entity_get_component(gs, gs->player, transform);
-  
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
@@ -107,6 +105,9 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
     break;
   case EV_NO_HEALTH:
     entity_kill(gs, e);
+    break;
+  case EV_MAP_COLLIDE:
+  case EV_ENTITY_COLLIDE:
     break;
   }
 }

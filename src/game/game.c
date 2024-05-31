@@ -117,7 +117,7 @@ void *entity_get_context(game_t *gs, entity_t e, int context_size)
   }
   
   if (context_size > sizeof(gs->entdata[e].context)) {
-    LOG_ERROR("not enough memory: %i / %i", context_size, sizeof(gs->entdata[e].context));
+    LOG_ERROR("not enough memory: %i / %li", context_size, sizeof(gs->entdata[e].context));
   }
   
   return &gs->entdata[e].context;

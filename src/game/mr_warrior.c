@@ -100,5 +100,8 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_NO_HEALTH:
     entity_kill(gs, e);
     break;
+  case EV_ENTITY_COLLIDE:
+  case EV_MAP_COLLIDE:
+    break;
   }
 }

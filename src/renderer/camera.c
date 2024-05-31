@@ -81,7 +81,6 @@ void camera_deinit()
   glDeleteBuffers(1, &camera.ubo);
 }
 
-matrix camera_get_view()
-{
+matrix camera_get_view() {
   return camera.v;
 }

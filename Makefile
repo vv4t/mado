@@ -1,6 +1,6 @@
 .PHONY=default run
 
-CFLAGS=-O3
+CFLAGS=-O3 -Wall
 LDFLAGS=-lSDL2 -lSDL2_image -lm -lGL -lGLEW
 INCLUDE=-I src/include
 SRC=$(wildcard src/*/*.c)
