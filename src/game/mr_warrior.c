@@ -41,6 +41,7 @@ entity_t enemy_spawn_mr_warrior(game_t *gs)
   entity_add_component(gs, e, health);
     health_t *h = entity_get_component(gs, e, health);
     h->hp = 100;
+    h->max_hp = 100;
   entity_add_component(gs, e, botmove);
     botmove_t *m = entity_get_component(gs, e, botmove);
     m->a1 = WARRIOR_CHASE_SPEED;

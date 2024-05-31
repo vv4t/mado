@@ -34,7 +34,7 @@ void player_init(game_t *gs)
     actor_stop(a, ACT0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    rb->radius = 0.5;
+    rb->radius = 0.1;
   entity_bind(gs, e, player_invoke);
   gs->player = e;
 }
