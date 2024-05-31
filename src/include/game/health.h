@@ -3,12 +3,14 @@
 
 typedef struct {
   int hp;
+  int max_hp;
 } health_t;
 
 inline static health_t create_health()
 {
   return (health_t) {
-    .hp = 100
+    .hp = 100,
+    .max_hp = 100
   };
 }
 

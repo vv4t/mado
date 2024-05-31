@@ -58,7 +58,7 @@ void mr_scythe_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT1, 0.2);
       break;
     case ACT1:
-      shoot_wall(gs, &mr_scythe_shooter, t->position, forward, 0b1011101, 7, 1.0);
+      shoot_wall(gs, &mr_scythe_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 0b1011101, 7, 1.0);
       break;
     }
     break;

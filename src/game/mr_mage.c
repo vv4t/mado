@@ -41,6 +41,7 @@ entity_t enemy_spawn_mr_mage(game_t *gs)
   entity_add_component(gs, e, health);
     health_t *h = entity_get_component(gs, e, health);
     h->hp = 100;
+    h->max_hp = 100;
   entity_bind(gs, e, mr_mage_invoke);
   return e;
 }

@@ -11,7 +11,7 @@
 #include <lib/input.h>
 #include <lib/map.h>
 
-#define ENTITY_MAX 512
+#define ENTITY_MAX 2048
 
 typedef int entity_t;
 

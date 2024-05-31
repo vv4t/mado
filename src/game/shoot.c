@@ -1,37 +1,34 @@
 #include <game/shoot.h>
 #include <stdio.h>
 
-static vector flight_linear(float time, float a1, float a2);
-static vector flight_wave(float time, float a1, float a2);
-
-void shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, int wall_bits, int length, float sep)
+void shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int wall_bits, int length, float sep)
 {
   vector v = normalize(mdotv(rotate_z(-M_PI / 2), fwd));
   vector start = vaddv(o, fdotv(-(length - 1) / 2.0, fdotv(sep, v)));
   for (int i = 0; i < length; i++) {
     if ((wall_bits >> i) & 1) {
-      shoot(gs, sh, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, 1.0, flight_linear, 0.0, 0.0);      
+      shoot(gs, sh, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, side, fl, a1, a2);      
     }
   }
 }
 
-void shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count)
+void shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count)
 {
   for (int i = 0; i < count; i++) {
     float rot = i * (2 * M_PI / count);
     vector u = mdotv(rotate_z(rot), fwd);
-    shoot(gs, sh, o, u, 1.0, flight_linear, 0.0, 0.0);
+    shoot(gs, sh, o, u, side, fl, a1, a2);
   }
 }
 
-void shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, int count, float cone)
+void shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count, float cone)
 {
   vector v = mdotv(rotate_z(-cone / 2), fwd);
   
   for (int i = 0; i < count; i++) {
     float rot = i * (cone / (count - 1));
     vector u = mdotv(rotate_z(rot), v);
-    shoot(gs, sh, o, u, 1.0, flight_linear, 0.0, 0.0);
+    shoot(gs, sh, o, u, side, fl, a1, a2);
   }
 }
 
@@ -109,11 +106,17 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
   }
 }
 
-vector flight_linear(float time, float a1, float a2) {
+vector flight_linear(float time, float a1, float a2)
+{
   return vec2(0.0, 1.0);
 }
 
-vector flight_wave(float time, float a1, float a2) {
+vector flight_wave(float time, float a1, float a2)
+{
   return vec2(cos(time * a1 + a2), 1.0);
 }
 
+vector flight_accelerate(float time, float accel, float a2)
+{
+  return vec2(0.0, time * accel);
+}

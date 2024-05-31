@@ -8,6 +8,20 @@ vector movement_chase(game_t *gs, entity_t e, float speed, float a2, vector v1, 
   return fdotv(speed, normalize(vsubv(pt->position, et->position)));
 }
 
+vector movement_travel(game_t *gs, entity_t e, float speed, float a2, vector pos, vector v2)
+{
+  transform_t *t = entity_get_component(gs, e, transform);
+  
+  vector delta_pos = vsubv(pos, t->position);
+
+  if (length(delta_pos) <= 0.2) {
+    t->position = pos;
+    return vec2(0.0, 0.0);
+  }
+
+  return fdotv(speed, normalize(delta_pos));
+}
+
 vector movement_none(game_t *gs, entity_t e, float a1, float a2, vector v1, vector v2)
 {  
   return vec2(0.0, 0.0);

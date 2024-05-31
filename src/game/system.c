@@ -38,8 +38,11 @@ void system_collide(game_t *gs)
       
       transform_t *bt = entity_get_component(gs, b, transform);
       rigidbody_t *b_rb = entity_get_component(gs, b, rigidbody);
-      
-      if (length(vsubv(bt->position, at->position)) <= a_rb->radius + b_rb->radius) {
+
+      // bullets with side != 1.0 have w set on their position as an artifact
+      vector b_pos2 = vec2(bt->position.x, bt->position.y);
+
+      if (length(vsubv(b_pos2, at->position)) <= a_rb->radius + b_rb->radius) {
         entity_invoke(gs, a, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = b });
         entity_invoke(gs, b, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = a });
       }

@@ -7,5 +7,6 @@
 vector movement_chase(game_t *gs, entity_t e, float speed, float a2, vector v1, vector v2);
 vector movement_none(game_t *gs, entity_t e, float a1, float a2, vector v1, vector v2);
 vector movement_pivot(game_t *gs, entity_t e, float radius, float time, vector pivot, vector v2);
+vector movement_travel(game_t *gs, entity_t e, float speed, float a2, vector pos, vector v2);
 
 #endif
