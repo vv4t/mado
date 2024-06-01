@@ -1,3 +1,4 @@
+/*
 #include <game/enemy.h>
 #include <game/shoot.h>
 #include <game/game.h>
@@ -117,3 +118,4 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
     break;
   }
 }
+*/

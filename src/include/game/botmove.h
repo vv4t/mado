@@ -1,28 +1,54 @@
 #ifndef BOTMOVE_H
 #define BOTMOVE_H
 
-#include <game/game.h>
 #include <lib/math3d.h>
 
-typedef vector (*movement_t)(struct game_s *gs, int entity, float a1, float a2, vector v1, vector v2);
+typedef int entity_t;
+
+typedef enum {
+  BH_STOP,
+  BH_TRAVEL,
+  BH_CHASE,
+  BH_RETREAT
+} behave_t;
 
 typedef struct {
-  movement_t movement;
-  float      a1;
-  float      a2;
-  vector     v1;
-  vector     v2;
+  behave_t  behave;
+  vector    target;
+  float     speed;
 } botmove_t;
 
 inline static botmove_t create_botmove()
 {
   return (botmove_t) {
-    .movement = NULL,
-    .a1 = 0.0,
-    .a2 = 0.0,
-    .v1 = vec2(0.0, 0.0),
-    .v2 = vec2(0.0, 0.0)
+    .behave = BH_STOP,
+    .target = vec2(0.0, 0.0),
+    .speed = 1.0
   };
+}
+
+inline static void botmove_stop(botmove_t *bm)
+{
+  bm->behave = BH_STOP;
+}
+
+inline static void botmove_chase(botmove_t *bm, float speed)
+{
+  bm->behave = BH_CHASE;
+  bm->speed = speed;
+}
+
+inline static void botmove_retreat(botmove_t *bm, float speed)
+{
+  bm->behave = BH_RETREAT;
+  bm->speed = speed;
+}
+
+inline static void botmove_travel(botmove_t *bm, vector target, float speed)
+{
+  bm->behave = BH_TRAVEL;
+  bm->target = target;
+  bm->speed = speed;
 }
 
 #endif

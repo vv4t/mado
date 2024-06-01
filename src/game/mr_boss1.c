@@ -67,8 +67,8 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs)
     h->hp = 2000;
     h->max_hp = 2000;
   entity_add_component(gs, e, botmove);
-    botmove_t *m = entity_get_component(gs, e, botmove);
-    m->movement = movement_none;
+    botmove_t *bm = entity_get_component(gs, e, botmove);
+    botmove_stop(bm);
   entity_bind(gs, e, mr_swordboss_invoke);
 
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
@@ -137,7 +137,7 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
 
 void mr_swordboss_phase_change(game_t *gs, entity_t e) {
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *m = entity_get_component(gs, e, botmove);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
   health_t *h = entity_get_component(gs, e, health);
 
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
@@ -150,7 +150,7 @@ void mr_swordboss_phase_change(game_t *gs, entity_t e) {
   actor_stop(a, ACT5);
   actor_stop(a, ACT6);
   actor_stop(a, ACT7);
-  m->movement = movement_none;
+  botmove_stop(bm);
 
   if (h->hp <= h->max_hp / 4) {
     ctx->phase = SWORDBOSS_PHASE_ULT;
@@ -176,7 +176,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *m = entity_get_component(gs, e, botmove);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
   
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   vector to_player = normalize(vsubv(pt->position, t->position));
@@ -187,10 +187,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
       break;
     case ACT1:
       actor_do(a, ACT0, 10.0);
-      
-      m->a1 = 5.0;
-      m->movement = movement_chase;
-
+      botmove_chase(bm, 5.0);
       actor_repeat(a, ACT2, 0.0, 0, 1.0);
       break;
     case ACT2:
@@ -217,7 +214,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *m = entity_get_component(gs, e, botmove);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
 
   switch(ev.act.name) {
     case ACT0:
@@ -225,11 +222,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
       break;
     case ACT1:
       actor_do(a, ACT0, 10.0);
-
-      m->a1 = 10.0;
-      m->v1 = vec2(24.0, 24.0);
-      m->movement = movement_travel;
-      
+      botmove_travel(bm, vec2(24.0, 24.0), 10.0);
       actor_repeat(a, ACT2, 1.0, 0, 0.1);
       actor_repeat(a, ACT3, 1.0, 0, 1.0);
       actor_repeat(a, ACT4, 1.0, 0, 2.0);
@@ -295,7 +288,7 @@ void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *m = entity_get_component(gs, e, botmove);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
   health_t *h = entity_get_component(gs, e, health);
   
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
@@ -307,10 +300,7 @@ void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT0:
       break;
     case ACT1:
-      m->a1 = 10.0;
-      m->v1 = vec2(24.0, 24.0);
-      m->movement = movement_travel;
-
+      botmove_travel(bm, vec2(24.0, 24.0), 10.0);
       actor_repeat(a, ACT4, 0.0, 0, 0.1);
       break;
     case ACT2:

@@ -165,13 +165,43 @@ void system_update_health(game_t *gs)
 void system_update_botmove(game_t *gs)
 {
   for (entity_t e = 0; e < gs->num_entities; e++) {
-    if (!entity_match(gs, e, C_botmove | C_transform)) {
+    if (!entity_match(gs, e, C_botmove | C_transform | C_rigidbody)) {
       continue;
     }
 
-    rigidbody_t *r = entity_get_component(gs, e, rigidbody);
-    botmove_t *m = entity_get_component(gs, e, botmove);
+    transform_t *t = entity_get_component(gs, e, transform);
+    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+    botmove_t *bm = entity_get_component(gs, e, botmove);
+    
+    if (bm->behave == BH_STOP) {
+      rb->velocity = vec2(0.0, 0.0);
+      continue;
+    }
+    
+    vector target_delta = vsubv(bm->target, t->position);
 
-    r->velocity = m->movement(gs, e, m->a1, m->a2, m->v1, m->v2);
+    if (length(target_delta) <= 0.2) {
+      t->position = bm->target;
+    } else {
+      rb->velocity = fdotv(bm->speed, normalize(target_delta));
+    }
+    
+    if (!entity_match(gs, gs->player, C_transform)) {
+      continue;
+    }
+    
+    transform_t *pt = entity_get_component(gs, gs->player, transform);
+    
+    switch (bm->behave) {
+    case BH_STOP:
+    case BH_TRAVEL:
+      break;
+    case BH_CHASE:
+      bm->target = pt->position;
+      break;
+    case BH_RETREAT:
+      bm->target = vaddv(t->position, vsubv(t->position, pt->position));
+      break;
+    }
   }
 }

@@ -118,5 +118,5 @@ vector flight_wave(float time, float a1, float a2)
 
 vector flight_accelerate(float time, float accel, float a2)
 {
-  return vec2(0.0, time * accel);
+  return vec4(0.0, time * accel, 0.0, time * accel);
 }

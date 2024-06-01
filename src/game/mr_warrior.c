@@ -4,10 +4,6 @@
 #include <game/game.h>
 #include <stdio.h>
 
-#define WARRIOR_CHASE_SPEED  1.5
-#define WARRIOR_PIVOT_RADIUS 5.0
-#define WARRIOR_PIVOT_TIME   2.5
-
 static const animation_t mr_warrior_idle   = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 static const animation_t mr_warrior_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
 
@@ -28,13 +24,14 @@ entity_t enemy_spawn_mr_warrior(game_t *gs)
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->scale = vec3(2.0, 2.0, 2.0);
-    t->position = vec2(4, 4);
+    t->position = vec2(24, 24);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &mr_warrior_idle);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT0, 0.0, 0, 5.0);
+    actor_repeat(a, ACT0, 0.0, 0, 0.5);
+    actor_repeat(a, ACT2, 0.0, 0, 5.0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -43,9 +40,9 @@ entity_t enemy_spawn_mr_warrior(game_t *gs)
     h->hp = 100;
     h->max_hp = 100;
   entity_add_component(gs, e, botmove);
-    botmove_t *m = entity_get_component(gs, e, botmove);
-    m->a1 = WARRIOR_CHASE_SPEED;
-    m->movement = movement_chase;
+    botmove_t *bm = entity_get_component(gs, e, botmove);
+    bm->speed = 4.0;
+    bm->behave = BH_CHASE;
   entity_bind(gs, e, mr_warrior_invoke);
   return e;
 }
@@ -57,7 +54,9 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *m = entity_get_component(gs, e, botmove);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
+  
+  float pdist = length(vsubv(pt->position, t->position));
   
   vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
   
@@ -65,30 +64,29 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      m->a1 = WARRIOR_CHASE_SPEED;
-      m->movement = movement_chase;
-      actor_repeat(a, ACT1, 0.0, 6, 0.3);
-      actor_do(a, ACT3, 2.5);
-      break;
-    case ACT1:
-      sprite_play(s, &mr_warrior_attack);
-      actor_do(a, ACT2, 0.15);
+      if (pdist < 3.0) {
+        botmove_retreat(bm, 3.0);
+      } else if (pdist < 5.0) {
+        botmove_stop(bm);
+      } else {
+        botmove_chase(bm, 6.0);
+      }
       break;
     case ACT2:
-      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
+      actor_repeat(a, ACT3, 0.0, 6, 0.3);
       break;
     case ACT3:
-      m->a1 = WARRIOR_PIVOT_RADIUS;
-      m->a2 = WARRIOR_PIVOT_TIME;
-      m->v1 = t->position;
-      m->movement = movement_pivot;
-      actor_repeat(a, ACT4, 0.0, 6, 0.3);
+      sprite_play(s, &mr_warrior_attack);
+      actor_do(a, ACT4, 0.15);
       break;
     case ACT4:
-      sprite_play(s, &mr_warrior_attack);
-      actor_do(a, ACT5, 0.15);
+      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
       break;
     case ACT5:
+      sprite_play(s, &mr_warrior_attack);
+      actor_do(a, ACT6, 0.15);
+      break;
+    case ACT6:
       shoot_radial(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 10);      
       break;
     }
