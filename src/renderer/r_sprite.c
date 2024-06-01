@@ -67,7 +67,7 @@ void r_sprite_draw(const game_t *gs)
     const transform_t *t = entity_get_component(gs, e, transform);
     const sprite_t *s = entity_get_component(gs, e, sprite);
     
-    float view_dist = length_squared(mdotv(camera_get_view(), v2pt(t->position)));
+    float view_dist = length_squared(mdotv(camera_get_view(), t->position));
     
     if (view_dist >= OCCLUDE_RADIUS * OCCLUDE_RADIUS) {
       continue;

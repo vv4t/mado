@@ -23,11 +23,9 @@ typedef struct {
 void vector_print(const char *string, vector x);
 void matrix_print(const char *string, matrix A);
 
-inline static vector vec2(float x, float y) { return (vector) { .x = x, .y = y, .z = 0, .w = 0 }; }
-inline static vector vec3(float x, float y, float z) { return (vector) { .x = x, .y = y, .z = z, .w = 0 }; }
+inline static vector vec2(float x, float y) { return (vector) { .x = x, .y = y, .z = 0, .w = 1 }; }
+inline static vector vec3(float x, float y, float z) { return (vector) { .x = x, .y = y, .z = z, .w = 1 }; }
 inline static vector vec4(float x, float y, float z, float w) { return (vector) { .x = x, .y = y, .z = z, .w = w }; }
-
-inline static vector v2pt(vector x) { return (vector) { .x = x.x, .y = x.y, .z = x.z, .w = 1.0 }; }
 
 inline static matrix mat4(vector a, vector b, vector c, vector d)
 {
@@ -68,7 +66,7 @@ inline static vector vaddv(vector A, vector B)
     .x = A.x + B.x,
     .y = A.y + B.y,
     .z = A.z + B.z,
-    .w = A.w + B.w
+    .w = 1.0
   };
 }
 
@@ -78,7 +76,7 @@ inline static vector vsubv(vector A, vector B)
     .x = A.x - B.x,
     .y = A.y - B.y,
     .z = A.z - B.z,
-    .w = A.w - B.w
+    .w = 1.0
   };
 }
 
@@ -88,7 +86,7 @@ inline static vector fdotv(float a, vector x)
     .x = a * x.x,
     .y = a * x.y,
     .z = a * x.z,
-    .w = a * x.w
+    .w = 1.0
   };
 }
 
@@ -104,7 +102,7 @@ inline static vector mdotv(matrix A, vector x)
 
 inline static float dot(vector A, vector B)
 {
-  return A.x * B.x + A.y * B.y + A.z * B.z + A.w * B.w;
+  return A.x * B.x + A.y * B.y + A.z * B.z;
 }
 
 inline static float length_squared(vector x)

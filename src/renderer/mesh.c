@@ -99,16 +99,16 @@ void meshdata_add_quad(meshdata_t md, matrix T_p, matrix T_uv)
   
   meshdata_add_face(
     md,
-    vertex_create(mdotv(T_p, v2pt(quad[0])), mdotv(T_uv, v2pt(quad[0]))),
-    vertex_create(mdotv(T_p, v2pt(quad[1])), mdotv(T_uv, v2pt(quad[1]))),
-    vertex_create(mdotv(T_p, v2pt(quad[2])), mdotv(T_uv, v2pt(quad[2])))
+    vertex_create(mdotv(T_p, quad[0]), mdotv(T_uv, quad[0])),
+    vertex_create(mdotv(T_p, quad[1]), mdotv(T_uv, quad[1])),
+    vertex_create(mdotv(T_p, quad[2]), mdotv(T_uv, quad[2]))
   );
   
   meshdata_add_face(
     md,
-    vertex_create(mdotv(T_p, v2pt(quad[3])), mdotv(T_uv, v2pt(quad[3]))),
-    vertex_create(mdotv(T_p, v2pt(quad[4])), mdotv(T_uv, v2pt(quad[4]))),
-    vertex_create(mdotv(T_p, v2pt(quad[5])), mdotv(T_uv, v2pt(quad[5])))
+    vertex_create(mdotv(T_p, quad[3]), mdotv(T_uv, quad[3])),
+    vertex_create(mdotv(T_p, quad[4]), mdotv(T_uv, quad[4])),
+    vertex_create(mdotv(T_p, quad[5]), mdotv(T_uv, quad[5]))
   );
 }
 
