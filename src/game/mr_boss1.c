@@ -9,12 +9,14 @@ typedef enum {
   SWORDBOSS_PHASE0,
   SWORDBOSS_PHASE1,
   SWORDBOSS_PHASE_ULT,
+  SWORDBOSS_PHASE_FELL
 } swordboss_phase_t;
 
 static const animation_t mr_swordboss_idle = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 static const animation_t mr_swordboss_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
-static const animation_t mr_swordboss_charging = { .tx = 4, .ty = 2, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.5 };
-static const animation_t mr_swordboss_ult = { .tx = 4, .ty = 0, .tw = 2, .th = 2, .framecount = 2, .frametime = 1.5 };
+static const animation_t mr_swordboss_charging = { .tx = 4, .ty = 2, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
+static const animation_t mr_swordboss_ult = { .tx = 4, .ty = 0, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
+static const animation_t mr_swordboss_fall = { .tx = 4, .ty = 8, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.75 };
 
 static shooter_t mr_swordboss_shooter = {
   .tx = 2, .ty = 0,
@@ -88,8 +90,6 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
 
   vector slow_fwd = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
-  vector medium_fwd = fdotv(8.0, normalize(vsubv(pt->position, t->position)));
-  vector fast_fwd = fdotv(15.0, normalize(vsubv(pt->position, t->position)));
 
   switch (ev.type) {
   case EV_ACT:
@@ -108,7 +108,6 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         actor_do(a, ACT1, 0.0);
         break;
       }
-
       // switch phase
       switch (ctx->phase) {
         case SWORDBOSS_PHASE0:
@@ -125,8 +124,9 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
           // ctx->phase = SWORDBOSS_PHASE0;
           // actor_do(a, ACT1, 3.0);
           break;
+        case SWORDBOSS_PHASE_FELL:
+          break;
       }
-
       break;
     case ACT1:
       // phase start
@@ -161,6 +161,10 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
 
           actor_repeat(a, ACT4, 0.0, 0, 0.1);
           break;
+        case SWORDBOSS_PHASE_FELL:
+          shoot_radial(gs, &mr_swordboss_shooter, t->position, vec2(3.0, 0.0), 1.0, flight_linear, 0.0, 0.0, 20);
+          entity_kill(gs, e);
+          break;
       }
       break;
     case ACT2:
@@ -183,6 +187,8 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
             vector v = fdotv(6.0, normalize(mdotv(rotate_z(M_PI), slow_fwd)));
             shoot_shotgun(gs, &mr_swordboss_shooter, t->position, v, 1.0, flight_wave, 2.0, 0.0, 15, 6 * M_PI / 4);
           }
+          break;
+        case SWORDBOSS_PHASE_FELL:
           break;
       }
       break;
@@ -214,6 +220,8 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
             shoot_wall(gs, &mr_swordboss_shooter2, t->position, slow_fwd, 1.0, flight_linear, 0.0, 0.0, wall, 14, 1.0);
           }
           break;
+        case SWORDBOSS_PHASE_FELL:
+          break;
       }
       break;
     case ACT4:
@@ -235,6 +243,8 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
             actor_do(a, ACT6, 5.0);
           }
 
+          break;
+        case SWORDBOSS_PHASE_FELL:
           break;
       }
       break;
@@ -264,6 +274,8 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
         case SWORDBOSS_PHASE_ULT:
           sprite_repeat(s, &mr_swordboss_ult);
           break;
+        case SWORDBOSS_PHASE_FELL:
+          break;
       }
       break;
     }
@@ -275,10 +287,24 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_NO_HEALTH:
     // later, replace with death animation and entity_kill on a delay.
 
-    if (ctx->used_ult) {
+    if (ctx->used_ult && ctx->phase != SWORDBOSS_PHASE_FELL) {
       // so we can't skip the ult phase by doing lethal dmg in normal phase
-      entity_kill(gs, e);
+      ctx->phase = SWORDBOSS_PHASE_FELL;
+      actor_stop(a, ACT0);
+      actor_stop(a, ACT1);
+      actor_stop(a, ACT2);
+      actor_stop(a, ACT3);
+      actor_stop(a, ACT4);
+      actor_stop(a, ACT5);
+      actor_stop(a, ACT6);
+      sprite_repeat(s, &mr_swordboss_fall);
+      actor_do(a, ACT1, 3.0);
+      // entity_kill(gs, e);
     }
+    break;
+  case EV_MAP_COLLIDE:
+    break;
+  case EV_ENTITY_COLLIDE:
     break;
   }
 }
