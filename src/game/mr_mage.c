@@ -28,7 +28,7 @@ entity_t enemy_spawn_mr_mage(game_t *gs)
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->scale = vec3(2.0, 2.0, 2.0);
-    t->position = vec2(5, 5);
+    t->position = vec2(24, 24);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &mr_mage_idle);
@@ -48,15 +48,20 @@ entity_t enemy_spawn_mr_mage(game_t *gs)
 
 vector flight_mr_mage_bullet(float time, float radius, float speed) {
   float t1 = radius / speed;
+  float t2 = time * 32.0;
   
   if (time < t1) {
-    return vec2(0, -1);
+    return vec4(0, -1, cos(t2), sin(t2));
   }
   
   time -= t1;
   
   float r = speed / radius;
-  return vec2(cos(time * r), sin(time * r));
+  
+  float vx = cos(time * r);
+  float vy = sin(time * r);
+  
+  return vec4(vx, vy, cos(t2), sin(t2));
 }
 
 void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)

@@ -139,8 +139,11 @@ void system_update_bullet(game_t *gs)
     }
     
     vector v = b->flight(b->time, bulletctx->a1, bulletctx->a2);
-    rb->velocity = vaddv(fdotv(v.x, b->side), fdotv(v.y, b->forward));
-    s->rotation = atan2(rb->velocity.y, rb->velocity.x) - M_PI / 2.0;
+    vector vel = vaddv(fdotv(v.x, b->side), fdotv(v.y, b->forward));
+    vector ang = vaddv(fdotv(v.z, b->side), fdotv(v.w, b->forward));
+    
+    rb->velocity = vel;
+    s->rotation = atan2(-ang.x, ang.y);
     b->time += 0.015;
   }
 }

@@ -81,7 +81,7 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs)
 
 vector flight_swordboss_curve(float time, float a1, float a2)
 {
-  return vec2(a1 * time, 1.0);
+  return vec4(a1 * time, 1.0, a1 * time, 1.0);
 }
 
 void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
