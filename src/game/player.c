@@ -16,7 +16,7 @@ static shooter_t player_shooter = {
   .tw = 1, .th = 1,
   .ttl = 0.6,
   .target = ENT_ENEMY,
-  .damage = 5
+  .damage = 20
 };
 
 void player_init(game_t *gs)

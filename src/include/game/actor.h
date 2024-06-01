@@ -30,7 +30,7 @@ inline static void actor_do(actor_t *a, actname_t id, float time)
   if (id >= ACTION_MAX) {
     return;
   }
-  
+
   a->action[id] = (action_t) {
     .active = 1,
     .count = 1,
@@ -67,7 +67,7 @@ inline static void actor_stop(actor_t *a, actname_t id)
   if (id >= ACTION_MAX) {
     return;
   }
-  
+
   a->action[id].active = 0;
 }
 
