@@ -242,29 +242,6 @@ inline static matrix transform(vector t, vector r, vector s)
   return mdotm(scale(s), mdotm(rotate_xyz(r), translate(t)));
 }
 
-inline static matrix perspective(float w, float h, float n, float f)
-{
-  float u = (-f - n) / (-f + n);
-  float v = (2 * f * n) / (-f + n);
-  
-  return mat4(
-    vec4(w, 0, 0, 0),
-    vec4(0, h, 0, 0),
-    vec4(0, 0, u, v),
-    vec4(0, 0, 1, 0)
-  );
-}
-
-inline static matrix isometric(float w, float h)
-{
-  return mat4(
-    vec4(w, 0, 0, 0),
-    vec4(0, h,-w, 0),
-    vec4(0, 0, w, 0),
-    vec4(0, 0, 0, 1)
-  );
-}
-
 inline static matrix inverse(matrix A)
 {
 #define ROW_ADD(A, a, b, k) for (int z = 0; z < 4; z++) A.m[a][z] += A.m[b][z] * k;

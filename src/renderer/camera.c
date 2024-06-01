@@ -13,16 +13,20 @@ struct {
   matrix p;
   matrix v;
   vector view_pos;
+  float w;
+  float h;
   GLuint ubo;
 } camera;
 
-void camera_init()
+void camera_init(float w, float h)
 {
   glGenBuffers(1, &camera.ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, camera.ubo);
   glBufferData(GL_UNIFORM_BUFFER, 512, NULL, GL_DYNAMIC_DRAW);
   glBindBufferBase(GL_UNIFORM_BUFFER, 0, camera.ubo);
   
+  camera.w = w;
+  camera.h = h;
   camera.p = identity();
   camera.v = identity();
   camera.view_pos = (vector) {0};
@@ -39,19 +43,22 @@ void camera_shader_import(shaderdata_t sd)
   shaderdata_source(sd, "assets/shader/import/camera.glsl", SD_VERT | SD_FRAG);
 }
 
-void camera_orthographic(float w, float h)
+void camera_orthographic()
 {
-  camera.p = scale(vec3(w, h, w));
+  camera.p = scale(vec3(camera.w, camera.h, camera.w));
 }
 
-void camera_isometric(float w, float h)
+void camera_isometric()
 {
-  camera.p = isometric(w, h);
-}
-
-void camera_perspective(float w, float h, float n, float f)
-{
-  camera.p = perspective(w, h, n, f);
+  float w = camera.w;
+  float h = camera.h;
+  
+  camera.p = mat4(
+    vec4(w, 0, 0, 0),
+    vec4(0, h,-w, 0),
+    vec4(0, 0, w, 0),
+    vec4(0, 0, 0, 1)
+  );
 }
 
 void camera_move(vector position, vector rotation)

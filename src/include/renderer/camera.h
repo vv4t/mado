@@ -4,11 +4,10 @@
 #include <lib/math3d.h>
 #include <renderer/shader.h>
 
-void camera_init();
+void camera_init(float w, float h);
 
-void camera_orthographic(float w, float h);
-void camera_isometric(float w, float h);
-void camera_perspective(float w, float h, float n, float f);
+void camera_orthographic();
+void camera_isometric();
 void camera_move(vector position, vector rotation);
 void camera_update(matrix m);
 

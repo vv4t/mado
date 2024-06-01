@@ -47,7 +47,7 @@ static void renderer_pipeline_init();
 
 void renderer_init()
 {
-  camera_init();
+  camera_init(FOV, FOV * ASPECT_RATIO);
   vbuffer_init(MAX_VERTICES);
   vbuffer_bind();
   renderer_pipeline_init();
@@ -75,11 +75,11 @@ void renderer_render(const game_t *gs)
     texture_bind(renderer.sheet, GL_TEXTURE_2D, 0);
     texture_bind(renderer.emit, GL_TEXTURE_2D, 1);
     
-    camera_isometric(FOV, FOV * ASPECT_RATIO);
+    camera_isometric();
     camera_update(identity());
     r_map_draw();
     
-    camera_orthographic(FOV, FOV * ASPECT_RATIO);
+    camera_orthographic();
     camera_update(identity());
     r_sprite_draw(gs);
   target_unbind();
