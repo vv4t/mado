@@ -1,4 +1,4 @@
-.PHONY=default run
+.PHONY=default run build
 
 CFLAGS=-O3 -Wall
 LDFLAGS=-lSDL2 -lSDL2_image -lm -lGL -lGLEW
@@ -16,6 +16,9 @@ bin/%.o: src/%.c $(SRC_H)
 	mkdir -p bin
 	mkdir -p "$(shell dirname "$@")"
 	gcc $(INCLUDE) $(CFLAGS) -c -o $@ $<
+
+build:
+	gcc $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRC) -o mado
 
 run: mado
 	./mado

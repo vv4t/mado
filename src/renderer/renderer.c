@@ -6,6 +6,7 @@
 #include <renderer/target.h>
 #include <renderer/r_sprite.h>
 #include <renderer/r_map.h>
+#include <renderer/gui.h>
 #include <stdio.h>
 #include <GL/glew.h>
 
@@ -51,12 +52,15 @@ void renderer_init()
   vbuffer_init(MAX_VERTICES);
   vbuffer_bind();
   renderer_pipeline_init();
+  gui_init(renderer.quad);
   r_sprite_init(renderer.quad);
   r_map_init();
   
+  glCullFace(GL_BACK);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+  
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
 }
 
 float t = 0.0;
@@ -110,9 +114,13 @@ void renderer_render(const game_t *gs)
   target_unbind();
   
   glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+  
+  glEnable(GL_BLEND);
   texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
   shader_bind(renderer.dither);
   vbuffer_draw(renderer.quad);
+  gui_draw(gs);
+  glDisable(GL_BLEND);
   
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
@@ -167,6 +175,7 @@ void renderer_deinit()
 {
   r_map_deinit();
   r_sprite_deinit();
+  gui_deinit();
   target_destroy(renderer.to_bloom);
   target_destroy(renderer.to_buffer[0]);
   target_destroy(renderer.to_buffer[1]);
@@ -185,7 +194,7 @@ void renderer_deinit()
 shader_t frame_shader_load(const char *path)
 {
   shaderdata_t sd = shaderdata_create();
-    shaderdata_source(sd, "assets/shader/vertex/none.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/vertex/frame.vert", SD_VERT);
     shaderdata_source(sd, path, SD_FRAG);
     shader_t shader = shader_load(sd);
   shaderdata_destroy(sd);
