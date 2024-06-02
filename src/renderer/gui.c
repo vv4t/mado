@@ -22,6 +22,7 @@ typedef struct {
 
 struct {
   mesh_t    mesh;
+  texture_t sheet;
   shader_t  shader;
   GLuint    ubo;
   int       num_rect;
@@ -40,6 +41,7 @@ void gui_init(mesh_t mesh)
     glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "rectdata"), 2);
   shaderdata_destroy(sd);
   
+  gui.sheet = texture_load_image("assets/sheet/gui.png");
   gui.mesh = mesh;
   
   glGenBuffers(1, &gui.ubo);
@@ -68,11 +70,13 @@ void gui_draw(game_t *gs)
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ub_rect_t), rectdata.rect);
   
   shader_bind(gui.shader);
+  texture_bind(gui.sheet, GL_TEXTURE_2D, 0);
   glDrawArraysInstanced(GL_TRIANGLES, gui.mesh.offset, gui.mesh.count, 1);
 }
 
 void gui_deinit()
 {
+  texture_destroy(gui.sheet);
   shader_destroy(gui.shader);
   glDeleteBuffers(1, &gui.ubo);
 }
