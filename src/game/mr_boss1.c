@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef enum {
+  SWORDBOSS_PHASE_INACTIVE,
   SWORDBOSS_PHASE0,
   SWORDBOSS_PHASE1,
   SWORDBOSS_PHASE_ULT,
@@ -36,7 +37,7 @@ static shooter_t mr_swordboss_shooter2 = {
 
 struct swordbossctx {
   swordboss_phase_t phase;
-  bool              used_ult;
+  bool              at_ult_hp;
 };
 
 void mr_swordboss_phase_change(game_t *gs, entity_t e);
@@ -44,6 +45,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_phase_fell_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev);
 vector flight_swordboss_curve(float time, float radius, float speed);
 void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev);
 
@@ -53,28 +55,26 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs)
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->scale = vec3(2.5, 2.5, 2.5);
-    t->position = vec2(48/2, 48/2);
+    t->position = vec2(48/2 - 4, 4 * 48/6);
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
-    sprite_repeat(s, &mr_swordboss_idle);
+    sprite_repeat(s, &mr_swordboss_fall);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
   entity_add_component(gs, e, actor);
-    actor_t *a = entity_get_component(gs, e, actor);
   entity_add_component(gs, e, health);
     health_t *h = entity_get_component(gs, e, health);
     h->hp = 2000;
     h->max_hp = 2000;
+    h->invincible = true;
   entity_add_component(gs, e, botmove);
     botmove_t *bm = entity_get_component(gs, e, botmove);
     botmove_stop(bm);
   entity_bind(gs, e, mr_swordboss_invoke);
 
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
-  ctx->phase = SWORDBOSS_PHASE1;
-
-  actor_do(a, ACT1, 0.0);
+  ctx->phase = SWORDBOSS_PHASE_INACTIVE;
 
   return e;
 }
@@ -95,6 +95,9 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
   switch (ev.type) {
   case EV_ACT:
     switch(ctx->phase) {
+    case SWORDBOSS_PHASE_INACTIVE:
+      mr_swordboss_phase_inactive_invoke(gs, e, ev);
+      break;
     case SWORDBOSS_PHASE0:
       mr_swordboss_phase0_invoke(gs, e, ev);
       break;
@@ -111,20 +114,17 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
     break;
   case EV_HIT:
     bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
-    h->hp -= b->damage;
+    health_damage(h, b->damage);
+    if (h->hp <= h->max_hp / 4 && ctx->at_ult_hp == false) {
+      ctx->at_ult_hp = true;
+      h->invincible = true;
+    }    
     break;
   case EV_NO_HEALTH:
-    if (ctx->used_ult && ctx->phase != SWORDBOSS_PHASE_FELL) {
+    if (ctx->phase != SWORDBOSS_PHASE_FELL) {
       ctx->phase = SWORDBOSS_PHASE_FELL;
       sprite_repeat(s, &mr_swordboss_fall);
-      actor_stop(a, ACT0);
-      actor_stop(a, ACT1);
-      actor_stop(a, ACT2);
-      actor_stop(a, ACT3);
-      actor_stop(a, ACT4);
-      actor_stop(a, ACT5);
-      actor_stop(a, ACT6);
-      actor_stop(a, ACT7);
+      actor_stop_all(a);
       actor_do(a, ACT0, 4.0);
     }
     break;
@@ -138,21 +138,13 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
 void mr_swordboss_phase_change(game_t *gs, entity_t e) {
   actor_t *a = entity_get_component(gs, e, actor);
   botmove_t *bm = entity_get_component(gs, e, botmove);
-  health_t *h = entity_get_component(gs, e, health);
 
   struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
 
-  actor_stop(a, ACT0);
-  actor_stop(a, ACT1);
-  actor_stop(a, ACT2);
-  actor_stop(a, ACT3);
-  actor_stop(a, ACT4);
-  actor_stop(a, ACT5);
-  actor_stop(a, ACT6);
-  actor_stop(a, ACT7);
+  actor_stop_all(a);
   botmove_stop(bm);
 
-  if (h->hp <= h->max_hp / 4) {
+  if (ctx->at_ult_hp) {
     ctx->phase = SWORDBOSS_PHASE_ULT;
   } else {
     switch (ctx->phase) {
@@ -166,6 +158,8 @@ void mr_swordboss_phase_change(game_t *gs, entity_t e) {
         break;
       case SWORDBOSS_PHASE_FELL:
         break;
+      case SWORDBOSS_PHASE_INACTIVE:
+        break;
     }
   }
   
@@ -177,6 +171,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
   botmove_t *bm = entity_get_component(gs, e, botmove);
+  health_t *h = entity_get_component(gs, e, health);
   
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   vector to_player = normalize(vsubv(pt->position, t->position));
@@ -186,6 +181,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
       mr_swordboss_phase_change(gs, e);
       break;
     case ACT1:
+      h->invincible = false;
       actor_do(a, ACT0, 10.0);
       botmove_chase(bm, 5.0);
       actor_repeat(a, ACT2, 0.0, 0, 1.0);
@@ -215,12 +211,14 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
   botmove_t *bm = entity_get_component(gs, e, botmove);
+  health_t *h = entity_get_component(gs, e, health);
 
   switch(ev.act.name) {
     case ACT0:
       mr_swordboss_phase_change(gs, e);
       break;
     case ACT1:
+      h->invincible = false;
       actor_do(a, ACT0, 10.0);
       botmove_travel(bm, vec2(24.0, 24.0), 10.0);
       actor_repeat(a, ACT2, 1.0, 0, 0.1);
@@ -290,8 +288,6 @@ void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev) {
   actor_t *a = entity_get_component(gs, e, actor);
   botmove_t *bm = entity_get_component(gs, e, botmove);
   health_t *h = entity_get_component(gs, e, health);
-  
-  struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   vector to_player = normalize(vsubv(pt->position, t->position));
@@ -318,7 +314,7 @@ void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev) {
       break;
     case ACT3:
       if (t->position.x == 24.0 && t->position.y == 24.0) {
-        int wall =  0b10001100000000;
+        int wall =  0b10001111000000;
         switch(rand() % 3) {
           case 0:
             wall |= 0b11101100000000;
@@ -352,9 +348,7 @@ void mr_swordboss_phase_ult_invoke(game_t *gs, entity_t e, event_t ev) {
       }
       break;
     case ACT5:
-      ctx->used_ult = true;
-      h->hp = 250;
-      h->max_hp = 250;
+      h->invincible = false;
       break;
     case ACT6:
       sprite_repeat(s, &mr_swordboss_ult);
@@ -380,17 +374,43 @@ void mr_swordboss_phase_fell_invoke(game_t *gs, entity_t e, event_t ev) {
       entity_kill(gs, e);
       break;
     case ACT1:
-      shoot_radial(
-        gs, 
-        &mr_swordboss_shooter, 
-        t->position, 
-        vec2(3.0, 0.0), 1.0, 
-        flight_linear, 0.0, 0.0, 
-        20
-      );
-      entity_kill(gs, e);
+    case ACT2:
+    case ACT3:
+    case ACT4:
+    case ACT5:
+    case ACT6:
+    case ACT7:
+      break;
+  }
+}
+
+void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev) {
+  health_t *h = entity_get_component(gs, e, health);
+  actor_t *a = entity_get_component(gs, e, actor);
+  sprite_t *s = entity_get_component(gs, e, sprite);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
+  transform_t *t = entity_get_component(gs, e, transform);
+
+  struct swordbossctx *ctx = entity_get_context(gs, e, sizeof(struct swordbossctx));
+
+  switch(ev.act.name) {
+    case ACT0:
+      actor_repeat(a, ACT2, 0.0, 0, 0.1);
+      botmove_travel(bm, vec2(24.0, 24.0), 5.0);
+      break;
+    case ACT1:
       break;
     case ACT2:
+      if (t->position.x == 24.0 && t->position.y == 24.0) {
+        actor_stop(a, ACT2);
+
+        h->invincible = false;
+  
+        ctx->phase = SWORDBOSS_PHASE1;
+        actor_do(a, ACT1, 2.0);
+        sprite_repeat(s, &mr_swordboss_idle);
+      }
+      break;
     case ACT3:
     case ACT4:
     case ACT5:

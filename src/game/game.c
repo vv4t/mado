@@ -13,7 +13,8 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  enemy_spawn_mr_swordboss(gs);
+  entity_t swordboss = enemy_spawn_mr_swordboss(gs);
+  actor_do(entity_get_component(gs, swordboss, actor), ACT0, 5.0);
 }
 
 void game_update(game_t *gs, const input_t in)

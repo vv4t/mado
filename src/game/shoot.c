@@ -47,7 +47,7 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
   entity_t e = entity_add(gs, ENT_BULLET);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    rb->radius = 0.25;
+    rb->radius = 0.4;
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->position = o;
