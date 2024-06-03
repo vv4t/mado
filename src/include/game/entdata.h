@@ -1,7 +1,7 @@
 #ifndef ENTDATA_H
 #define ENTDATA_H
 
-#define ENT_CONTEXT_WORD_MAX 4
+#define ENT_CONTEXT_WORD_MAX 8
 
 struct game_s;
 

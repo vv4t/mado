@@ -6,23 +6,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-static const animation_t mr_swordboss_idle = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
-static const animation_t mr_swordboss_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
+static const animation_t mr_mageboss_idle = { .tx = 8, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
+static const animation_t mr_mageboss_attack = { .tx = 8, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
 
-static shooter_t mr_swordboss_shooter = {
-  .tx = 3, .ty = 0,
+static shooter_t mr_mageboss_shooter = {
+  .tx = 2, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 5.0,
   .target = ENT_PLAYER,
   .damage = 20
 };
 
-void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev);
-void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev);
-void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev);
-void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_mageboss_phase0_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_mageboss_phase1_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_mageboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_mageboss_invoke(game_t *gs, entity_t e, event_t ev);
 
-entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
+entity_t enemy_spawn_mr_mageboss(game_t *gs, vector pos)
 {
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
@@ -31,7 +31,7 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
     t->position = pos;
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
-    sprite_repeat(s, &mr_swordboss_idle);
+    sprite_repeat(s, &mr_mageboss_idle);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -44,7 +44,7 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
   entity_add_component(gs, e, botmove);
     botmove_t *bm = entity_get_component(gs, e, botmove);
     botmove_stop(bm);
-  entity_bind(gs, e, mr_swordboss_invoke);
+  entity_bind(gs, e, mr_mageboss_invoke);
 
   bossctx_t *ctx = entity_get_context(gs, e, sizeof(bossctx_t));
   ctx->phase = BOSS_PHASE_INACTIVE;
@@ -52,7 +52,7 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
   return e;
 }
 
-void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
+void mr_mageboss_invoke(game_t *gs, entity_t e, event_t ev)
 {
   health_t *h = entity_get_component(gs, e, health);
   
@@ -62,13 +62,13 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch(ctx->phase) {
     case BOSS_PHASE_INACTIVE:
-      mr_swordboss_phase_inactive_invoke(gs, e, ev);
+      mr_mageboss_phase_inactive_invoke(gs, e, ev);
       break;
     case BOSS_PHASE0:
-      mr_swordboss_phase0_invoke(gs, e, ev);
+      mr_mageboss_phase0_invoke(gs, e, ev);
       break;
     case BOSS_PHASE1:
-      mr_swordboss_phase1_invoke(gs, e, ev);
+      mr_mageboss_phase1_invoke(gs, e, ev);
       break;
     }
     break;
@@ -86,25 +86,33 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
   }
 }
 
-void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
+void mr_mageboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   sprite_t *s = entity_get_component(gs, e, sprite);
   health_t *h = entity_get_component(gs, e, health);
   botmove_t *bm = entity_get_component(gs, e, botmove);
 
-  const transform_t *pt = entity_get_component(gs, gs->player, transform);
-  vector to_player = normalize(vsubv(pt->position, t->position));
-
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
       actor_stop_all(a);
-      botmove_chase(bm, 2.0);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+      botmove_travel(bm, vec2(24.0, 24.0), 10.0);
+      actor_repeat(a, ACT1, 1.0, 0, 0.1);
       break;
     case ACT1:
-      sprite_play(s, &mr_swordboss_attack);
+      if (t->position.x == 24.0 && t->position.y == 24.0) {
+        sprite_play(s, &mr_mageboss_attack);
+        vector v = mdotv(rotate_z( 5 * gs->time), vec2(0.0, 6.0));
+        shoot_radial(
+          gs, 
+          &mr_mageboss_shooter, 
+          t->position, 
+          v, 1.0, 
+          flight_linear, 0.0, 0.0, 
+          5
+        );
+      }
       break;
     case ACT2:
     case ACT3:
@@ -116,7 +124,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   }
 }
 
-void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
+void mr_mageboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
@@ -131,7 +139,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
       actor_repeat(a, ACT1, 1.0, 0, 0.5);
       break;
     case ACT1:
-      sprite_play(s, &mr_swordboss_attack);
+      sprite_play(s, &mr_mageboss_attack);
       break;
     case ACT2:
     case ACT3:
@@ -143,7 +151,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   }
 }
 
-void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev) {
+void mr_mageboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev) {
   health_t *h = entity_get_component(gs, e, health);
   actor_t *a = entity_get_component(gs, e, actor);
   sprite_t *s = entity_get_component(gs, e, sprite);
@@ -151,7 +159,7 @@ void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      sprite_repeat(s, &mr_swordboss_idle);
+      sprite_repeat(s, &mr_mageboss_idle);
       actor_stop_all(a);
       actor_do(a, ACT0, 0.0);
       break;
