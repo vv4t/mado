@@ -39,6 +39,16 @@ void window_init(int width, int height, const char *title)
     LOG_ERROR("SDL_Error: %s", SDL_GetError());
   }
   
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  
   window.window = SDL_CreateWindow(
     title,
     SDL_WINDOWPOS_CENTERED,
@@ -52,6 +62,7 @@ void window_init(int width, int height, const char *title)
   window.width = width;
   window.height = height;
   
+#ifndef __EMSCRIPTEN__
   glewExperimental = 1;
   GLenum status = glewInit();
   if (status != GLEW_OK) {
@@ -60,6 +71,7 @@ void window_init(int width, int height, const char *title)
   
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(MessageCallback, 0);
+#endif
 }
 
 int window_loop(input_t in)
