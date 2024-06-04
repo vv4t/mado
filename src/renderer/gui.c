@@ -53,10 +53,10 @@ void gui_init(mesh_t mesh)
   glBufferData(GL_UNIFORM_BUFFER, sizeof(ub_rectdata_t), NULL, GL_DYNAMIC_DRAW);
   glBindBufferBase(GL_UNIFORM_BUFFER, 2, gui.ubo);
   
-  char sentence[] = ">god";
+  char sentence[] = ">summon something very good nice good";
   
   for (int i = 0; i < sizeof(sentence); i++) {
-    rect_glyph(0.0, 0.0, 0.015625 * 2.0, sentence[i], i, vec4(1.0, 1.0, 1.0, 1.0));
+    rect_glyph(0.0, 0.0, 0.015625 * 1.25, sentence[i], i, vec4(1.0, 1.0, 1.0, 1.0));
   }
 }
 
@@ -105,7 +105,7 @@ void rect_solid(float x, float y, float w, float h, vector color)
   glBufferSubData(GL_UNIFORM_BUFFER, sizeof(ub_rect_t) * gui.num_rect++, sizeof(ub_rect_t), rectdata.rect);
 }
 
-void gui_draw(game_t *gs)
+void gui_draw()
 {
   shader_bind(gui.shader);
   texture_bind(gui.sheet, GL_TEXTURE_2D, 0);
