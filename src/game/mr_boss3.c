@@ -98,12 +98,13 @@ void mr_mageboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
       h->invincible = false;
       actor_stop_all(a);
       botmove_travel(bm, vec2(24.0, 24.0), 10.0);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+      actor_repeat(a, ACT1, 0.0, 0, 2.0);
+      actor_repeat(a, ACT2, 1.0, 0, 2.0);
       break;
     case ACT1:
       if (t->position.x == 24.0 && t->position.y == 24.0) {
         sprite_play(s, &mr_mageboss_attack);
-        vector v = mdotv(rotate_z(gs->time), vec2(0.0, 3.0));
+        vector v = vec2(0.0, 3.0);
         shoot_radial(
           gs, 
           &mr_mageboss_shooter, 
@@ -115,6 +116,19 @@ void mr_mageboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
       }
       break;
     case ACT2:
+      if (t->position.x == 24.0 && t->position.y == 24.0) {
+        sprite_play(s, &mr_mageboss_attack);
+        vector v = mdotv(rotate_z(M_PI / 10), vec2(0.0, 3.0));
+        shoot_radial(
+          gs, 
+          &mr_mageboss_shooter, 
+          t->position, 
+          v, 1.0, 
+          flight_linear, 0.0, 0.0, 
+          10
+        );
+      }
+      break;
     case ACT3:
     case ACT4:
     case ACT5:

@@ -1,7 +1,7 @@
 .PHONY=default run
 
 CFLAGS=-O3 -Wall
-LDFLAGS=-lSDL2 -lSDL2_image -lm -lGL -lGLEW
+LDFLAGS=-lSDL2 -lSDL2_image -lm -l:libglew32.dll.a -lopengl32
 INCLUDE=-I src/include
 SRC=$(wildcard src/*/*.c)
 OBJ=$(patsubst src/%.c, bin/%.o, $(SRC))

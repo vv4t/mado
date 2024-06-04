@@ -7,10 +7,10 @@
 #include <stdbool.h>
 
 static const animation_t mr_scytheboss_idle = { .tx = 12, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
-static const animation_t mr_scytheboss_attack = { .tx = 12, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
+static const animation_t mr_scytheboss_attack = { .tx = 12, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 
 static shooter_t mr_scytheboss_shooter = {
-  .tx = 3, .ty = 0,
+  .tx = 1, .ty = 0,
   .tw = 1, .th = 1,
   .ttl = 5.0,
   .target = ENT_PLAYER,
@@ -21,6 +21,7 @@ void mr_scytheboss_phase0_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_scytheboss_phase1_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_scytheboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_scytheboss_invoke(game_t *gs, entity_t e, event_t ev);
+vector flight_scytheboss_wave(float time, float a1, float a2);
 
 entity_t enemy_spawn_mr_scytheboss(game_t *gs, vector pos)
 {
@@ -100,14 +101,38 @@ void mr_scytheboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT0:
       h->invincible = false;
       actor_stop_all(a);
-      botmove_chase(bm, 4.0);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+
+      vector pivot = vec2(24.0, 24.0);
+      vector closest = vaddv(fdotv(6.0, normalize(vsubv(t->position, pivot))), pivot);
+
+      botmove_travel(bm, closest, 5.0);
+
+      actor_repeat(a, ACT3, 0.0, 0, 0.1);
+
       break;
     case ACT1:
       sprite_play(s, &mr_scytheboss_attack);
+      actor_do(a, ACT2, 0.5);
       break;
     case ACT2:
+      shoot_radial(
+        gs, 
+        &mr_scytheboss_shooter, 
+        t->position, 
+        fdotv(5.0, to_player), 1.0, 
+        flight_scytheboss_wave, 1.0, 22.0, 
+        20
+      );
+      break;
     case ACT3:
+      if (length(vsubv(vec2(24.0, 24.0), t->position)) <= 6.0 + 5.0 * 0.015) {
+        
+        actor_stop(a, ACT3);
+        actor_repeat(a, ACT1, 1.0, 0, 3.0);
+        botmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 7.0);
+      }
+
+      break;
     case ACT4:
     case ACT5:
     case ACT6:
@@ -164,4 +189,9 @@ void mr_scytheboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT7:
       break;
   }
+}
+
+vector flight_scytheboss_wave(float time, float a1, float a2)
+{
+  return vec4(cos(time * a1 + a2), 1.0, -cos(20 * time), sin(20 * time));
 }

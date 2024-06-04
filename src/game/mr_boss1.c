@@ -100,13 +100,23 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT0:
       h->invincible = false;
       actor_stop_all(a);
-      botmove_chase(bm, 2.0);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+      botmove_chase(bm, 3.0);
+      actor_repeat(a, ACT1, 2.0, 0, 2.0);
       break;
     case ACT1:
       sprite_play(s, &mr_swordboss_attack);
+      actor_do(a, ACT2, 0.15);
       break;
     case ACT2:
+      shoot_shotgun(
+        gs, 
+        &mr_swordboss_shooter, 
+        t->position, 
+        fdotv(7.0, to_player), 1.0, 
+        flight_linear, 0.0, 0.0, 
+        10, M_PI
+      );
+      break;
     case ACT3:
     case ACT4:
     case ACT5:
