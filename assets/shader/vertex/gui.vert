@@ -19,6 +19,7 @@ out vec4 vs_color;
 void main()
 {
   vs_color = rect[gl_InstanceID].color;
+  
   vs_uv = rect[gl_InstanceID].uv_pos + v_uv * rect[gl_InstanceID].uv_size;
   vs_uv *= (1.0 / 16.0);
   vs_uv = vec2(vs_uv.x, 1.0 - vs_uv.y);
