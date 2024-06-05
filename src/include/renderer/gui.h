@@ -4,8 +4,8 @@
 #include <game/game.h>
 #include <renderer/mesh.h>
 
-void gui_init(mesh_t mesh);
-void gui_draw(const game_t *gs);
-void gui_deinit();
+void GUI_init(mesh_t mesh);
+void GUI_draw(const game_t *gs);
+void GUI_deinit();
 
 #endif

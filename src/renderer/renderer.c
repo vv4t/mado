@@ -52,7 +52,7 @@ void renderer_init()
   vbuffer_init(MAX_VERTICES);
   vbuffer_bind();
   renderer_pipeline_init();
-  gui_init(renderer.quad);
+  GUI_init(renderer.quad);
   r_sprite_init(renderer.quad);
   r_map_init();
   
@@ -119,7 +119,7 @@ void renderer_render(const game_t *gs)
   texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
   shader_bind(renderer.dither);
   vbuffer_draw(renderer.quad);
-  gui_draw(gs);
+  GUI_draw(gs);
   glDisable(GL_BLEND);
   
   glEnable(GL_DEPTH_TEST);
@@ -175,7 +175,7 @@ void renderer_deinit()
 {
   r_map_deinit();
   r_sprite_deinit();
-  gui_deinit();
+  GUI_deinit();
   target_destroy(renderer.to_bloom);
   target_destroy(renderer.to_buffer[0]);
   target_destroy(renderer.to_buffer[1]);

@@ -8,12 +8,13 @@
 #include <string.h>
 #include <stdio.h>
 
-#define RECT_MAX 256
+#define RECT_MAX  256
+#define TEXT_MAX 64
 
 typedef struct {
-  float x, y, w, h;
-  float tx, ty, tw, th;
-  vector color;
+  float   x, y, w, h;
+  float   tx, ty, tw, th;
+  vector  color;
 } ub_rect_t;
 
 typedef struct {
@@ -23,20 +24,25 @@ typedef struct {
 typedef struct {
   int offset;
   int count;
-} rectdef_t;
+} rectbuf_t;
 
 typedef struct {
-  rectdef_t rd;
-  float x, y, w, h;
-  vector color;
-} mgui_box_t;
+  rectbuf_t rb;
+  float     x, y, w, h;
+  vector    color;
+} GUI_box_t;
 
 typedef struct {
-  rectdef_t rd;
-  float x, y, size;
-  vector color;
-  char text[128];
-} mgui_label_t;
+  rectbuf_t rb;
+  float     x, y, size;
+  vector    color;
+  char      text[TEXT_MAX];
+} GUI_label_t;
+
+typedef struct {
+  GUI_box_t   bar;
+  GUI_label_t label;
+} GUI_health_t;
 
 struct {
   mesh_t    mesh;
@@ -45,64 +51,108 @@ struct {
   GLuint    ubo;
   int       num_rect;
   
-  mgui_box_t    health_bar;
-  mgui_label_t  health_label;
-} gui;
+  GUI_health_t  health[4];
+} GUI;
 
-void mgui_box_update(const mgui_box_t *box);
-mgui_box_t mgui_box_create(float x, float y, float w, float h, vector color);
-mgui_label_t mgui_label_create(float x, float y, float size, int max_len, const char *text, vector color);
-void mgui_label_update(const mgui_label_t *label);
-rectdef_t rect_define(int count);
-void rect_update(const rectdef_t *rd, const ub_rect_t *data);
+static GUI_health_t GUI_health_create(int num, const char *name);
 
-void gui_init(mesh_t mesh)
+static GUI_box_t    GUI_box_create(float x, float y, float w, float h, vector color);
+static void         GUI_box_update(const GUI_box_t *box);
+
+static GUI_label_t  GUI_label_create(float x, float y, float size, int max_len, const char *text, vector color);
+static void         GUI_label_update(const GUI_label_t *label);
+
+static rectbuf_t    rect_define(int count);
+static void         rect_update(const rectbuf_t *rb, const ub_rect_t *data);
+
+void GUI_init(mesh_t mesh)
 {
   char define_max[256];
   snprintf(define_max, sizeof(define_max), "#define RECT_MAX %i", RECT_MAX);
   
   shaderdata_t sd = shaderdata_create();
     shaderdata_line(sd, define_max, SD_VERT);
-    shaderdata_source(sd, "assets/shader/vertex/gui.vert", SD_VERT);
-    shaderdata_source(sd, "assets/shader/fragment/gui.frag", SD_FRAG);
-    gui.shader = shader_load(sd);
-    glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "rectdata"), 2);
+    shaderdata_source(sd, "assets/shader/vertex/GUI.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/fragment/GUI.frag", SD_FRAG);
+    GUI.shader = shader_load(sd);
+    glUniformBlockBinding(GUI.shader, glGetUniformBlockIndex(GUI.shader, "rectdata"), 2);
   shaderdata_destroy(sd);
   
-  gui.sheet = texture_load_image("assets/sheet/gui.png");
-  gui.mesh = mesh;
-  gui.num_rect = 0;
+  GUI.sheet = texture_load_image("assets/sheet/GUI.png");
+  GUI.mesh = mesh;
+  GUI.num_rect = 0;
   
-  glGenBuffers(1, &gui.ubo);
-  glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
+  glGenBuffers(1, &GUI.ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, GUI.ubo);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(ub_rectdata_t), NULL, GL_DYNAMIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 2, gui.ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 2, GUI.ubo);
   
-  gui.health_bar = mgui_box_create(0.01, 0.01, 0.99, 0.0625, vec4(1.0, 0.0, 0.0, 0.25));
-  gui.health_label = mgui_label_create(0.02, 0.02, 0.05, 16, "HP100", vec4(1.0, 1.0, 1.0, 1.0));
+  GUI.health[0] = GUI_health_create(0, "MR.WARRIOR 1");
+  GUI.health[1] = GUI_health_create(1, "MR.WARRIOR 2");
+  GUI.health[2] = GUI_health_create(2, "MR.WARRIOR 3");
 }
 
-void gui_draw(const game_t *gs)
+float get_health_width(const health_t *health)
 {
-  gui.health_bar.w = gs->health[gs->boss].hp / (float) gs->health[gs->boss].max_hp;
-  mgui_box_update(&gui.health_bar);
-  
-  snprintf(gui.health_label.text, sizeof(gui.health_label.text), "HP%i", gs->health[gs->boss].hp);
-  mgui_label_update(&gui.health_label);
-  
-  shader_bind(gui.shader);
-  texture_bind(gui.sheet, GL_TEXTURE_2D, 0);
-  glDrawArraysInstanced(GL_TRIANGLES, gui.mesh.offset, gui.mesh.count, gui.num_rect);
+  return health->hp / (float) health->max_hp * 1280.0 / 960.0 - 0.015 * 2;
 }
 
-void gui_deinit()
+void GUI_draw(const game_t *gs)
 {
-  texture_destroy(gui.sheet);
-  shader_destroy(gui.shader);
-  glDeleteBuffers(1, &gui.ubo);
+  for (int i = 0; i < 3; i++) {
+    GUI.health[i].bar.w = get_health_width(&gs->health[gs->boss[i]]);
+    GUI_box_update(&GUI.health[i].bar);
+  }
+  
+  shader_bind(GUI.shader);
+  texture_bind(GUI.sheet, GL_TEXTURE_2D, 0);
+  glDrawArraysInstanced(GL_TRIANGLES, GUI.mesh.offset, GUI.mesh.count, GUI.num_rect);
 }
 
-void mgui_box_update(const mgui_box_t *box)
+void GUI_deinit()
+{
+  texture_destroy(GUI.sheet);
+  shader_destroy(GUI.shader);
+  glDeleteBuffers(1, &GUI.ubo);
+}
+
+GUI_health_t GUI_health_create(int num, const char *name)
+{
+  float pt = 0.025;
+  float margin = 0.01;
+  float pad = 0.005;
+  
+  int n = strlen(name);
+  
+  return (GUI_health_t) {
+    .bar = GUI_box_create(
+      margin, 1.0 - (1 + num) * (margin + pt + pad * 2),
+      1280.0 / 960.0 - (pad + margin) * 2, pt + pad * 2,
+      vec4(1.0, 0.0, 0.0, 0.8)
+    ),
+    .label = GUI_label_create(
+      0.5 - n * pt * 5.0 / 8.0 * 0.5,
+      1.0 - (1 + num) * (margin + pad + pt) - num * pad,
+      pt, n, name,
+      vec4(1.0, 1.0, 1.0, 1.0)
+    )
+  };
+}
+
+GUI_box_t GUI_box_create(float x, float y, float w, float h, vector color)
+{
+  GUI_box_t box = (GUI_box_t) {
+    .rb = rect_define(1),
+    .x = x, .y = y, .w = w, .h = h,
+    .color = color
+  };
+  
+  GUI_box_update(&box);
+  
+  return box;
+}
+
+void GUI_box_update(const GUI_box_t *box)
 {
   ub_rect_t rect = {
     .x = box->x, .y = box->y, .w = box->w, .h = box->h,
@@ -110,38 +160,25 @@ void mgui_box_update(const mgui_box_t *box)
     .color = box->color
   };
   
-  rect_update(&box->rd, &rect);
+  rect_update(&box->rb, &rect);
 }
 
-mgui_box_t mgui_box_create(float x, float y, float w, float h, vector color)
+GUI_label_t GUI_label_create(float x, float y, float size, int max_len, const char *text, vector color)
 {
-  mgui_box_t box = (mgui_box_t) {
-    .rd = rect_define(1),
-    .x = x, .y = y, .w = w, .h = h,
-    .color = color
-  };
-  
-  mgui_box_update(&box);
-  
-  return box;
-}
-
-mgui_label_t mgui_label_create(float x, float y, float size, int max_len, const char *text, vector color)
-{
-  mgui_label_t label = (mgui_label_t) {
-    .rd = rect_define(max_len),
+  GUI_label_t label = (GUI_label_t) {
+    .rb = rect_define(max_len),
     .x = x, .y = y, .size = size,
     .color = color
   };
   
   strncpy(label.text, text, sizeof(label.text));
   
-  mgui_label_update(&label);
+  GUI_label_update(&label);
   
   return label;
 }
 
-void mgui_label_update(const mgui_label_t *label)
+void GUI_label_update(const GUI_label_t *label)
 {
   static ub_rect_t rect[256];
   
@@ -164,56 +201,35 @@ void mgui_label_update(const mgui_label_t *label)
     };
   }
   
-  for (int i = strlen(label->text); i < label->rd.count; i++) {
+  for (int i = strlen(label->text); i < label->rb.count; i++) {
     rect[i] = (ub_rect_t) {
       .w = 0.0, .h = 0.0
     };
   }
   
-  rect_update(&label->rd, rect);
+  rect_update(&label->rb, rect);
 }
 
-rectdef_t rect_define(int count)
+rectbuf_t rect_define(int count)
 {
-  if (gui.num_rect + count >= RECT_MAX) {
+  if (GUI.num_rect + count >= RECT_MAX) {
     LOG_ERROR("out of memory");
   }
   
-  int offset = gui.num_rect;
-  gui.num_rect += count;
+  int offset = GUI.num_rect;
+  GUI.num_rect += count;
   
-  return (rectdef_t) {
+  return (rectbuf_t) {
     .offset = offset,
     .count = count
   };
 }
 
-void rect_update(const rectdef_t *rd, const ub_rect_t *data)
+void rect_update(const rectbuf_t *rb, const ub_rect_t *data)
 {
-  int offset = sizeof(ub_rect_t) * rd->offset;
-  int size = sizeof(ub_rect_t) * rd->count;
+  int offset = sizeof(ub_rect_t) * rb->offset;
+  int size = sizeof(ub_rect_t) * rb->count;
   
-  glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, GUI.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
 }
-
-/*
-
-void rect_solid(float x, float y, float w, float h, vector color)
-{
-  ub_rectdata_t rectdata = {
-    .rect = {
-      {
-        .p_pos = { x, y },
-        .p_size = { w, h },
-        .uv_pos = { 0.0, 0.0 },
-        .uv_size = { 1.0, 1.0 },
-        .color = { color.x, color.y, color.z, color.w }
-      }
-    }
-  };
-  
-  glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, sizeof(ub_rect_t) * gui.num_rect++, sizeof(ub_rect_t), rectdata.rect);
-}
-*/
