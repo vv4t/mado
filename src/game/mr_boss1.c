@@ -12,7 +12,7 @@ static const animation_t mr_swordboss_attack = { .tx = 4, .ty = 4, .tw = 2, .th 
 static shooter_t mr_swordboss_shooter = {
   .tx = 3, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 5.0,
+  .ttl = 20.0,
   .target = ENT_PLAYER,
   .damage = 20
 };
@@ -99,8 +99,8 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      actor_stop_all(a);
       botmove_chase(bm, 3.0);
+      actor_stop_all(a);
       actor_repeat(a, ACT1, 2.0, 0, 2.0);
       break;
     case ACT1:
@@ -133,17 +133,51 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   botmove_t *bm = entity_get_component(gs, e, botmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
+  const transform_t *pt = entity_get_component(gs, gs->player, transform);
+  vector to_player = normalize(vsubv(pt->position, t->position));
+
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_stop(bm);
+      botmove_travel(bm, vec2(24.0, 10.0), 20.0);
       actor_stop_all(a);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+      actor_repeat(a, ACT1, 2.0, 0, 4.0);
+      actor_repeat(a, ACT2, 4.0, 0, 4.0);
       break;
     case ACT1:
-      sprite_play(s, &mr_swordboss_attack);
+      if (t->position.x == 24.0 && t->position.y == 10.0) {
+        sprite_play(s, &mr_swordboss_attack);
+        shoot_shotgun(
+          gs,
+          &mr_swordboss_shooter,
+          t->position,
+          vec2(0.0, 3.0), 1.0,
+          flight_linear, 0.0, 0.0,
+          10, M_PI / 3
+        );
+      }
       break;
     case ACT2:
+      if (t->position.x == 24.0 && t->position.y == 10.0) {
+        sprite_play(s, &mr_swordboss_attack);
+        shoot_shotgun(
+          gs,
+          &mr_swordboss_shooter,
+          t->position,
+          mdotv(rotate_z(M_PI / 4), vec2(0.0, 3.0)), 1.0,
+          flight_linear, 0.0, 0.0,
+          10, M_PI / 3
+        );
+        shoot_shotgun(
+          gs,
+          &mr_swordboss_shooter,
+          t->position,
+          mdotv(rotate_z(-M_PI / 4), vec2(0.0, 3.0)), 1.0,
+          flight_linear, 0.0, 0.0,
+          10, M_PI / 3
+        );
+      }
+      break;
     case ACT3:
     case ACT4:
     case ACT5:

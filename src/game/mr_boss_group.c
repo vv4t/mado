@@ -48,7 +48,7 @@ void mr_boss_group_invoke(game_t *gs, entity_t e, event_t ev)
       case ACT0:
         switch(ctx->phase) {
         case BOSS_PHASE_INACTIVE:
-          mr_boss_group_phase_change(gs, e, BOSS_PHASE0);
+          mr_boss_group_phase_change(gs, e, BOSS_PHASE1);
           actor_do(a, ACT1, 0.0);
           break;
         case BOSS_PHASE0:
@@ -66,10 +66,10 @@ void mr_boss_group_invoke(game_t *gs, entity_t e, event_t ev)
         case BOSS_PHASE_INACTIVE:
           break;
         case BOSS_PHASE0:
-          actor_do(a, ACT0, 10.0);
+          actor_do(a, ACT0, 20.0);
           break;
         case BOSS_PHASE1:
-          actor_do(a, ACT0, 2.0);
+          actor_do(a, ACT0, 20.0);
           break;
         }
         break;

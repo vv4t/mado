@@ -2,7 +2,7 @@
 
 CFLAGS=-O3 -Wall
 LDFLAGS=-lSDL2 -lSDL2_image -lm
-ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+ifeq ($(OS),Windows_NT)
     LDFLAGS+= -l:libglew32.dll.a -lopengl32
 else
     LDFLAGS+= -lGL -lGLEW

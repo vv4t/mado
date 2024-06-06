@@ -96,8 +96,8 @@ void mr_mageboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      actor_stop_all(a);
       botmove_travel(bm, vec2(24.0, 24.0), 10.0);
+      actor_stop_all(a);
       actor_repeat(a, ACT1, 0.0, 0, 2.0);
       actor_repeat(a, ACT2, 1.0, 0, 2.0);
       break;
@@ -143,16 +143,27 @@ void mr_mageboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   health_t *h = entity_get_component(gs, e, health);
   botmove_t *bm = entity_get_component(gs, e, botmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
+  transform_t *t = entity_get_component(gs, e, transform);
 
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_stop(bm);
+      botmove_travel(bm, vec2(26.0, 10.0), 20.0);
       actor_stop_all(a);
-      actor_repeat(a, ACT1, 1.0, 0, 0.5);
+      actor_repeat(a, ACT1, 1.0, 0, 0.1);
       break;
     case ACT1:
-      sprite_play(s, &mr_mageboss_attack);
+      if (t->position.x == 26.0 && t->position.y == 10.0) {
+        sprite_play(s, &mr_mageboss_attack);
+        shoot_shotgun(
+          gs, 
+          &mr_mageboss_shooter, 
+          t->position, 
+          mdotv(rotate_z(0.5 * sin(gs->time)), vec2(0.0, -7.0)), 1.0, 
+          flight_linear, 0.0, 0.0, 
+          20, M_PI + M_PI / 4
+        );
+      }
       break;
     case ACT2:
     case ACT3:
