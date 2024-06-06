@@ -13,9 +13,7 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  gs->boss[0] = enemy_spawn_mr_warrior(gs, vec2(24, 24));
-  gs->boss[1] = enemy_spawn_mr_warrior(gs, vec2(26, 26));
-  gs->boss[2] = enemy_spawn_mr_warrior(gs, vec2(22, 26));
+  gs->boss = enemy_spawn_mr_swordboss(gs);
 }
 
 void game_update(game_t *gs, const input_t in)

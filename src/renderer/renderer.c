@@ -119,7 +119,7 @@ void renderer_render(const game_t *gs)
   texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
   shader_bind(renderer.dither);
   vbuffer_draw(renderer.quad);
-  GUI_draw(gs);
+  GUI_draw();
   glDisable(GL_BLEND);
   
   glEnable(GL_DEPTH_TEST);
