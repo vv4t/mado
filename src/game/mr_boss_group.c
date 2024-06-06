@@ -33,6 +33,10 @@ entity_t enemy_spawn_mr_boss_group(game_t *gs, vector pos)
   ctx->mageboss = enemy_spawn_mr_mageboss(gs, vaddv(pos, vec2(0.0, 3.0)));
   ctx->swordboss = enemy_spawn_mr_swordboss(gs, vaddv(pos, vec2(2.0, 0.0)));
 
+  gs->boss[0] = ctx->scytheboss;
+  gs->boss[1] = ctx->mageboss;
+  gs->boss[2] = ctx->swordboss;
+
   return e;
 }
 
