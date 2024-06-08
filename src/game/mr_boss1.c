@@ -12,13 +12,22 @@ static const animation_t mr_swordboss_attack = { .tx = 4, .ty = 4, .tw = 2, .th 
 static shooter_t mr_swordboss_shooter = {
   .tx = 3, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 20.0,
+  .target = ENT_PLAYER,
+  .damage = 20
+};
+
+static shooter_t mr_swordboss_shooter2 = {
+  .tx = 3, .ty = 3,
+  .tw = 1, .th = 1,
   .target = ENT_PLAYER,
   .damage = 20
 };
 
 void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_swordboss_phase2_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_swordboss_phase3_invoke(game_t *gs, entity_t e, event_t ev);
+void mr_swordboss_phase4_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_phase_inactive_invoke(game_t *gs, entity_t e, event_t ev);
 void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev);
 
@@ -38,8 +47,8 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
   entity_add_component(gs, e, actor);
   entity_add_component(gs, e, health);
     health_t *h = entity_get_component(gs, e, health);
-    h->hp = 2000;
-    h->max_hp = 2000;
+    h->hp = 20000;
+    h->max_hp = 20000;
     h->invincible = true;
   entity_add_component(gs, e, botmove);
     botmove_t *bm = entity_get_component(gs, e, botmove);
@@ -69,6 +78,15 @@ void mr_swordboss_invoke(game_t *gs, entity_t e, event_t ev)
       break;
     case BOSS_PHASE1:
       mr_swordboss_phase1_invoke(gs, e, ev);
+      break;
+    case BOSS_PHASE2:
+      mr_swordboss_phase2_invoke(gs, e, ev);
+      break;
+    case BOSS_PHASE3:
+      mr_swordboss_phase3_invoke(gs, e, ev);
+      break;
+    case BOSS_PHASE4:
+      mr_swordboss_phase4_invoke(gs, e, ev);
       break;
     }
     break;
@@ -110,7 +128,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT2:
       shoot_shotgun(
         gs, 
-        &mr_swordboss_shooter, 
+        &mr_swordboss_shooter, 20.0,
         t->position, 
         fdotv(7.0, to_player), 1.0, 
         flight_linear, 0.0, 0.0, 
@@ -149,7 +167,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
         sprite_play(s, &mr_swordboss_attack);
         shoot_shotgun(
           gs,
-          &mr_swordboss_shooter,
+          &mr_swordboss_shooter, 20.0,
           t->position,
           vec2(0.0, 3.0), 1.0,
           flight_linear, 0.0, 0.0,
@@ -162,7 +180,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
         sprite_play(s, &mr_swordboss_attack);
         shoot_shotgun(
           gs,
-          &mr_swordboss_shooter,
+          &mr_swordboss_shooter, 20.0,
           t->position,
           mdotv(rotate_z(M_PI / 4), vec2(0.0, 3.0)), 1.0,
           flight_linear, 0.0, 0.0,
@@ -170,7 +188,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
         );
         shoot_shotgun(
           gs,
-          &mr_swordboss_shooter,
+          &mr_swordboss_shooter, 20.0,
           t->position,
           mdotv(rotate_z(-M_PI / 4), vec2(0.0, 3.0)), 1.0,
           flight_linear, 0.0, 0.0,
@@ -181,6 +199,145 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
     case ACT3:
     case ACT4:
     case ACT5:
+    case ACT6:
+    case ACT7:
+      break;
+  }
+}
+
+void mr_swordboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
+  transform_t *t = entity_get_component(gs, e, transform);
+  actor_t *a = entity_get_component(gs, e, actor);
+  health_t *h = entity_get_component(gs, e, health);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
+  sprite_t *s = entity_get_component(gs, e, sprite);
+
+  const transform_t *pt = entity_get_component(gs, gs->player, transform);
+  vector to_player = normalize(vsubv(pt->position, t->position));
+
+  switch(ev.act.name) {
+    case ACT0:
+      h->invincible = false;
+      botmove_travel(bm, vec2(24.5, 24.0), 10.0);
+      actor_stop_all(a);
+      actor_repeat(a, ACT1, 0.0, 0, 4.0);
+      break;
+    case ACT1:
+      if (t->position.x == 24.5 && t->position.y == 24.0) {
+        sprite_play(s, &mr_swordboss_attack);
+        shoot_shotgun(
+          gs, 
+          &mr_swordboss_shooter, 20.0,
+          vec2(24.0, 24.0), 
+          fdotv(1.5, to_player), 1.0, 
+          flight_accelerate, 9.0, 0.0, 
+          10, M_PI
+        );
+      }
+      break;
+    case ACT2:
+    case ACT3:
+    case ACT4:
+    case ACT5:
+    case ACT6:
+    case ACT7:
+      break;
+  }
+}
+
+void mr_swordboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
+  transform_t *t = entity_get_component(gs, e, transform);
+  actor_t *a = entity_get_component(gs, e, actor);
+  health_t *h = entity_get_component(gs, e, health);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
+  sprite_t *s = entity_get_component(gs, e, sprite);
+
+  const transform_t *pt = entity_get_component(gs, gs->player, transform);
+  vector to_player = normalize(vsubv(pt->position, t->position));
+
+  switch(ev.act.name) {
+    case ACT0:
+      h->invincible = false;
+      botmove_travel(bm, vec2(23.5, 24.0), 10.0);
+      actor_stop_all(a);
+      actor_repeat(a, ACT1, 0.0, 0, 0.5);
+      break;
+    case ACT1:
+      if (t->position.x == 23.5 && t->position.y == 24.0) {
+        sprite_play(s, &mr_swordboss_attack);
+        shoot_shotgun(
+          gs, 
+          &mr_swordboss_shooter, 1.5,
+          vec2(24.0, 24.0), 
+          fdotv(2.0, to_player), 1.0, 
+          flight_linear, 0.0, 0.0, 
+          7, M_PI
+        );
+      }
+      break;
+    case ACT2:
+    case ACT3:
+    case ACT4:
+    case ACT5:
+    case ACT6:
+    case ACT7:
+      break;
+  }
+}
+
+void mr_swordboss_phase4_invoke(game_t *gs, entity_t e, event_t ev) {
+  transform_t *t = entity_get_component(gs, e, transform);
+  actor_t *a = entity_get_component(gs, e, actor);
+  health_t *h = entity_get_component(gs, e, health);
+  botmove_t *bm = entity_get_component(gs, e, botmove);
+  sprite_t *s = entity_get_component(gs, e, sprite);
+
+  const transform_t *pt = entity_get_component(gs, gs->player, transform);
+  vector to_player = normalize(vsubv(pt->position, t->position));
+
+  switch(ev.act.name) {
+    case ACT0:
+      h->invincible = false;
+      botmove_travel(bm, vec2(32.0, 32.0), 10.0);
+      actor_stop_all(a);
+      actor_repeat(a, ACT1, 0.0, 0, 0.1);
+      break;
+    case ACT1:
+      if (t->position.x == 32.0 && t->position.y == 32.0) {
+        actor_stop(a, ACT1);
+        actor_repeat(a, ACT2, 1.0, 0, 1.0);
+        actor_repeat(a, ACT4, 4.0, 0, 4.0);
+        actor_do(a, ACT5, 20.0);
+      }
+      break;
+    case ACT2:
+      sprite_play(s, &mr_swordboss_attack);
+      actor_do(a, ACT3, 0.3);
+      break;
+    case ACT3:
+      vector v = mdotv(rotate_z(gs->time / 3.0), vec2(0.0, 2.0));
+      shoot_radial(
+        gs, 
+        &mr_swordboss_shooter, 10.0,
+        t->position, 
+        v, 1.0, 
+        flight_linear, 1.0, 22.0, 
+        10
+      );
+      break;
+    case ACT4:
+      shoot_radial(
+        gs, 
+        &mr_swordboss_shooter2, 10.0,
+        t->position, 
+        vec2(0.0, 3.0), 1.0, 
+        flight_wave, 1.0, 22.0, 
+        10
+      );
+      break;
+    case ACT5:
+      actor_stop_all(a);
+      break;
     case ACT6:
     case ACT7:
       break;

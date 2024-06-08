@@ -87,9 +87,9 @@ void GUI_init(mesh_t mesh)
   glBufferData(GL_UNIFORM_BUFFER, sizeof(ub_rectdata_t), NULL, GL_DYNAMIC_DRAW);
   glBindBufferBase(GL_UNIFORM_BUFFER, 2, GUI.ubo);
   
-  GUI.health[0] = GUI_health_create(0, "MR.WARRIOR 1");
-  GUI.health[1] = GUI_health_create(1, "MR.WARRIOR 2");
-  GUI.health[2] = GUI_health_create(2, "MR.WARRIOR 3");
+  GUI.health[0] = GUI_health_create(0, "MR.SCYTHER");
+  GUI.health[1] = GUI_health_create(1, "MR.MAGE");
+  GUI.health[2] = GUI_health_create(2, "MR.WARRIOR");
 }
 
 float get_health_width(const health_t *health)
