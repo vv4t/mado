@@ -1,53 +1,53 @@
 #include <game/shoot.h>
 #include <stdio.h>
 
-void shoot_wall(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int wall_bits, int length, float sep)
+void shoot_wall(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int wall_bits, int length, float sep)
 {
   vector v = normalize(mdotv(rotate_z(-M_PI / 2), fwd));
   vector start = vaddv(o, fdotv(-(length - 1) / 2.0, fdotv(sep, v)));
   for (int i = 0; i < length; i++) {
     if ((wall_bits >> i) & 1) {
-      shoot(gs, sh, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, side, fl, a1, a2);      
+      shoot(gs, sh, ttl, vaddv(start, fdotv((float)i, fdotv(sep, v))), fwd, side, fl, a1, a2);      
     }
   }
 }
 
-void shoot_radial(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count)
+void shoot_radial(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count)
 {
   for (int i = 0; i < count; i++) {
     float rot = i * (2 * M_PI / count);
     vector u = mdotv(rotate_z(rot), fwd);
-    shoot(gs, sh, o, u, side, fl, a1, a2);
+    shoot(gs, sh, ttl, o, u, side, fl, a1, a2);
   }
 }
 
-void shoot_shotgun(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count, float cone)
+void shoot_shotgun(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float side, flight_t fl, float a1, float a2, int count, float cone)
 {
   vector v = mdotv(rotate_z(-cone / 2), fwd);
   
   for (int i = 0; i < count; i++) {
     float rot = i * (cone / (count - 1));
     vector u = mdotv(rotate_z(rot), v);
-    shoot(gs, sh, o, u, side, fl, a1, a2);
+    shoot(gs, sh, ttl, o, u, side, fl, a1, a2);
   }
 }
 
-entity_t shoot_linear(game_t *gs, const shooter_t *sh, vector o, vector fwd)
+entity_t shoot_linear(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd)
 {
-  return shoot(gs, sh, o, fwd, 1.0, flight_linear, 0.0, 0.0);
+  return shoot(gs, sh, ttl, o, fwd, 1.0, flight_linear, 0.0, 0.0);
 }
 
-entity_t shoot_wave(game_t *gs, const shooter_t *sh, vector o, vector fwd, float amp, float freq, float phase)
+entity_t shoot_wave(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float amp, float freq, float phase)
 {
-  return shoot(gs, sh, o, fwd, amp, flight_wave, freq, phase);
+  return shoot(gs, sh, ttl, o, fwd, amp, flight_wave, freq, phase);
 }
 
-entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side, flight_t fl, float a1, float a2)
+entity_t shoot(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float side, flight_t fl, float a1, float a2)
 {
   entity_t e = entity_add(gs, ENT_BULLET);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    rb->radius = 0.25;
+    rb->radius = 0.4;
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->position = o;
@@ -67,7 +67,7 @@ entity_t shoot(game_t *gs, const shooter_t *sh, vector o, vector fwd, float side
     b->damage = sh->damage;
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_do(a, ACT0, sh->ttl);
+    actor_do(a, ACT0, ttl);
   struct bulletctx *bulletctx = entity_get_context(gs, e, sizeof(struct bulletctx));
     bulletctx->a1 = a1;
     bulletctx->a2 = a2;
@@ -113,7 +113,7 @@ vector flight_linear(float time, float a1, float a2)
 
 vector flight_wave(float time, float a1, float a2)
 {
-  return vec2(cos(time * a1 + a2), 1.0);
+  return vec4(cos(time * a1 + a2), 1.0, cos(time * a1 + a2), 1.0);
 }
 
 vector flight_accelerate(float time, float accel, float a2)

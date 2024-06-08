@@ -13,9 +13,8 @@ void game_init(game_t *gs)
   gs->num_entities = 0;
   
   player_init(gs);
-  gs->boss[0] = enemy_spawn_mr_warrior(gs, vec2(24, 24));
-  gs->boss[1] = enemy_spawn_mr_warrior(gs, vec2(26, 26));
-  gs->boss[2] = enemy_spawn_mr_warrior(gs, vec2(22, 26));
+  entity_t boss_group = enemy_spawn_mr_boss_group(gs, vec2(32/2, 4 * 32 / 6));
+  actor_do(entity_get_component(gs, boss_group, actor), ACT0, 0.0);
 }
 
 void game_update(game_t *gs, const input_t in)

@@ -14,7 +14,6 @@ static const animation_t walk_right   = { .tx = 0, .ty = 2, .tw = 1, .th = 1, .f
 static shooter_t player_shooter = {
   .tx = 0, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 0.6,
   .target = ENT_ENEMY,
   .damage = 20
 };
@@ -44,13 +43,13 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   transform_t *pt = entity_get_component(gs, e, transform);
   
   vector forward = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
-  
+
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, 0.0);
-      shoot_wave(gs, &player_shooter, pt->position, forward, 1.0, 22.0, M_PI);
+      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 22.0, 0.0);
+      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 22.0, M_PI);
       break;
     }
     break;

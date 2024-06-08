@@ -10,7 +10,6 @@ static const animation_t mr_warrior_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 
 static shooter_t mr_warrior_shooter = {
   .tx = 3, .ty = 0,
   .tw = 1, .th = 1,
-  .ttl = 1.0,
   .target = ENT_PLAYER,
   .damage = 20
 };
@@ -80,14 +79,14 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT4, 0.15);
       break;
     case ACT4:
-      shoot_shotgun(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
+      shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
       break;
     case ACT5:
       sprite_play(s, &mr_warrior_attack);
       actor_do(a, ACT6, 0.15);
       break;
     case ACT6:
-      shoot_radial(gs, &mr_warrior_shooter, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 10);      
+      shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 10);      
       break;
     }
     break;

@@ -71,4 +71,17 @@ inline static void actor_stop(actor_t *a, actname_t id)
   a->action[id].active = 0;
 }
 
+inline static void actor_stop_all(actor_t *a)
+{
+  actor_stop(a, ACT0);
+  actor_stop(a, ACT1);
+  actor_stop(a, ACT2);
+  actor_stop(a, ACT3);
+  actor_stop(a, ACT4);
+  actor_stop(a, ACT5);
+  actor_stop(a, ACT6);
+  actor_stop(a, ACT7);
+}
+
+
 #endif
