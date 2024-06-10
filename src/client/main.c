@@ -2,7 +2,7 @@
 #include <lib/input.h>
 #include <lib/map.h>
 #include <game/game.h>
-#include <renderer/renderer.h>
+#include <gfx/gfx.h>
 #include <stdio.h>
 
 #define WIDTH 1280
@@ -18,13 +18,13 @@ void update();
 int main(int argc, char *argv[])
 {
   window_init(WIDTH, HEIGHT, "mado");
-  renderer_init();
+  gfx_init();
   game_init(&mado.gs);
   mado.in = input_create();
   
   map_t map = map_load("assets/map/1.map");
   
-  renderer_load_map(map);
+  gfx_load_map(map);
   game_load_map(&mado.gs, map);
   
   int prev_time = window_get_time();
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     if (lag_time > 15) {
       lag_time -= 15;
       game_update(&mado.gs, mado.in);
-      renderer_render(&mado.gs);
+      gfx_render(&mado.gs);
     }
     
     int now_time = window_get_time();
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     prev_time = now_time;
   }
   
-  renderer_deinit();
+  gfx_deinit();
   window_deinit();
   
   return 0;
