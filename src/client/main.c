@@ -14,6 +14,7 @@ struct {
 } mado;
 
 void update();
+void window_swap();
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
       lag_time -= 15;
       game_update(&mado.gs, mado.in);
       renderer_render(&mado.gs);
+      window_swap();
     }
     
     int now_time = window_get_time();

@@ -11,6 +11,7 @@ struct {
 } window;
 
 static int window_poll(input_t in);
+void window_swap();
 
 void GLAPIENTRY
 MessageCallback( GLenum source,
@@ -39,6 +40,9 @@ void window_init(int width, int height, const char *title)
     LOG_ERROR("SDL_Error: %s", SDL_GetError());
   }
   
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
   window.window = SDL_CreateWindow(
     title,
     SDL_WINDOWPOS_CENTERED,
@@ -62,13 +66,16 @@ void window_init(int width, int height, const char *title)
   glDebugMessageCallback(MessageCallback, 0);
 }
 
+void window_swap()
+{
+  SDL_GL_SwapWindow(window.window);
+}
+
 int window_loop(input_t in)
 {
   if (!window_poll(in)) {
     return 0;
   }
-  
-  SDL_GL_SwapWindow(window.window);
   
   return 1;
 }

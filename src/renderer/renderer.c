@@ -82,7 +82,7 @@ void renderer_render(const game_t *gs)
     camera_isometric();
     camera_update(identity());
     r_map_draw();
-    
+
     camera_orthographic();
     camera_update(identity());
     r_sprite_draw(gs);
