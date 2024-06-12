@@ -1,3 +1,4 @@
+#include <gfx/gui.h>
 #include <gfx/gfx_sprite.h>
 #include <gfx/mesh.h>
 #include <gfx/shader.h>
@@ -25,31 +26,30 @@ typedef struct {
   int count;
 } rectdef_t;
 
-typedef int gui_frame_t;
-
 typedef enum {
-  gui_BOX,
-  gui_LABEL
+  GUI_BOX,
+  GUI_LABEL
 } gui_type_t;
 
-typedef struct gui_node_s {
+struct gui_node_s {
   union {
     struct {
       float w, h;
+      rectdef_t def;
     } box;
     struct {
       float size;
       int max_text;
       char *text;
+      rectdef_t def;
     } label;
   };
   float x, y;
   vector color;
   gui_type_t type;
-  struct gui_node_s *next;
-  struct gui_node_s *child;
-  rectdef_t def;
-} gui_node_t;
+  gui_node_t next;
+  gui_node_t child;
+};
 
 struct {
   mesh_t      mesh;
@@ -59,16 +59,11 @@ struct {
   gui_frame_t top;
 } gui;
 
-static gui_node_t   *gui_create_label(float x, float y, float size, const char *text, int max_text, vector color);
-static gui_node_t   *gui_create_box(float x, float y, float w, float h, vector color);
-static void         gui_add_child(gui_node_t *node, gui_node_t *child);
-static void         gui_destroy(gui_node_t *node);
+static gui_node_t gui_node_create(gui_type_t type);
 
-static gui_frame_t  gui_push(const gui_node_t *node);
-static void         gui_push_R(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h);
-static void         gui_push_box(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h);
-static void         gui_push_label(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h);
-static void         gui_reset(gui_frame_t frame);
+static void gui_push_R(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h);
+static void gui_push_box(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h);
+static void gui_push_label(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h);
 
 void gui_init(mesh_t mesh)
 {
@@ -77,8 +72,8 @@ void gui_init(mesh_t mesh)
   
   shaderdata_t sd = shaderdata_create();
     shaderdata_line(sd, define_max, SD_VERT);
-    shaderdata_source(sd, "assets/shader/vertex/gui.vert", SD_VERT);
-    shaderdata_source(sd, "assets/shader/fragment/gui.frag", SD_FRAG);
+    shaderdata_source(sd, "assets/shader/gui/gui.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/gui/gui.frag", SD_FRAG);
     gui.shader = shader_load(sd);
     glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "rectdata"), 2);
   shaderdata_destroy(sd);
@@ -91,12 +86,6 @@ void gui_init(mesh_t mesh)
   glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(ub_rectdata_t), NULL, GL_DYNAMIC_DRAW);
   glBindBufferBase(GL_UNIFORM_BUFFER, 2, gui.ubo);
-  
-  gui_node_t *rect1 = gui_create_box(0.01, 0.01, 1280.0 / 960.0 - 0.02, 0.05, vec4(1.0, 0.0, 0.0, 1.0));
-  gui_node_t *label1 = gui_create_label(0.1 * 0.05, 0.1, 1.0, "hi there", 32, vec4(1.0, 1.0, 1.0, 1.0));
-  gui_add_child(rect1, label1);
-  
-  gui_push(rect1);
 }
 
 void gui_draw(const game_t *gs)
@@ -113,7 +102,7 @@ void gui_deinit()
   glDeleteBuffers(1, &gui.ubo);
 }
 
-gui_frame_t gui_push(const gui_node_t *node)
+gui_frame_t gui_push(const gui_node_t node)
 {
   static ub_rect_t rectdata[RECT_MAX];
   int num_rect = 0;
@@ -129,41 +118,58 @@ gui_frame_t gui_push(const gui_node_t *node)
   return frame;
 }
 
+void gui_node_color(gui_node_t node, vector color)
+{
+  node->color = color;
+}
+
 void gui_reset(gui_frame_t frame)
 {
   gui.top = frame;
 }
 
-gui_node_t *gui_create_box(float x, float y, float w, float h, vector color)
+gui_node_t gui_node_create(gui_type_t type)
 {
-  gui_node_t *node = malloc(sizeof(*node));
-  node->x = x;
-  node->y = y;
-  node->color = color;
-  node->type = gui_BOX;
+  gui_node_t node = malloc(sizeof(*node));
+  node->type = type;
+  node->x = 0.0;
+  node->y = 0.0;
+  node->color = vec4(1, 1, 1, 1);
   node->next = NULL;
   node->child = NULL;
+  return node;
+}
+
+gui_node_t gui_create_box()
+{
+  gui_node_t node = gui_node_create(GUI_BOX);
+  node->box.w = 1.0;
+  node->box.h = 1.0;
+  return node;
+}
+
+gui_node_t gui_create_label(int max_text)
+{
+  gui_node_t node = gui_node_create(GUI_LABEL);
+  node->label.size = 1.0;
+  node->label.text = calloc(max_text, sizeof(char));
+  strcpy(node->label.text, "let x = 3 - 4; if \"TRUE\" =[]");
+  return node;
+}
+
+void gui_box_resize(gui_node_t node, float w, float h)
+{
   node->box.w = w;
   node->box.h = h;
-  return node;
 }
 
-gui_node_t *gui_create_label(float x, float y, float size, const char *text, int max_text, vector color)
+void gui_node_move(gui_node_t node, float x, float y)
 {
-  gui_node_t *node = malloc(sizeof(*node));
   node->x = x;
   node->y = y;
-  node->color = color;
-  node->type = gui_LABEL;
-  node->next = NULL;
-  node->child = NULL;
-  node->label.size = size;
-  node->label.text = calloc(max_text, sizeof(char));
-  strncpy(node->label.text, text, strlen(text) + 1);
-  return node;
 }
 
-void gui_add_child(gui_node_t *node, gui_node_t *child)
+void gui_node_attach(gui_node_t node, gui_node_t child)
 {
   if (!node->child) {
     node->child = child;
@@ -172,7 +178,7 @@ void gui_add_child(gui_node_t *node, gui_node_t *child)
   }
 }
 
-void gui_push_R(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h)
+void gui_push_R(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h)
 {
   if (!node) {
     return;
@@ -181,16 +187,16 @@ void gui_push_R(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, floa
   gui_push_R(rectdata, num_rect, node->next, x, y, w, h);
   
   switch (node->type) {
-  case gui_BOX:
+  case GUI_BOX:
     gui_push_box(rectdata, num_rect, node, x, y, w, h);
     break;
-  case gui_LABEL:
+  case GUI_LABEL:
     gui_push_label(rectdata, num_rect, node, x, y, w, h);
     break;
   }
 }
 
-void gui_push_box(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h)
+void gui_push_box(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h)
 {
   ub_rect_t rect = {
     .x = x + node->x * w * 960.0 / 1280.0,
@@ -204,7 +210,7 @@ void gui_push_box(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, fl
   gui_push_R(rectdata, num_rect, node->child, rect.x, rect.y, rect.w, rect.h);
 }
 
-void gui_push_label(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, float x, float y, float w, float h)
+void gui_push_label(ub_rect_t *rectdata, int *num_rect, const gui_node_t node, float x, float y, float w, float h)
 {
   ub_rect_t glyph = {
     .x = x + node->x * w * 960.0 / 1280.0,
@@ -243,7 +249,7 @@ void gui_push_label(ub_rect_t *rectdata, int *num_rect, const gui_node_t *node, 
   gui_push_R(rectdata, num_rect, node->child, glyph.x, glyph.y, glyph.w * strlen(node->label.text), glyph.h);
 }
 
-void gui_destroy(gui_node_t *node)
+void gui_destroy(gui_node_t node)
 {
   if (!node) {
     return;
@@ -253,9 +259,9 @@ void gui_destroy(gui_node_t *node)
   free(node->next);
   
   switch (node->type) {
-  case gui_BOX:
+  case GUI_BOX:
     break;
-  case gui_LABEL:
+  case GUI_LABEL:
     free(node->label.text);
     break;
   }
