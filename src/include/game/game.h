@@ -8,8 +8,8 @@
 #include <game/bullet.h>
 #include <game/health.h>
 #include <game/botmove.h>
-#include <lib/input.h>
 #include <lib/map.h>
+#include <stdbool.h>
 
 #define ENTITY_MAX 2048
 
@@ -24,6 +24,16 @@ typedef enum {
   C_health    = 1 << 5,
   C_botmove   = 1 << 6
 } component_t;
+
+typedef struct {
+  bool forward;
+  bool back;
+  bool left;
+  bool right;
+  bool rotate_left;
+  bool rotate_right;
+  bool attack;
+} usercmd_t;
 
 typedef struct game_s {
   transform_t transform[ENTITY_MAX];
@@ -49,7 +59,7 @@ typedef struct game_s {
 
 void game_init(game_t *gs);
 void game_load_map(game_t *gs, map_t map);
-void game_update(game_t *gs, const input_t in);
+void game_update(game_t *gs, const usercmd_t *usercmd);
 
 entity_t  entity_add(game_t *gs, entname_t name);
 void      entity_kill(game_t *gs, entity_t e);
