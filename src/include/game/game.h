@@ -33,6 +33,8 @@ typedef struct {
   bool rotate_left;
   bool rotate_right;
   bool attack;
+  float aim_x;
+  float aim_y;
 } usercmd_t;
 
 typedef struct game_s {

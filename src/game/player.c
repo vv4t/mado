@@ -92,7 +92,7 @@ void player_move(game_t *gs, const usercmd_t *usercmd)
   if (usercmd->back) ps->repeat = &walk_back;
   if (usercmd->left) ps->repeat = &walk_left;
   if (usercmd->right) ps->repeat = &walk_right;
-  // pt->rotation.z = gs->view_rotation.z + atan2(-input_get_mouse_x(in), input_get_mouse_y(in));
+  pt->rotation.z = gs->view_rotation.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
   
   walk.y += usercmd->forward;
   walk.y -= usercmd->back;

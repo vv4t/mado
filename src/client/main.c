@@ -28,6 +28,7 @@ static int poll();
 
 static void sdl_init();
 static void sdl_deinit();
+static void mouse_move(int x, int y);
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +98,7 @@ int poll()
       mouse_press(event.button.button, 1);
       break;
     case SDL_MOUSEMOTION:
-      // input_mouse_move(in, event.motion.x / (float) WIDTH, event.motion.y / (float) HEIGHT);
+      mouse_move(event.motion.x, event.motion.y);
       break;
     }
   }
@@ -105,9 +106,17 @@ int poll()
   return 1;
 }
 
+void mouse_move(int x, int y)
+{
+  client.usercmd.aim_x = x / (float) WIDTH - 0.5;
+  client.usercmd.aim_y = y / (float) HEIGHT - 0.5;
+}
+
 void key_press(int key, int action)
 {
   switch (key) {
+  case '`':
+    break;
   case 'w':
     client.usercmd.forward = action;
     break;
