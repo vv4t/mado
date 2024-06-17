@@ -25,7 +25,8 @@ void gui_box_resize(gui_node_t node, float w, float h);
 void gui_box_color(gui_node_t node, vector color);
 
 gui_node_t gui_create_text(int col, int row);
-void gui_text_printf(gui_node_t node, const char *format);
+void gui_text_printf(gui_node_t node, const char *format, ...);
+void gui_text_reset(gui_node_t node);
 void gui_text_resize(gui_node_t node, float size);
 void gui_text_color(gui_node_t node, vector color);
 

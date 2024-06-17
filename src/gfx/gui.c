@@ -7,6 +7,7 @@
 #include <lib/log.h>
 #include <GL/glew.h>
 #include <string.h>
+#include <stdarg.h>
 #include <stdio.h>
 
 #define RECT_MAX  256
@@ -315,15 +316,23 @@ void gui_text_color(gui_node_t node, vector color)
   node->text.color = color;
 }
 
-void gui_text_printf(gui_node_t node, const char *format)
-{ 
+void gui_text_printf(gui_node_t node, const char *format, ...)
+{
   int len = node->text.row * node->text.col - strlen(node->text.text);
   
   if (len <= 0) {
     return;
   }
   
-  snprintf(&node->text.text[strlen(node->text.text)], len, format);
+  va_list args;
+  va_start(args, format);
+  vsnprintf(&node->text.text[strlen(node->text.text)], len, format, args);
+  va_end(args);
+}
+
+void gui_text_reset(gui_node_t node)
+{
+  node->text.text[0] = 0;
 }
 
 void gui_inputbox_resize(gui_node_t node, float size)

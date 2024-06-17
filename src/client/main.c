@@ -18,6 +18,8 @@ struct {
   int prev_time;
   int lag_time;
   
+  gui_node_t debug_info;
+  
   usercmd_t usercmd;
   game_t gs;
   bool focus_game;
@@ -32,7 +34,8 @@ static void key_press(const SDL_Event *event, int action);
 static void mouse_press(const SDL_Event *event, int action);
 static void mouse_move(const SDL_Event *event);
 
-static void cl_hud_init();
+static void hud_init();
+static void hud_update();
 
 static void sdl_init();
 static void sdl_deinit();
@@ -54,8 +57,8 @@ void init()
 {
   sdl_init();
   gfx_init();
-  cl_hud_init();
   game_init(&client.gs);
+  hud_init();
   
   map_t map = map_load("assets/map/1.map");
   
@@ -71,6 +74,7 @@ void update()
   if (client.lag_time > 0) {
     client.lag_time -= 15;
     game_update(&client.gs, &client.usercmd);
+    hud_update();
     gfx_render(&client.gs);
     SDL_GL_SwapWindow(client.window);
   }
@@ -80,13 +84,33 @@ void update()
   client.prev_time = now_time;
 }
 
-void cl_hud_init()
+void hud_init()
 {
+  client.debug_info = gui_create_text(32, 3);
+    gui_text_printf(client.debug_info, "hi there");
+    gui_text_resize(client.debug_info, 8.0 / 480.0);
+  gui_push(client.debug_info);
+  
+  /*
   gui_node_t inputbox = gui_create_inputbox(64);
     gui_inputbox_resize(inputbox, 16.0 / 980.0);
     gui_node_bind(inputbox, inputbox_invoke);
   gui_push(inputbox);
   gui_focus(inputbox);
+  */
+}
+
+void hud_update()
+{
+  transform_t *transform = entity_get_component(&client.gs, client.gs.player, transform);
+  
+  gui_text_reset(client.debug_info);
+  gui_text_printf(
+    client.debug_info,
+    "x: %f y: %f\nmore things",
+    transform->position.x, transform->position.y
+  );
+  gui_node_update(client.debug_info);
 }
 
 int poll()
