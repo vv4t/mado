@@ -5,6 +5,7 @@
 #include <gfx/gui.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #define WIDTH 1280
@@ -13,22 +14,28 @@
 struct {
   SDL_Window *window;
   SDL_GLContext *gl;
-  usercmd_t usercmd;
+  
   int prev_time;
   int lag_time;
+  
+  usercmd_t usercmd;
   game_t gs;
+  bool focus_game;
 } client;
 
 static void init();
 static void deinit();
 static void update();
-static void key_press(int key, int action);
-static void mouse_press(int button, int action);
 static int poll();
+
+static void key_press(const SDL_Event *event, int action);
+static void mouse_press(const SDL_Event *event, int action);
+static void mouse_move(const SDL_Event *event);
+
+static void cl_hud_init();
 
 static void sdl_init();
 static void sdl_deinit();
-static void mouse_move(int x, int y);
 
 int main(int argc, char *argv[])
 {
@@ -38,23 +45,17 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+void inputbox_invoke(gui_node_t node, gui_event_t event)
+{
+  printf("%s\n", gui_inputbox_get_value(node));
+}
+
 void init()
 {
   sdl_init();
   gfx_init();
+  cl_hud_init();
   game_init(&client.gs);
-  
-  gui_node_t box = gui_create_box();
-    gui_node_move(box, 0.01565, 0.01565);
-    gui_node_color(box, vec4(0.3, 0.3, 0.3, 0.5));
-    gui_box_resize(box, 0.8, 0.4);
-  gui_node_t text = gui_create_text(12, 4);
-    gui_node_color(text, vec4(1, 1, 1, 1));
-    gui_node_move(text, 0.01 * 0.5, 0.01);
-    gui_text_resize(text, 0.125 / 2 / 2);
-    gui_text_printf(text, "there is alot of text that you can put");
-  gui_node_attach(box, text);
-  gui_push(box);
   
   map_t map = map_load("assets/map/1.map");
   
@@ -67,7 +68,7 @@ void init()
 
 void update()
 {
-  if (client.lag_time > 15) {
+  if (client.lag_time > 0) {
     client.lag_time -= 15;
     game_update(&client.gs, &client.usercmd);
     gfx_render(&client.gs);
@@ -79,6 +80,15 @@ void update()
   client.prev_time = now_time;
 }
 
+void cl_hud_init()
+{
+  gui_node_t inputbox = gui_create_inputbox(64);
+    gui_inputbox_resize(inputbox, 16.0 / 980.0);
+    gui_node_bind(inputbox, inputbox_invoke);
+  gui_push(inputbox);
+  gui_focus(inputbox);
+}
+
 int poll()
 {
   SDL_Event event;
@@ -86,19 +96,23 @@ int poll()
     switch (event.type) {
     case SDL_QUIT:
       return 0;
+    case SDL_TEXTINPUT:
+      gui_text_input(event.text.text);
+      break;
     case SDL_KEYUP:
-      key_press(event.key.keysym.sym, 0);
+      key_press(&event, 0);
       break;
     case SDL_KEYDOWN:
-      key_press(event.key.keysym.sym, 1);
+      key_press(&event, 1);
+      break;
     case SDL_MOUSEBUTTONUP:
-      mouse_press(event.button.button, 0);
+      mouse_press(&event, 0);
       break;
     case SDL_MOUSEBUTTONDOWN:
-      mouse_press(event.button.button, 1);
+      mouse_press(&event, 1);
       break;
     case SDL_MOUSEMOTION:
-      mouse_move(event.motion.x, event.motion.y);
+      mouse_move(&event);
       break;
     }
   }
@@ -106,17 +120,19 @@ int poll()
   return 1;
 }
 
-void mouse_move(int x, int y)
+void mouse_move(const SDL_Event *event)
 {
-  client.usercmd.aim_x = x / (float) WIDTH - 0.5;
-  client.usercmd.aim_y = y / (float) HEIGHT - 0.5;
+  client.usercmd.aim_x = event->motion.x / (float) WIDTH - 0.5;
+  client.usercmd.aim_y = event->motion.y / (float) HEIGHT - 0.5;
 }
 
-void key_press(int key, int action)
+void key_press(const SDL_Event *event, int action)
 {
-  switch (key) {
-  case '`':
-    break;
+  if (action == 1) {
+    gui_key_press(event->key.keysym.sym);
+  }
+  
+  switch (event->key.keysym.sym) {
   case 'w':
     client.usercmd.forward = action;
     break;
@@ -135,12 +151,16 @@ void key_press(int key, int action)
   case 'e':
     client.usercmd.rotate_right = action;
     break;
-  } 
+  }
 }
 
-void mouse_press(int button, int action)
+void mouse_press(const SDL_Event *event, int action)
 {
-  switch (button) {
+  if (event->button.button == 1 && action == 1) {
+    gui_click(event->button.x / (float) HEIGHT, event->button.y / (float) HEIGHT);
+  }
+  
+  switch (event->button.button) {
   case 1:
     client.usercmd.attack = action;
     break;
@@ -149,7 +169,6 @@ void mouse_press(int button, int action)
 
 void deinit()
 {
-  // game_deinit(&client.gs);
   gfx_deinit();
   sdl_deinit();
 }
