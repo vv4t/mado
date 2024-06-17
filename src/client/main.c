@@ -48,11 +48,6 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void inputbox_invoke(gui_node_t node, gui_event_t event)
-{
-  printf("%s\n", gui_inputbox_get_value(node));
-}
-
 void init()
 {
   sdl_init();
@@ -87,17 +82,8 @@ void update()
 void hud_init()
 {
   client.debug_info = gui_create_text(32, 3);
-    gui_text_printf(client.debug_info, "hi there");
     gui_text_resize(client.debug_info, 8.0 / 480.0);
   gui_push(client.debug_info);
-  
-  /*
-  gui_node_t inputbox = gui_create_inputbox(64);
-    gui_inputbox_resize(inputbox, 16.0 / 980.0);
-    gui_node_bind(inputbox, inputbox_invoke);
-  gui_push(inputbox);
-  gui_focus(inputbox);
-  */
 }
 
 void hud_update()
@@ -107,7 +93,7 @@ void hud_update()
   gui_text_reset(client.debug_info);
   gui_text_printf(
     client.debug_info,
-    "x: %f y: %f\nmore things",
+    "x:%f y:%f\nmore things",
     transform->position.x, transform->position.y
   );
   gui_node_update(client.debug_info);

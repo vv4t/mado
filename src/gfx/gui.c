@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define RECT_MAX  256
+#define RECT_MAX  512
 
 typedef struct {
   float x, y, w, h;
@@ -53,6 +53,7 @@ struct gui_node_s {
       gui_node_t box;
     } inputbox;
   };
+  bool hidden;
   float x, y;
   space_t space;
   gui_invoke_t invoke;
@@ -246,6 +247,7 @@ gui_node_t gui_create_text(int col, int row)
   node->text.col = col;
   node->text.row = row;
   node->text.text = calloc(col * row, sizeof(char));
+  node->text.text[0] = 0;
   node->text.color = vec4(1, 1, 1, 1);
   return node;
 }
@@ -488,6 +490,26 @@ void gui_update_text(gui_node_t node)
   for (int i = strlen(node->text.text); i < node->text.row * node->text.col; i++) {
     rect_t rect = {0};
     rect_update(&rect, node->text.rect_ptr + i);
+  }
+}
+
+void gui_node_hide(gui_node_t node, bool hidden)
+{
+  if (!node) {
+    return;
+  }
+  
+  node->hidden = hidden;
+  switch (node->type) {
+  case GUI_INPUTBOX:
+    gui_node_hide(node->inputbox.div, hidden);
+    break;
+  case GUI_DIV:
+    gui_node_hide(node->div.child, hidden);
+    break;
+  case GUI_BOX:
+  case GUI_TEXT:
+    break;
   }
 }
 

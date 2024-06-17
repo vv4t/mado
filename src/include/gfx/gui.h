@@ -1,6 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include <stdbool.h>
 #include <gfx/mesh.h>
 
 typedef struct gui_node_s *gui_node_t;
@@ -17,7 +18,7 @@ void gui_node_move(gui_node_t node, float x, float y);
 void gui_node_destroy(gui_node_t node);
 void gui_node_update(gui_node_t node);
 void gui_node_bind(gui_node_t node, gui_invoke_t invoke);
-void gui_node_hide(gui_node_t node);
+void gui_node_hide(gui_node_t node, bool hidden);
 gui_frame_t gui_push(gui_node_t node);
 
 gui_node_t gui_create_box();
@@ -39,7 +40,6 @@ void gui_inputbox_resize(gui_node_t node, float size);
 const char *gui_inputbox_get_value(gui_node_t node);
 // void gui_inputbox_text_color(gui_node_t node, vector color);
 // void gui_inputbox_box_color(gui_node_t node, vector color);
-// void gui_inputbox_focus(gui_node_t node);
 
 void gui_focus(gui_node_t node);
 void gui_unfocus();
