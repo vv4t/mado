@@ -1,9 +1,9 @@
-#include <renderer/r_sprite.h>
-#include <renderer/r_def.h>
-#include <renderer/camera.h>
-#include <renderer/mesh.h>
-#include <renderer/shader.h>
-#include <renderer/texture.h>
+#include <gfx/gfx_sprite.h>
+#include <gfx/r_def.h>
+#include <gfx/camera.h>
+#include <gfx/mesh.h>
+#include <gfx/shader.h>
+#include <gfx/texture.h>
 #include <lib/math3d.h>
 #include <GL/glew.h>
 #include <stdio.h>
@@ -24,9 +24,9 @@ struct {
   mesh_t    mesh;
   shader_t  shader;
   GLuint    ubo;
-} r_sprite;
+} gfx_sprite;
 
-void r_sprite_init(mesh_t mesh)
+void gfx_sprite_init(mesh_t mesh)
 {
   char define_max[256];
   snprintf(define_max, sizeof(define_max), "#define SPRITE_MAX %i", SPRITE_MAX);
@@ -36,25 +36,25 @@ void r_sprite_init(mesh_t mesh)
     shaderdata_line(sd, define_max, SD_VERT);
     shaderdata_source(sd, "assets/shader/vertex/sprite.vert", SD_VERT);
     shaderdata_source(sd, "assets/shader/fragment/world.frag", SD_FRAG);
-    r_sprite.shader = shader_load(sd);
-    camera_shader_attach(r_sprite.shader);
-    glUniformBlockBinding(r_sprite.shader, glGetUniformBlockIndex(r_sprite.shader, "spritedata"), 1);
-    glUniform1i(glGetUniformLocation(r_sprite.shader, "emit"), 1);
+    gfx_sprite.shader = shader_load(sd);
+    camera_shader_attach(gfx_sprite.shader);
+    glUniformBlockBinding(gfx_sprite.shader, glGetUniformBlockIndex(gfx_sprite.shader, "spritedata"), 1);
+    glUniform1i(glGetUniformLocation(gfx_sprite.shader, "emit"), 1);
   shaderdata_destroy(sd);
   
-  r_sprite.mesh = mesh;
+  gfx_sprite.mesh = mesh;
   
-  glGenBuffers(1, &r_sprite.ubo);
-  glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
+  glGenBuffers(1, &gfx_sprite.ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, gfx_sprite.ubo);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(ub_spritedata_t), NULL, GL_DYNAMIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 1, r_sprite.ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 1, gfx_sprite.ubo);
 }
 
-void r_sprite_draw(const game_t *gs)
+void gfx_sprite_draw(const game_t *gs)
 {
   static ub_spritedata_t spritedata;
   
-  shader_bind(r_sprite.shader);
+  shader_bind(gfx_sprite.shader);
   
   matrix inv_view = inverse(mat3_from_mat4(camera_get_view()));
   
@@ -101,20 +101,20 @@ void r_sprite_draw(const game_t *gs)
     };
     
     if (num_sprite >= SPRITE_MAX) {
-      glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
+      glBindBuffer(GL_UNIFORM_BUFFER, gfx_sprite.ubo);
       glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ub_sprite_t) * num_sprite, spritedata.sprite);
-      glDrawArraysInstanced(GL_TRIANGLES, r_sprite.mesh.offset, r_sprite.mesh.count, num_sprite);
+      glDrawArraysInstanced(GL_TRIANGLES, gfx_sprite.mesh.offset, gfx_sprite.mesh.count, num_sprite);
       num_sprite = 0;
     }
   }
   
-  glBindBuffer(GL_UNIFORM_BUFFER, r_sprite.ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, gfx_sprite.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ub_sprite_t) * num_sprite, spritedata.sprite);
-  glDrawArraysInstanced(GL_TRIANGLES, r_sprite.mesh.offset, r_sprite.mesh.count, num_sprite);
+  glDrawArraysInstanced(GL_TRIANGLES, gfx_sprite.mesh.offset, gfx_sprite.mesh.count, num_sprite);
 }
 
-void r_sprite_deinit()
+void gfx_sprite_deinit()
 {
-  shader_destroy(r_sprite.shader);
-  glDeleteBuffers(1, &r_sprite.ubo);
+  shader_destroy(gfx_sprite.shader);
+  glDeleteBuffers(1, &gfx_sprite.ubo);
 }

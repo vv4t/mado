@@ -1,4 +1,4 @@
-#include <renderer/mesh.h>
+#include <gfx/mesh.h>
 #include <lib/log.h>
 #include <stdio.h>
 #include <stdlib.h>

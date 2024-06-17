@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include <lib/math3d.h>
-#include <renderer/shader.h>
+#include <gfx/shader.h>
 
 void camera_init(float w, float h);
 

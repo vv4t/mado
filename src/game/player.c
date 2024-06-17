@@ -2,8 +2,8 @@
 #include <game/shoot.h>
 #include <stdio.h>
 
-void player_move(game_t *gs, const input_t in);
-void player_attack(game_t *gs, const input_t in);
+void player_move(game_t *gs, const usercmd_t *usercmd);
+void player_attack(game_t *gs, const usercmd_t *usercmd);
 void player_invoke(game_t *gs, entity_t e, event_t ev);
 
 static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
@@ -61,24 +61,24 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   }
 }
 
-void player_update(game_t *gs, const input_t in)
+void player_update(game_t *gs, const usercmd_t *usercmd)
 {
-  player_move(gs, in);
-  player_attack(gs, in);
+  player_move(gs, usercmd);
+  player_attack(gs, usercmd);
 }
 
-void player_attack(game_t *gs, const input_t in)
+void player_attack(game_t *gs, const usercmd_t *usercmd)
 {
   actor_t *a = entity_get_component(gs, gs->player, actor);
   
-  if (input_is_mouse_pressed(in, 1)) {
+  if (usercmd->attack) {
     actor_start(a, ACT0);
   } else {
     actor_stop(a, ACT0);
   }
 }
 
-void player_move(game_t *gs, const input_t in)
+void player_move(game_t *gs, const usercmd_t *usercmd)
 {
   sprite_t *ps = entity_get_component(gs, gs->player, sprite);
   transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -87,16 +87,16 @@ void player_move(game_t *gs, const input_t in)
   float speed = 9.0;
   vector walk = vec2(0, 0);
   
-  if (input_is_key_pressed(in, 'w')) ps->repeat = &walk_forward;
-  if (input_is_key_pressed(in, 's')) ps->repeat = &walk_back;
-  if (input_is_key_pressed(in, 'a')) ps->repeat = &walk_left;
-  if (input_is_key_pressed(in, 'd')) ps->repeat = &walk_right;
-  pt->rotation.z = gs->view_rotation.z + atan2(-input_get_mouse_x(in), input_get_mouse_y(in));
+  if (usercmd->forward) ps->repeat = &walk_forward;
+  if (usercmd->back) ps->repeat = &walk_back;
+  if (usercmd->left) ps->repeat = &walk_left;
+  if (usercmd->right) ps->repeat = &walk_right;
+  pt->rotation.z = gs->view_rotation.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
   
-  walk.y += input_is_key_pressed(in, 'w');
-  walk.y -= input_is_key_pressed(in, 's');
-  walk.x -= input_is_key_pressed(in, 'a');
-  walk.x += input_is_key_pressed(in, 'd');
+  walk.y += usercmd->forward;
+  walk.y -= usercmd->back;
+  walk.x -= usercmd->left;
+  walk.x += usercmd->right;
   
   if (dot(walk, walk) > 0.0) {
     walk = fdotv(speed, normalize(mdotv(rotate_z(gs->view_rotation.z), walk)));
