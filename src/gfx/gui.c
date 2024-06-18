@@ -53,7 +53,7 @@ struct gui_node_s {
       gui_node_t box;
     } inputbox;
   };
-  bool hidden;
+  bool visible;
   float x, y;
   space_t space;
   gui_invoke_t invoke;
@@ -80,8 +80,9 @@ static int gui_push_node(int rect_num, gui_node_t node);
 
 static void gui_click_R(gui_node_t node, float x, float y);
 
+static void gui_hide_node(gui_node_t node, bool hide_next);
 static void gui_update_node_R(gui_node_t node, space_t space);
-static void gui_update_div(gui_node_t node);
+static void gui_update_child(gui_node_t node, gui_node_t child, float w, float h);
 static void gui_update_box(gui_node_t node);
 static void gui_update_text(gui_node_t node);
 
@@ -160,21 +161,19 @@ void gui_key_press(int key)
     return;
   }
   
-  if (gui.focus->type == GUI_INPUTBOX) {
+  gui_node_t focus = gui.focus;
+  
+  if (focus->type == GUI_INPUTBOX) {
     if (key == 8) {
-      int len = strlen(gui.focus->inputbox.text->text.text);
+      int len = strlen(focus->inputbox.text->text.text);
       if (len > 0) {
-        gui.focus->inputbox.text->text.text[len - 1] = 0;
-        gui_node_update(gui.focus);
+        focus->inputbox.text->text.text[len - 1] = 0;
+        gui_node_update(focus);
       }
     }
     
-    if (key == 13) {
-      if (gui.focus->invoke) {
-        gui.focus->invoke(gui.focus, GUI_TEXT_INPUT);
-      }
-      gui.focus->inputbox.text->text.text[0] = 0;
-      gui_node_update(gui.focus);
+    if (key == 13 && focus->invoke) {
+      focus->invoke(focus, GUI_TEXT_INPUT);
     }
   }
 }
@@ -215,7 +214,7 @@ void gui_node_bind(gui_node_t node, gui_invoke_t invoke)
   node->invoke = invoke;
 }
 
-void gui_reset(gui_frame_t frame)
+void gui_clear(gui_frame_t frame)
 {
   gui.top = frame;
 }
@@ -227,6 +226,7 @@ gui_node_t gui_node_create(gui_type_t type)
   node->space = (space_t) { .x = 0, .y = 0, .w = 1, .h = 1 };
   node->x = 0.0;
   node->y = 0.0;
+  node->visible = true;
   node->next = NULL;
   return node;
 }
@@ -271,7 +271,6 @@ gui_node_t gui_create_inputbox(int max_text)
     gui_box_color(box, vec4(0.3, 0.3, 0.3, 0.5));
   gui_node_t text = gui_create_text(max_text, 1);
     gui_text_color(text, vec4(1, 1, 1, 1));
-    gui_text_printf(text, "hi there");
   gui_div_attach(div, box);
   gui_div_attach(div, text);
   
@@ -332,9 +331,14 @@ void gui_text_printf(gui_node_t node, const char *format, ...)
   va_end(args);
 }
 
-void gui_text_reset(gui_node_t node)
+void gui_text_clear(gui_node_t node)
 {
   node->text.text[0] = 0;
+}
+
+void gui_inputbox_clear(gui_node_t node)
+{
+  gui_text_clear(node->inputbox.text);
 }
 
 void gui_inputbox_resize(gui_node_t node, float size)
@@ -396,32 +400,36 @@ void gui_update_node_R(gui_node_t node, space_t space)
   gui_update_node_R(node->next, space);
   
   node->space = space;
-  switch (node->type) {
-  case GUI_INPUTBOX:
-    gui_update_div(node->inputbox.div);
-    break;
-  case GUI_DIV:
-    gui_update_div(node);
-    break;
-  case GUI_BOX:
-    gui_update_box(node);
-    break;
-  case GUI_TEXT:
-    gui_update_text(node);
-    break;
+  if (!node->visible) {
+    gui_hide_node(node, false);
+  } else {
+    switch (node->type) {
+    case GUI_INPUTBOX:
+      gui_update_child(node, node->inputbox.div, 1.0, 1.0);
+      break;
+    case GUI_DIV:
+      gui_update_child(node, node->div.child, node->div.w, node->div.h);
+      break;
+    case GUI_BOX:
+      gui_update_box(node);
+      break;
+    case GUI_TEXT:
+      gui_update_text(node);
+      break;
+    }
   }
 }
 
-void gui_update_div(gui_node_t node)
+void gui_update_child(gui_node_t node, gui_node_t child, float w, float h)
 {
   space_t new_space = (space_t) {
     .x = node->space.x + node->x * node->space.w,
     .y = node->space.y + node->y * node->space.h,
-    .w = node->box.w * node->space.w,
-    .h = node->box.h * node->space.h,
+    .w = w * node->space.w,
+    .h = h * node->space.h,
   };
   
-  gui_update_node_R(node->div.child, new_space);
+  gui_update_node_R(child, new_space);
 }
 
 void gui_update_box(gui_node_t node)
@@ -493,24 +501,58 @@ void gui_update_text(gui_node_t node)
   }
 }
 
-void gui_node_hide(gui_node_t node, bool hidden)
+void gui_hide_node(gui_node_t node, bool hide_next)
 {
   if (!node) {
     return;
   }
   
-  node->hidden = hidden;
+  if (hide_next) {
+    gui_hide_node(node->next, true);
+  }
+  
+  rect_t rect = {0};
   switch (node->type) {
   case GUI_INPUTBOX:
-    gui_node_hide(node->inputbox.div, hidden);
+    gui_hide_node(node->inputbox.div, true);
     break;
   case GUI_DIV:
-    gui_node_hide(node->div.child, hidden);
+    gui_hide_node(node->div.child, true);
+    break;
+  case GUI_BOX:
+    rect_update(&rect, node->box.rect_ptr);
+    break;
+  case GUI_TEXT:
+    for (int i = 0; i < node->text.row * node->text.col; i++) {
+      rect_update(&rect, node->text.rect_ptr + i);
+    }
+    break;
+  }
+}
+
+void gui_node_show(gui_node_t node, bool visible)
+{
+  if (!node) {
+    return;
+  }
+  
+  node->visible = visible;
+  switch (node->type) {
+  case GUI_INPUTBOX:
+    gui_node_show(node->inputbox.div, visible);
+    break;
+  case GUI_DIV:
+    gui_node_show(node->div.child, visible);
     break;
   case GUI_BOX:
   case GUI_TEXT:
     break;
   }
+}
+
+bool gui_node_is_visible(gui_node_t node)
+{
+  return node->visible;
 }
 
 void gui_destroy(gui_node_t node)

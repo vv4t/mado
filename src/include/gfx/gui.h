@@ -18,7 +18,8 @@ void gui_node_move(gui_node_t node, float x, float y);
 void gui_node_destroy(gui_node_t node);
 void gui_node_update(gui_node_t node);
 void gui_node_bind(gui_node_t node, gui_invoke_t invoke);
-void gui_node_hide(gui_node_t node, bool hidden);
+void gui_node_show(gui_node_t node, bool visible);
+bool gui_node_is_visible(gui_node_t node);
 gui_frame_t gui_push(gui_node_t node);
 
 gui_node_t gui_create_box();
@@ -27,7 +28,7 @@ void gui_box_color(gui_node_t node, vector color);
 
 gui_node_t gui_create_text(int col, int row);
 void gui_text_printf(gui_node_t node, const char *format, ...);
-void gui_text_reset(gui_node_t node);
+void gui_text_clear(gui_node_t node);
 void gui_text_resize(gui_node_t node, float size);
 void gui_text_color(gui_node_t node, vector color);
 
@@ -37,6 +38,7 @@ void gui_div_resize(gui_node_t node, float w, float h);
 
 gui_node_t gui_create_inputbox(int max_text);
 void gui_inputbox_resize(gui_node_t node, float size);
+void gui_inputbox_clear(gui_node_t node);
 const char *gui_inputbox_get_value(gui_node_t node);
 // void gui_inputbox_text_color(gui_node_t node, vector color);
 // void gui_inputbox_box_color(gui_node_t node, vector color);
