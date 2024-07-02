@@ -18,7 +18,7 @@ struct {
   int prev_time;
   int lag_time;
   
-  gui_node_t c_in;
+  gui_node_t console;
   gui_node_t debug_info;
   
   usercmd_t usercmd;
@@ -80,7 +80,7 @@ void update()
   client.prev_time = now_time;
 }
 
-void c_in_invoke(gui_node_t node, gui_event_t event)
+void console_invoke(gui_node_t node, gui_event_t event)
 {
   if (event == GUI_TEXT_INPUT) {
     printf("%s\n", gui_inputbox_get_value(node));
@@ -95,18 +95,23 @@ void c_in_invoke(gui_node_t node, gui_event_t event)
 
 void hud_init()
 {
-  gui_node_t c_in = gui_create_inputbox(64);
-    gui_node_bind(c_in, c_in_invoke);
-    gui_node_move(c_in, 0.0, 1.0 - 8.0 / 480.0);
-    gui_inputbox_resize(c_in, 8.0 / 480.0);
-    gui_node_show(c_in, false);
-  gui_push(c_in);
+  gui_node_t console = gui_create_inputbox(64);
+    gui_node_bind(console, console_invoke);
+    gui_node_move(console, 0.0, 1.0 - 8.0 / 480.0);
+    gui_inputbox_resize(console, 8.0 / 480.0);
+    gui_node_show(console, false);
+  gui_push(console);
+  
+  gui_node_t button = gui_create_button("play");
+    gui_node_move(button, 0.0125, 0.4);
+    gui_button_resize(button, 0.125, 0.035);
+  gui_push(button);
   
   gui_node_t debug_info = gui_create_text(32, 4);
     gui_text_resize(debug_info, 8.0 / 480.0);
   gui_push(debug_info);
   
-  client.c_in = c_in;
+  client.console = console;
   client.debug_info = debug_info;
 }
 
@@ -114,15 +119,8 @@ void hud_update()
 {
   transform_t *pt = entity_get_component(&client.gs, client.gs.player, transform);
   
-  health_t *b1_h = entity_get_component(&client.gs, client.gs.boss[0], health);
-  health_t *b2_h = entity_get_component(&client.gs, client.gs.boss[1], health);
-  health_t *b3_h = entity_get_component(&client.gs, client.gs.boss[2], health);
-  
   gui_text_clear(client.debug_info);
   gui_text_printf(client.debug_info, "x:%f y:%f\n", pt->position.x, pt->position.y);
-  gui_text_printf(client.debug_info, "Mr.Boss1:%i\n", b1_h->hp);
-  gui_text_printf(client.debug_info, "Mr.Boss2:%i\n", b2_h->hp);
-  gui_text_printf(client.debug_info, "Mr.Boss3:%i", b3_h->hp);
   gui_node_update(client.debug_info);
 }
 
@@ -166,16 +164,16 @@ void mouse_move(const SDL_Event *event)
 void key_press(const SDL_Event *event, int action)
 {
   if (action == 1) {
-    if (!gui_node_is_visible(client.c_in) && event->key.keysym.sym == '`') {
-      gui_node_show(client.c_in, true);
-      gui_node_update(client.c_in);
-      gui_focus(client.c_in);
+    if (!gui_node_is_visible(client.console) && event->key.keysym.sym == '`') {
+      gui_node_show(client.console, true);
+      gui_node_update(client.console);
+      gui_focus(client.console);
       SDL_StopTextInput();
       SDL_StartTextInput();
     }
-    
-    gui_key_press(event->key.keysym.sym);
   }
+  
+  gui_key_press(event->key.keysym.sym, action);
   
   switch (event->key.keysym.sym) {
   case 'w':
@@ -201,8 +199,8 @@ void key_press(const SDL_Event *event, int action)
 
 void mouse_press(const SDL_Event *event, int action)
 {
-  if (event->button.button == 1 && action == 1) {
-    gui_click(event->button.x / (float) HEIGHT, event->button.y / (float) HEIGHT);
+  if (event->button.button == 1) {
+    gui_mouse_press(event->button.x / (float) HEIGHT, event->button.y / (float) HEIGHT, action);
   }
   
   switch (event->button.button) {

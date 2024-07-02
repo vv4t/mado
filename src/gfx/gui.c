@@ -26,7 +26,8 @@ typedef enum {
   GUI_DIV,
   GUI_BOX,
   GUI_TEXT,
-  GUI_INPUTBOX
+  GUI_INPUTBOX,
+  GUI_BUTTON
 } gui_type_t;
 
 struct gui_node_s {
@@ -48,10 +49,16 @@ struct gui_node_s {
       vector color;
     } text;
     struct {
+      struct {
+        gui_node_t text;
+        gui_node_t box;
+      } inputbox;
+      struct {
+        gui_node_t text;
+        gui_node_t box;
+      } button;
       gui_node_t div;
-      gui_node_t text;
-      gui_node_t box;
-    } inputbox;
+    } sub;
   };
   bool visible;
   float x, y;
@@ -78,7 +85,8 @@ static gui_node_t gui_node_create(gui_type_t type);
 static void rect_update(const rect_t *rect, int offset);
 static int gui_push_node(int rect_num, gui_node_t node);
 
-static void gui_click_R(gui_node_t node, float x, float y);
+static void gui_mouse_press_R(gui_node_t node, float x, float y, int action);
+static void gui_mouse_press_button(gui_node_t node, float x, float y, int action);
 
 static void gui_hide_node(gui_node_t node, bool hide_next);
 static void gui_update_node_R(gui_node_t node, space_t space);
@@ -134,7 +142,8 @@ gui_frame_t gui_push(gui_node_t node)
   if (!gui.root) {
     gui.root = node;
   } else {
-    gui.root->next = node;
+    node->next = gui.root;
+    gui.root = node;
   }
   
   return frame;
@@ -150,12 +159,12 @@ void gui_unfocus()
   gui.focus = NULL;
 }
 
-void gui_click(float x, float y)
+void gui_mouse_press(float x, float y, int action)
 {
-  gui_click_R(gui.root, x, y);
+  gui_mouse_press_R(gui.root, x, y, action);
 }
 
-void gui_key_press(int key)
+void gui_key_press(int key, int action)
 {
   if (!gui.focus) {
     return;
@@ -164,10 +173,10 @@ void gui_key_press(int key)
   gui_node_t focus = gui.focus;
   
   if (focus->type == GUI_INPUTBOX) {
-    if (key == 8) {
-      int len = strlen(focus->inputbox.text->text.text);
+    if (key == 8 && action == 1) {
+      int len = strlen(focus->sub.inputbox.text->text.text);
       if (len > 0) {
-        focus->inputbox.text->text.text[len - 1] = 0;
+        focus->sub.inputbox.text->text.text[len - 1] = 0;
         gui_node_update(focus);
       }
     }
@@ -185,20 +194,23 @@ void gui_text_input(const char *text)
   }
   
   if (gui.focus->type == GUI_INPUTBOX) {
-    gui_text_printf(gui.focus->inputbox.text, text);
+    gui_text_printf(gui.focus->sub.inputbox.text, text);
     gui_node_update(gui.focus);
   }
 }
 
-void gui_click_R(gui_node_t node, float x, float y)
+void gui_mouse_press_R(gui_node_t node, float x, float y, int action)
 {
   if (!node) {
     return;
   }
   
   switch (node->type) {
+  case GUI_BUTTON:
+    gui_mouse_press_button(node, x, y, action);
+    break;
   case GUI_DIV:
-    gui_click_R(node->div.child, x, y);
+    gui_mouse_press_R(node->div.child, x, y, action);
     break;
   case GUI_INPUTBOX:
   case GUI_BOX:
@@ -206,7 +218,27 @@ void gui_click_R(gui_node_t node, float x, float y)
     break;
   }
   
-  gui_click_R(node->next, x, y);
+  gui_mouse_press_R(node->next, x, y, action);
+}
+
+void gui_mouse_press_button(gui_node_t node, float x, float y, int action)
+{
+  gui_node_t div = node->sub.div;
+  
+  space_t space = (space_t) {
+    .x = div->space.x + div->x * div->space.w,
+    .y = div->space.y + div->y * div->space.h,
+    .w = div->div.w * div->space.w,
+    .h = div->div.h * div->space.h,
+  };
+  
+  if (x > space.x && y > space.y && x < space.x + space.w && y < space.h + space.y) {
+    if (action) {
+      gui_box_color(node->sub.button.box, vec4(0.2, 0.2, 0.2, 0.5));
+    } else {
+      gui_box_color(node->sub.button.box, vec4(0.3, 0.3, 0.3, 0.5));
+    }
+  }
 }
 
 void gui_node_bind(gui_node_t node, gui_invoke_t invoke)
@@ -275,9 +307,32 @@ gui_node_t gui_create_inputbox(int max_text)
   gui_div_attach(div, text);
   
   gui_node_t node = gui_node_create(GUI_INPUTBOX);
-  node->inputbox.div = div;
-  node->inputbox.box = box;
-  node->inputbox.text = text;
+  node->sub.div = div;
+  node->sub.inputbox.box = box;
+  node->sub.inputbox.text = text;
+  return node;
+}
+
+gui_node_t gui_create_button(const char *btn_text)
+{
+  gui_node_t div = gui_create_div();
+    gui_div_resize(div, 1.0, 1.0);
+  gui_node_t box = gui_create_box();
+    gui_node_move(box, 0.0, 0.0);
+    gui_box_resize(box, 1.0, 1.0);
+    gui_box_color(box, vec4(0.3, 0.3, 0.3, 0.5));
+  gui_node_t text = gui_create_text(strlen(btn_text) + 1, 1);
+    gui_node_move(text, 0.02, 0.3 * 0.5);
+    gui_text_resize(text, 0.7);
+    gui_text_color(text, vec4(1, 1, 1, 1));
+    gui_text_printf(text, "%s", btn_text);
+  gui_div_attach(div, box);
+  gui_div_attach(div, text);
+  
+  gui_node_t node = gui_node_create(GUI_BUTTON);
+  node->sub.div = div;
+  node->sub.button.box = box;
+  node->sub.button.text = text;
   return node;
 }
 
@@ -292,7 +347,8 @@ void gui_div_attach(gui_node_t node, gui_node_t child)
   if (!node->div.child) {
     node->div.child = child;
   } else {
-    node->div.child->next = child;
+    child->next = node->div.child;
+    node->div.child = child;
   }
 }
 
@@ -338,17 +394,22 @@ void gui_text_clear(gui_node_t node)
 
 void gui_inputbox_clear(gui_node_t node)
 {
-  gui_text_clear(node->inputbox.text);
+  gui_text_clear(node->sub.inputbox.text);
 }
 
 void gui_inputbox_resize(gui_node_t node, float size)
 {
-  gui_div_resize(node->inputbox.div, node->inputbox.div->div.w * size, size);
+  gui_div_resize(node->sub.div, node->sub.div->div.w * size, size);
 }
 
 const char *gui_inputbox_get_value(gui_node_t node)
 {
-  return node->inputbox.text->text.text;
+  return node->sub.inputbox.text->text.text;
+}
+
+void gui_button_resize(gui_node_t node, float w, float h)
+{
+  gui_div_resize(node->sub.div, w, h);
 }
 
 void gui_node_move(gui_node_t node, float x, float y)
@@ -363,9 +424,12 @@ int gui_push_node(int rect_num, gui_node_t node)
     return rect_num;
   }
   
+  rect_num = gui_push_node(rect_num, node->next);
+  
   switch (node->type) {
+  case GUI_BUTTON:
   case GUI_INPUTBOX:
-    rect_num = gui_push_node(rect_num, node->inputbox.div);
+    rect_num = gui_push_node(rect_num, node->sub.div);
     break;
   case GUI_DIV:
     rect_num = gui_push_node(rect_num, node->div.child);
@@ -379,7 +443,7 @@ int gui_push_node(int rect_num, gui_node_t node)
     break;
   }
   
-  return gui_push_node(rect_num, node->next);
+  return rect_num;
 }
 
 void gui_node_update(gui_node_t node)
@@ -404,8 +468,9 @@ void gui_update_node_R(gui_node_t node, space_t space)
     gui_hide_node(node, false);
   } else {
     switch (node->type) {
+    case GUI_BUTTON:
     case GUI_INPUTBOX:
-      gui_update_child(node, node->inputbox.div, 1.0, 1.0);
+      gui_update_child(node, node->sub.div, 1.0, 1.0);
       break;
     case GUI_DIV:
       gui_update_child(node, node->div.child, node->div.w, node->div.h);
@@ -513,8 +578,9 @@ void gui_hide_node(gui_node_t node, bool hide_next)
   
   rect_t rect = {0};
   switch (node->type) {
+  case GUI_BUTTON:
   case GUI_INPUTBOX:
-    gui_hide_node(node->inputbox.div, true);
+    gui_hide_node(node->sub.div, true);
     break;
   case GUI_DIV:
     gui_hide_node(node->div.child, true);
@@ -538,8 +604,9 @@ void gui_node_show(gui_node_t node, bool visible)
   
   node->visible = visible;
   switch (node->type) {
+  case GUI_BUTTON:
   case GUI_INPUTBOX:
-    gui_node_show(node->inputbox.div, visible);
+    gui_node_show(node->sub.div, visible);
     break;
   case GUI_DIV:
     gui_node_show(node->div.child, visible);
@@ -564,8 +631,9 @@ void gui_destroy(gui_node_t node)
   free(node->next);
   
   switch (node->type) {
+  case GUI_BUTTON:
   case GUI_INPUTBOX:
-    gui_destroy(node->inputbox.div);
+    gui_destroy(node->sub.div);
     break;
   case GUI_DIV:
     gui_destroy(node->div.child);

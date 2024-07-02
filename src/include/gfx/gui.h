@@ -40,14 +40,15 @@ gui_node_t gui_create_inputbox(int max_text);
 void gui_inputbox_resize(gui_node_t node, float size);
 void gui_inputbox_clear(gui_node_t node);
 const char *gui_inputbox_get_value(gui_node_t node);
-// void gui_inputbox_text_color(gui_node_t node, vector color);
-// void gui_inputbox_box_color(gui_node_t node, vector color);
+
+gui_node_t gui_create_button(const char *text);
+void gui_button_resize(gui_node_t node, float w, float h);
 
 void gui_focus(gui_node_t node);
 void gui_unfocus();
 void gui_text_input(const char *text);
-void gui_key_press(int key);
-void gui_click(float x, float y);
+void gui_key_press(int key, int action);
+void gui_mouse_press(float x, float y, int action);
 
 void gui_init(mesh_t mesh);
 void gui_draw();
