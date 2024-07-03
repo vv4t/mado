@@ -53,8 +53,8 @@ typedef struct game_s {
   entity_t    player;
   entity_t    boss[3];
   
-  vector      view_position;
-  vector      view_rotation;
+  vector      view_pos;
+  vector      view_rot;
   
   float       time;
 } game_t;

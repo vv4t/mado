@@ -91,7 +91,7 @@ void player_move(game_t *gs, const usercmd_t *usercmd)
   if (usercmd->back) ps->repeat = &walk_back;
   if (usercmd->left) ps->repeat = &walk_left;
   if (usercmd->right) ps->repeat = &walk_right;
-  pt->rotation.z = gs->view_rotation.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
+  pt->rotation.z = gs->view_rot.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
   
   walk.y += usercmd->forward;
   walk.y -= usercmd->back;
@@ -99,7 +99,7 @@ void player_move(game_t *gs, const usercmd_t *usercmd)
   walk.x += usercmd->right;
   
   if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_z(gs->view_rotation.z), walk)));
+    walk = fdotv(speed, normalize(mdotv(rotate_z(gs->view_rot.z), walk)));
     rb->velocity = walk;
   } else {
     ps->repeat = NULL;

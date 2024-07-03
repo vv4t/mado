@@ -69,7 +69,7 @@ void gfx_render(const game_t *gs)
 {
   t += 0.015;
   
-  camera_move(gs->view_position, gs->view_rotation);
+  camera_move(gs->view_pos, gs->view_rot);
   
   glViewport(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
   

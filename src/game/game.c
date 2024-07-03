@@ -37,7 +37,7 @@ void game_move_camera(game_t *gs, const usercmd_t *usercmd)
   float rot_speed = 0.05;
   transform_t *pt = entity_get_component(gs, gs->player, transform);
   
-  gs->view_rotation.z += usercmd->rotate_left * rot_speed;
-  gs->view_rotation.z -= usercmd->rotate_right * rot_speed;
-  gs->view_position = pt->position;
+  gs->view_rot.z += usercmd->rotate_left * rot_speed;
+  gs->view_rot.z -= usercmd->rotate_right * rot_speed;
+  gs->view_pos = pt->position;
 }
