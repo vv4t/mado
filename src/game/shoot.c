@@ -95,8 +95,8 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
     entity_kill(gs, e);
     break;
   case EV_ENTITY_COLLIDE:
-    if (b->target == entity_get_name(gs, ev.entcol.e)) {
-      entity_invoke(gs, ev.entcol.e, (event_t) { .type = EV_HIT, .entcol.e = e });
+    if (b->target == entity_get_name(gs, ev.col.e)) {
+      entity_invoke(gs, ev.col.e, (event_t) { .type = EV_HIT, .col.e = e });
       entity_kill(gs, e);
     }
     break;

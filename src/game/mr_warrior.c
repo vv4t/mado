@@ -91,7 +91,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
     }
     break;
   case EV_HIT:
-    bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
+    bullet_t *b = entity_get_component(gs, ev.col.e, bullet);
     health_t *h = entity_get_component(gs, e, health);
     h->hp -= b->damage;
     break;

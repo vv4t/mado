@@ -98,7 +98,7 @@ void mr_mageboss_invoke(game_t *gs, entity_t e, event_t ev)
     }
     break;
   case EV_HIT:
-    bullet_t *b = entity_get_component(gs, ev.entcol.e, bullet);
+    bullet_t *b = entity_get_component(gs, ev.col.e, bullet);
     health_damage(h, b->damage);
     break;
   case EV_NO_HEALTH:

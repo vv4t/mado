@@ -40,8 +40,8 @@ void system_collide(game_t *gs)
       rigidbody_t *b_rb = entity_get_component(gs, b, rigidbody);
 
       if (length(vsubv(bt->position, at->position)) <= a_rb->radius + b_rb->radius) {
-        entity_invoke(gs, a, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = b });
-        entity_invoke(gs, b, (event_t) { .type = EV_ENTITY_COLLIDE, .entcol.e = a });
+        entity_invoke(gs, a, (event_t) { .type = EV_ENTITY_COLLIDE, .col.e = b });
+        entity_invoke(gs, b, (event_t) { .type = EV_ENTITY_COLLIDE, .col.e = a });
       }
     }
   }

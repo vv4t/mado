@@ -51,7 +51,6 @@ typedef struct game_s {
   
   map_t       map;
   entity_t    player;
-  entity_t    boss[3];
   
   vector      view_pos;
   vector      view_rot;
