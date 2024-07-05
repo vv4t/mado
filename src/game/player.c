@@ -40,6 +40,11 @@ void player_init(game_t *gs)
 
 void player_kill(game_t *gs)
 {
+  health_t *h = entity_get_component(gs, gs->player, health);
+  h->hp = 0;
+  
+  entity_bind(gs, gs->player, NULL);
+  entity_remove_component(gs, gs->player, health);
   entity_remove_component(gs, gs->player, sprite);
   entity_remove_component(gs, gs->player, actor);
   entity_remove_component(gs, gs->player, rigidbody);
@@ -60,6 +65,9 @@ void player_spawn(game_t *gs)
   entity_add_component(gs, gs->player, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
     rb->radius = 0.1;
+  entity_add_component(gs, gs->player, health);
+    health_t *h = entity_get_component(gs, gs->player, health);
+    h->hp = 100;
   entity_bind(gs, gs->player, player_invoke);
   
   struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
@@ -69,7 +77,7 @@ void player_spawn(game_t *gs)
 void player_invoke(game_t *gs, entity_t e, event_t ev)
 {
   transform_t *pt = entity_get_component(gs, e, transform);
-  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
+  struct playerctx *ctx = entity_get_context(gs, e, sizeof(struct playerctx));
   
   vector forward = mdotv(rotate_z(ctx->aim_rot), vec2(0, 10));
 
@@ -82,10 +90,16 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
       break;
     }
     break;
+  case EV_HIT:
+    bullet_t *b = entity_get_component(gs, ev.col.e, bullet);
+    health_t *h = entity_get_component(gs, e, health);
+    h->hp -= b->damage;
+    break;
+  case EV_NO_HEALTH:
+    player_kill(gs);
+    break;
   case EV_MAP_COLLIDE:
   case EV_ENTITY_COLLIDE:
-  case EV_HIT:
-  case EV_NO_HEALTH:
     break;
   }
 }
