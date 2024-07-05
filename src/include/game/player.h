@@ -3,9 +3,11 @@
 
 #include <game/game.h>
 
-struct game_s;
+typedef struct game_s game_t;
 
-void player_init(struct game_s *gs);
-void player_update(struct game_s *gs, const usercmd_t *usercmd);
+void player_init(game_t *gs);
+void player_kill(game_t *gs);
+void player_spawn(game_t *gs);
+void player_update(game_t *gs, const usercmd_t *usercmd);
 
 #endif

@@ -236,8 +236,12 @@ void gui_mouse_press_button(gui_node_t node, float x, float y, int action)
     if (action) {
       gui_box_color(node->sub.button.box, vec4(0.2, 0.2, 0.2, 0.5));
     } else {
+      if (node->invoke) {
+        node->invoke(node, GUI_CLICK);
+      }
       gui_box_color(node->sub.button.box, vec4(0.3, 0.3, 0.3, 0.5));
     }
+    gui_node_update(node);
   }
 }
 
@@ -322,7 +326,7 @@ gui_node_t gui_create_button(const char *btn_text)
     gui_box_resize(box, 1.0, 1.0);
     gui_box_color(box, vec4(0.3, 0.3, 0.3, 0.5));
   gui_node_t text = gui_create_text(strlen(btn_text) + 1, 1);
-    gui_node_move(text, 0.02, 0.3 * 0.5);
+    gui_node_move(text, 0.02, 0.0);
     gui_text_resize(text, 0.7);
     gui_text_color(text, vec4(1, 1, 1, 1));
     gui_text_printf(text, "%s", btn_text);

@@ -5,7 +5,6 @@
 
 void gfx_map_init();
 void gfx_map_draw();
-void gfx_map_load(map_t map);
 void gfx_map_deinit();
 
 #endif

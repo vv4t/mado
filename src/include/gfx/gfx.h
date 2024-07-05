@@ -6,7 +6,7 @@
 
 void gfx_init();
 void gfx_render(const game_t *game);
-void gfx_load_map(map_t map);
+void gfx_map_load(map_t map);
 void gfx_deinit();
 
 #endif

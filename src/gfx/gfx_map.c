@@ -78,6 +78,11 @@ void gfx_map_load(map_t map)
   meshdata_destroy(md);
 }
 
+void gfx_map_deinit()
+{
+  shader_destroy(gfx_map.shader);
+}
+
 int skip_wall_check(map_t map, int x, int y, int z)
 {
   tilename_t tilename = map_get(map, x, y);
@@ -126,9 +131,4 @@ void add_block(meshdata_t md, int x, int y, int z, int skip, int tx, int ty)
     matrix T_uv = mdotm(translate(vec2(tx, ty)), fscale(1.0 / SHEET_SIZE));
     meshdata_add_quad(md, T_p, T_uv);
   }
-}
-
-void gfx_map_deinit()
-{
-  shader_destroy(gfx_map.shader);
 }

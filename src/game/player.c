@@ -2,9 +2,9 @@
 #include <game/shoot.h>
 #include <stdio.h>
 
-void player_move(game_t *gs, const usercmd_t *usercmd);
-void player_attack(game_t *gs, const usercmd_t *usercmd);
-void player_invoke(game_t *gs, entity_t e, event_t ev);
+static void player_move(game_t *gs, const usercmd_t *usercmd);
+static void player_attack(game_t *gs, const usercmd_t *usercmd);
+static void player_invoke(game_t *gs, entity_t e, event_t ev);
 
 static const animation_t walk_forward = { .tx = 2, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
 static const animation_t walk_back    = { .tx = 0, .ty = 1, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.15 };
@@ -18,31 +18,60 @@ static shooter_t player_shooter = {
   .damage = 20
 };
 
+typedef enum {
+  PS_DEAD,
+  PS_ACTIVE
+} pstate_t;
+
+struct playerctx {
+  pstate_t state;
+  float aim_rot;
+};
+
 void player_init(game_t *gs)
 {
   entity_t e = entity_add(gs, ENT_PLAYER);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
     t->position = vec2(24, 24);
-  entity_add_component(gs, e, sprite);
-    sprite_t *s = entity_get_component(gs, e, sprite);
+  gs->player = e;
+  player_kill(gs);
+}
+
+void player_kill(game_t *gs)
+{
+  entity_remove_component(gs, gs->player, sprite);
+  entity_remove_component(gs, gs->player, actor);
+  entity_remove_component(gs, gs->player, rigidbody);
+  
+  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
+  ctx->state = PS_DEAD;
+}
+
+void player_spawn(game_t *gs)
+{
+  entity_add_component(gs, gs->player, sprite);
+    sprite_t *s = entity_get_component(gs, gs->player, sprite);
     sprite_repeat(s, &walk_forward);
-  entity_add_component(gs, e, actor);
-    actor_t *a = entity_get_component(gs, e, actor);
+  entity_add_component(gs, gs->player, actor);
+    actor_t *a = entity_get_component(gs, gs->player, actor);
     actor_repeat(a, ACT0, 0.0, 0, 0.15);
     actor_stop(a, ACT0);
-  entity_add_component(gs, e, rigidbody);
-    rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
+  entity_add_component(gs, gs->player, rigidbody);
+    rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
     rb->radius = 0.1;
-  entity_bind(gs, e, player_invoke);
-  gs->player = e;
+  entity_bind(gs, gs->player, player_invoke);
+  
+  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
+  ctx->state = PS_ACTIVE;
 }
 
 void player_invoke(game_t *gs, entity_t e, event_t ev)
 {
   transform_t *pt = entity_get_component(gs, e, transform);
+  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
   
-  vector forward = mdotv(rotate_z(pt->rotation.z), vec2(0, 10));
+  vector forward = mdotv(rotate_z(ctx->aim_rot), vec2(0, 10));
 
   switch (ev.type) {
   case EV_ACT:
@@ -63,8 +92,17 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
 
 void player_update(game_t *gs, const usercmd_t *usercmd)
 {
-  player_move(gs, usercmd);
-  player_attack(gs, usercmd);
+  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
+  
+  switch (ctx->state) {
+  case PS_ACTIVE:
+    player_move(gs, usercmd);
+    player_attack(gs, usercmd);
+    break;
+  case PS_DEAD:
+  default:
+    break;
+  }
 }
 
 void player_attack(game_t *gs, const usercmd_t *usercmd)
@@ -85,21 +123,27 @@ void player_move(game_t *gs, const usercmd_t *usercmd)
   rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
   
   float speed = 9.0;
+  float rot_speed = 0.05;
+  
   vector walk = vec2(0, 0);
   
   if (usercmd->forward) ps->repeat = &walk_forward;
   if (usercmd->back) ps->repeat = &walk_back;
   if (usercmd->left) ps->repeat = &walk_left;
   if (usercmd->right) ps->repeat = &walk_right;
-  pt->rotation.z = gs->view_rot.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
   
   walk.y += usercmd->forward;
   walk.y -= usercmd->back;
   walk.x -= usercmd->left;
   walk.x += usercmd->right;
   
+  struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
+  pt->rotation.z += usercmd->rotate_left * rot_speed;
+  pt->rotation.z -= usercmd->rotate_right * rot_speed;
+  ctx->aim_rot = pt->rotation.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
+  
   if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_z(gs->view_rot.z), walk)));
+    walk = fdotv(speed, normalize(mdotv(rotate_z(pt->rotation.z), walk)));
     rb->velocity = walk;
   } else {
     ps->repeat = NULL;

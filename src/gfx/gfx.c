@@ -126,11 +126,6 @@ void gfx_render(const game_t *gs)
   glDepthMask(GL_TRUE);
 }
 
-void gfx_load_map(map_t map)
-{
-  gfx_map_load(map);
-}
-
 void gfx_pipeline_init()
 {
   gfx.sheet = texture_load_image("assets/sheet/color.png");

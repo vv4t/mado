@@ -1,19 +1,34 @@
 #include <client/client.h>
 #include <game/game.h>
-#include <lib/log.h>
-#include <gfx/gfx.h>
+#include <game/player.h>
 #include <gfx/gui.h>
-#include <lib/map.h>
 
 static struct {
   gui_node_t debug_info;
 } scene1;
+
+static void spawn_click(gui_node_t node, gui_event_t event);
+static void kill_click(gui_node_t node, gui_event_t event);
 
 static void scene1_load()
 {
   gui_node_t debug_info = gui_create_text(32, 4);
     gui_text_resize(debug_info, 8.0 / 480.0);
   gui_push(debug_info);
+  
+  gui_node_t spawn_btn = gui_create_button("spawn");
+    gui_node_move(spawn_btn, 0.01, 0.125);
+    gui_button_resize(spawn_btn, 0.2, 0.03);
+    gui_node_bind(spawn_btn, spawn_click);
+  gui_push(spawn_btn);
+  
+  gui_node_t kill_btn = gui_create_button("kill");
+    gui_node_move(kill_btn, 0.01, 0.125 + 0.04);
+    gui_button_resize(kill_btn, 0.2, 0.03);
+    gui_node_bind(kill_btn, kill_click);
+  gui_push(kill_btn);
+  
+  // player_spawn();
   
   scene1.debug_info = debug_info;
 }
@@ -32,6 +47,16 @@ cl_scene_t s_scene1 = {
   .load = scene1_load,
   .update = scene1_update
 };
+
+static void spawn_click(gui_node_t node, gui_event_t event)
+{
+  player_spawn(cl_get_game());
+}
+
+static void kill_click(gui_node_t node, gui_event_t event)
+{
+  player_kill(cl_get_game());
+}
 
 /*
 void console_invoke(gui_node_t node, gui_event_t event);

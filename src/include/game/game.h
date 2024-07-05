@@ -59,7 +59,7 @@ typedef struct game_s {
 } game_t;
 
 void game_init(game_t *gs);
-void game_load_map(game_t *gs, map_t map);
+void game_map_load(game_t *gs, map_t map);
 void game_update(game_t *gs, const usercmd_t *usercmd);
 
 entity_t  entity_add(game_t *gs, entname_t name);
@@ -73,6 +73,11 @@ void      *entity_get_context(game_t *gs, entity_t e, int context_size);
 {\
   (gs)->component[e] = create_##component();\
   (gs)->entdict[e] |= C_##component;\
+}
+
+#define entity_remove_component(gs, e, component) \
+{\
+  (gs)->entdict[e] &= ~(C_##component);\
 }
 
 #define entity_get_component(gs, e, component) (&(gs)->component[e])
