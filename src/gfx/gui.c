@@ -1,5 +1,4 @@
 #include <gfx/gui.h>
-#include <gfx/gfx_sprite.h>
 #include <gfx/mesh.h>
 #include <gfx/shader.h>
 #include <gfx/texture.h>
@@ -10,21 +9,82 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define RECT_MAX  512
+#define RECT_MAX 512
 
+typedef struct {
+  float x, y, w, h;
+  float tx, ty, tw, th;
+  float r, g, b, a;
+} rect_t;
+
+typedef enum {
+  GUI_RECT
+} gui_node_type_t;
+
+struct gui_node_s {
+  union {
+    struct {
+      float w, h;
+      float r, g, b, a;
+      int rect_num;
+    } rect;
+  };
+  float x, y;
+  gui_node_type_t type;
+};
+
+struct {
+  mesh_t      mesh;
+  texture_t   sheet;
+  shader_t    shader;
+  GLuint      ubo;
+  
+  int         top;
+} gui;
+
+void gui_init(mesh_t mesh)
+{
+  char define_max[256];
+  snprintf(define_max, sizeof(define_max), "#define RECT_MAX %i", RECT_MAX);
+  
+  shaderdata_t sd = shaderdata_create();
+    shaderdata_line(sd, define_max, SD_VERT);
+    shaderdata_source(sd, "assets/shader/vertex/gui.vert", SD_VERT);
+    shaderdata_source(sd, "assets/shader/fragment/gui.frag", SD_FRAG);
+    gui.shader = shader_load(sd);
+    glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "ubo_gui"), 2);
+  shaderdata_destroy(sd);
+  
+  gui.sheet = texture_load_image("assets/sheet/gui.png");
+  gui.mesh = mesh;
+  
+  glGenBuffers(1, &gui.ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(rect_t) * RECT_MAX, NULL, GL_DYNAMIC_DRAW);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 2, gui.ubo);
+}
+
+void gui_draw()
+{
+  shader_bind(gui.shader);
+  texture_bind(gui.sheet, GL_TEXTURE_2D, 0);
+  glDrawArraysInstanced(GL_TRIANGLES, gui.mesh.offset, gui.mesh.count, gui.top);
+}
+
+void gui_deinit()
+{
+  shader_destroy(gui.shader);
+}
+
+/*
 typedef struct {
   float x, y, w, h;
   float tx, ty, tw, th;
   vector color;
 } rect_t;
 
-typedef struct {
-  float x, y, w, h;
-} space_t;
-
 typedef enum {
-  GUI_DIV,
-  GUI_BOX,
+  GUI_RECT,
   GUI_TEXT,
   GUI_INPUTBOX,
   GUI_BUTTON
@@ -34,13 +94,9 @@ struct gui_node_s {
   union {
     struct {
       float w, h;
-      gui_node_t child;
-    } div;
-    struct {
-      float w, h;
       int rect_ptr;
       vector color;
-    } box;
+    } rect;
     struct {
       int col, row;
       float size;
@@ -49,20 +105,11 @@ struct gui_node_s {
       vector color;
     } text;
     struct {
-      struct {
-        gui_node_t text;
-        gui_node_t box;
-      } inputbox;
-      struct {
-        gui_node_t text;
-        gui_node_t box;
-      } button;
-      gui_node_t div;
-    } sub;
+      gui_node_t child[8];
+    } inputbox;
   };
   bool visible;
   float x, y;
-  space_t space;
   gui_invoke_t invoke;
   gui_type_t type;
   gui_node_t next;
@@ -657,3 +704,4 @@ void rect_update(const rect_t *rect, int offset)
   glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, offset * sizeof(rect_t), sizeof(rect_t), rect);
 }
+*/

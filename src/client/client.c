@@ -1,6 +1,6 @@
 #include <client/client.h>
 #include <lib/log.h>
-#include <gfx/gfx.h>
+#include <gfx/renderer.h>
 #include <gfx/gui.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -30,14 +30,14 @@ static void sdl_deinit();
 void cl_init()
 {
   sdl_init();
-  gfx_init();
+  renderer_init();
   game_init(&cl.gs);
   
   cl.prev_time = SDL_GetTicks();
   cl.lag_time = 0;  
   
   map_t map = map_load("assets/map/1.map");
-  gfx_map_load(map);
+  renderer_map_load(map);
   game_map_load(&cl.gs, map);
 }
 
@@ -49,7 +49,7 @@ int cl_update()
     case SDL_QUIT:
       return 0;
     case SDL_TEXTINPUT:
-      gui_text_input(event.text.text);
+      // event.text.text;
       break;
     case SDL_KEYUP:
       key_press(event.key.keysym.sym, 0);
@@ -73,7 +73,7 @@ int cl_update()
     cl.lag_time -= 15;
     game_update(&cl.gs, &cl.usercmd);
     cl.scene->update();
-    gfx_render(&cl.gs);
+    renderer_render(&cl.gs);
     SDL_GL_SwapWindow(cl.window);
   }
   
@@ -86,7 +86,7 @@ int cl_update()
 
 void cl_deinit()
 {
-  gfx_deinit();
+  renderer_deinit();
   sdl_deinit();
 }
 
@@ -109,8 +109,6 @@ void mouse_move(int x, int y)
 
 void key_press(int key, int action)
 {
-  gui_key_press(key, action);
-  
   switch (key) {
   case 'w':
     cl.usercmd.forward = action;
@@ -136,7 +134,6 @@ void key_press(int key, int action)
 void mouse_press(int button, int x, int y, int action)
 {
   if (button == 1) {
-    gui_mouse_press(x / (float) HEIGHT, y / (float) HEIGHT, action);
     cl.usercmd.attack = action;
   }
 }
