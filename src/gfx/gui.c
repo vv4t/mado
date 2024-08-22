@@ -14,7 +14,7 @@
 typedef struct {
   float x, y, w, h;
   float tx, ty, tw, th;
-  float r, g, b, a;
+  vector color;
 } rect_t;
 
 typedef enum {
@@ -25,8 +25,8 @@ struct gui_node_s {
   union {
     struct {
       float w, h;
-      float r, g, b, a;
-      int rect_num;
+      vector color;
+      int offset;
     } rect;
   };
   float x, y;
@@ -41,6 +41,8 @@ struct {
   
   int         top;
 } gui;
+
+static gui_node_t gui_create_node();
 
 void gui_init(mesh_t mesh)
 {
@@ -74,6 +76,64 @@ void gui_draw()
 void gui_deinit()
 {
   shader_destroy(gui.shader);
+}
+
+void gui_node_update(const gui_node_t node)
+{
+  rect_t rect[32];
+  int offset = 0;
+  int num_rect = 0;
+  
+  switch (node->type) {
+  case GUI_RECT:
+    offset = node->rect.offset;
+    rect[num_rect++] = (rect_t) {
+      .x = node->x,
+      .y = node->y,
+      .w = node->rect.w,
+      .h = node->rect.h,
+      .tx = 0.0, .ty = 0.0, .tw = 1.0, .th = 1.0,
+      .color = node->rect.color
+    };
+    break;
+  default:
+    break;
+  }
+  
+  glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, offset * sizeof(rect_t), num_rect * sizeof(rect_t), rect);
+}
+
+gui_node_t gui_create_rect()
+{
+  gui_node_t node = gui_create_node(GUI_RECT);
+  node->rect.w = 1.0;
+  node->rect.h = 1.0;
+  node->rect.color = vec4(1.0, 1.0, 1.0, 1.0);
+  node->rect.offset = gui.top++;
+  gui_node_update(node);
+  return node;
+}
+
+void gui_rect_resize(gui_node_t node, float w, float h)
+{
+  node->rect.w = w;
+  node->rect.h = h;
+}
+
+gui_node_t gui_create_node(gui_node_type_t type)
+{
+  gui_node_t node = malloc(sizeof(*node));
+  node->type = type;
+  node->x = 0.0;
+  node->y = 0.0;
+  return node;
+}
+
+void gui_node_move(gui_node_t node, float x, float y)
+{
+  node->x = x;
+  node->y = y;
 }
 
 /*
@@ -704,4 +764,6 @@ void rect_update(const rect_t *rect, int offset)
   glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, offset * sizeof(rect_t), sizeof(rect_t), rect);
 }
-*/
+
+vector color;
+vector color;*/
