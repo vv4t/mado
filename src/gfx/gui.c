@@ -18,16 +18,24 @@ typedef struct {
 } rect_t;
 
 typedef enum {
-  GUI_RECT
+  GUI_RECT,
+  GUI_TEXT
 } gui_node_type_t;
 
 struct gui_node_s {
   union {
     struct {
+      int offset;
       float w, h;
       vector color;
-      int offset;
     } rect;
+    struct {
+      int offset;
+      float size;
+      int col, row;
+      char *src;
+      vector color;
+    } text;
   };
   float x, y;
   gui_node_type_t type;
@@ -38,11 +46,13 @@ struct {
   texture_t   sheet;
   shader_t    shader;
   GLuint      ubo;
-  
   int         top;
 } gui;
 
 static gui_node_t gui_create_node();
+static void gui_rect_update(const gui_node_t node);
+static void gui_text_update(const gui_node_t node);
+static void sub_rect(int offset, rect_t rect);
 
 void gui_init(mesh_t mesh)
 {
@@ -80,28 +90,119 @@ void gui_deinit()
 
 void gui_node_update(const gui_node_t node)
 {
-  rect_t rect[32];
-  int offset = 0;
-  int num_rect = 0;
-  
   switch (node->type) {
   case GUI_RECT:
-    offset = node->rect.offset;
-    rect[num_rect++] = (rect_t) {
-      .x = node->x,
-      .y = node->y,
-      .w = node->rect.w,
-      .h = node->rect.h,
-      .tx = 0.0, .ty = 0.0, .tw = 1.0, .th = 1.0,
-      .color = node->rect.color
-    };
+    gui_rect_update(node);
+    break;
+  case GUI_TEXT:
+    gui_text_update(node);
     break;
   default:
     break;
   }
+}
+
+void gui_rect_update(const gui_node_t node)
+{
+  sub_rect(node->rect.offset, (rect_t) {
+    .x = node->x,
+    .y = node->y,
+    .w = node->rect.w,
+    .h = node->rect.h,
+    .tx = 0.0, .ty = 0.0, .tw = 1.0, .th = 1.0,
+    .color = node->rect.color
+  });
+}
+
+void gui_text_update(const gui_node_t node)
+{
+  rect_t glyph = (rect_t) {
+    .x = node->x,
+    .y = node->y,
+    .w = 5.0 / 8.0 * node->text.size,
+    .h = node->text.size,
+    .tw = 5.0 / 8.0, .th = 1.0,
+    .color = node->text.color
+  };
   
+  int col = 0;
+  int row = 0;
+  
+  for (int i = 0; i < strlen(node->text.src); i++) {
+    int letter = node->text.src[i];
+    
+    if (letter == '\n') {
+      row++;
+      col = 0;
+    } else {
+      if (letter >= ' ' && letter <= '~') {
+        letter -= ' ';
+        glyph.tx = (float) (letter % 16);
+        glyph.ty = 15.0 - floor(letter / 16.0);
+      } else {
+        glyph.tx = 0.0;
+        glyph.ty = 15.0;
+      }
+      
+      glyph.x = node->x + col * glyph.w;
+      glyph.y = node->y + row * glyph.h;
+      sub_rect(node->text.offset + i, glyph);
+      col++;
+    }
+    
+    if (col >= node->text.col) {
+      row++;
+      col = 0;
+    }
+    
+    if (row >= node->text.row) {
+      break;
+    }
+  }
+}
+
+void sub_rect(int offset, rect_t rect)
+{
   glBindBuffer(GL_UNIFORM_BUFFER, gui.ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, offset * sizeof(rect_t), num_rect * sizeof(rect_t), rect);
+  glBufferSubData(GL_UNIFORM_BUFFER, offset * sizeof(rect_t), sizeof(rect_t), &rect);
+}
+
+gui_node_t gui_create_text(int col, int row)
+{
+  gui_node_t node = gui_create_node(GUI_TEXT);
+  node->text.offset = gui.top;
+  node->text.size = 1.0;
+  node->text.col = col;
+  node->text.row = row;
+  node->text.src = calloc(col * row, sizeof(char));
+  node->text.src[0] = 0;
+  node->text.color = vec4(1.0, 1.0, 1.0, 1.0);
+  gui.top += col * row;
+  return node;
+}
+
+void gui_text_printf(gui_node_t node, const char *format, ...)
+{
+  int len = node->text.row * node->text.col - strlen(node->text.src);
+  
+  if (len <= 0) {
+    return;
+  }
+  
+  va_list args;
+  va_start(args, format);
+  vsnprintf(&node->text.src[strlen(node->text.src)], len, format, args);
+  va_end(args);
+}
+
+void gui_text_clear(gui_node_t node)
+{
+  node->text.src[0] = 0;
+}
+
+void gui_text_resize(gui_node_t node, float size)
+{
+  node->text.size = size;
 }
 
 gui_node_t gui_create_rect()
@@ -111,7 +212,6 @@ gui_node_t gui_create_rect()
   node->rect.h = 1.0;
   node->rect.color = vec4(1.0, 1.0, 1.0, 1.0);
   node->rect.offset = gui.top++;
-  gui_node_update(node);
   return node;
 }
 
@@ -281,9 +381,9 @@ void gui_key_press(int key, int action)
   
   if (focus->type == GUI_INPUTBOX) {
     if (key == 8 && action == 1) {
-      int len = strlen(focus->sub.inputbox.text->text.text);
+      int len = strlen(focus->sub.inputbox.text->text.src);
       if (len > 0) {
-        focus->sub.inputbox.text->text.text[len - 1] = 0;
+        focus->sub.inputbox.text->text.src[len - 1] = 0;
         gui_node_update(focus);
       }
     }
@@ -389,8 +489,8 @@ gui_node_t gui_create_text(int col, int row)
   node->text.size = 1.0;
   node->text.col = col;
   node->text.row = row;
-  node->text.text = calloc(col * row, sizeof(char));
-  node->text.text[0] = 0;
+  node->text.src = calloc(col * row, sizeof(char));
+  node->text.src[0] = 0;
   node->text.color = vec4(1, 1, 1, 1);
   return node;
 }
@@ -486,7 +586,7 @@ void gui_text_color(gui_node_t node, vector color)
 
 void gui_text_printf(gui_node_t node, const char *format, ...)
 {
-  int len = node->text.row * node->text.col - strlen(node->text.text);
+  int len = node->text.row * node->text.col - strlen(node->text.src);
   
   if (len <= 0) {
     return;
@@ -494,13 +594,13 @@ void gui_text_printf(gui_node_t node, const char *format, ...)
   
   va_list args;
   va_start(args, format);
-  vsnprintf(&node->text.text[strlen(node->text.text)], len, format, args);
+  vsnprintf(&node->text.src[strlen(node->text.src)], len, format, args);
   va_end(args);
 }
 
 void gui_text_clear(gui_node_t node)
 {
-  node->text.text[0] = 0;
+  node->text.src[0] = 0;
 }
 
 void gui_inputbox_clear(gui_node_t node)
@@ -515,7 +615,7 @@ void gui_inputbox_resize(gui_node_t node, float size)
 
 const char *gui_inputbox_get_value(gui_node_t node)
 {
-  return node->sub.inputbox.text->text.text;
+  return node->sub.inputbox.text->text.src;
 }
 
 void gui_button_resize(gui_node_t node, float w, float h)
@@ -636,11 +736,11 @@ void gui_update_text(gui_node_t node)
     .color = node->text.color
   };
   
-  for (int i = 0; i < strlen(node->text.text); i++) {
+  for (int i = 0; i < strlen(node->text.src); i++) {
     float tx = 0.0;
     float ty = 15.0;
     
-    int letter = node->text.text[i];
+    int letter = node->text.src[i];
     
     if (letter == '\n') {
       row++;
@@ -671,7 +771,7 @@ void gui_update_text(gui_node_t node)
     }
   }
   
-  for (int i = strlen(node->text.text); i < node->text.row * node->text.col; i++) {
+  for (int i = strlen(node->text.src); i < node->text.row * node->text.col; i++) {
     rect_t rect = {0};
     rect_update(&rect, node->text.rect_ptr + i);
   }
@@ -752,7 +852,7 @@ void gui_destroy(gui_node_t node)
   case GUI_BOX:
     break;
   case GUI_TEXT:
-    free(node->text.text);
+    free(node->text.src);
     break;
   }
   

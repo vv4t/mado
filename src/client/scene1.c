@@ -10,8 +10,9 @@ static struct {
 
 static void scene1_load()
 {
-  scene1.thing = gui_create_rect();
-  gui_rect_resize(scene1.thing, 0.2, 0.2);
+  scene1.thing = gui_create_text(32, 32);
+  gui_text_resize(scene1.thing, 0.025);
+  gui_text_printf(scene1.thing, "Play");
   gui_node_update(scene1.thing);
   
   player_spawn(cl_get_game());
@@ -19,6 +20,7 @@ static void scene1_load()
 
 static void scene1_update()
 {
+  
 }
 
 cl_scene_t s_scene1 = {
