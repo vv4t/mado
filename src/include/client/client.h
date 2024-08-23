@@ -6,13 +6,10 @@
 typedef struct {
   void (*load)();
   void (*update)();
-} cl_scene_t;
+} client_scene_t;
 
-void cl_init();
-int cl_update();
-void cl_deinit();
+game_t *client_get_game();
 
-game_t *cl_get_game();
-void cl_scene_load(const cl_scene_t *scene);
+extern client_scene_t client_scene1;
 
 #endif

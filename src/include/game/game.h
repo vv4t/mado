@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <game/usercmd.h>
 #include <game/transform.h>
 #include <game/sprite.h>
 #include <game/rigidbody.h>
@@ -9,7 +10,6 @@
 #include <game/health.h>
 #include <game/botmove.h>
 #include <lib/map.h>
-#include <stdbool.h>
 
 #define ENTITY_MAX 2048
 
@@ -24,18 +24,6 @@ typedef enum {
   C_health    = 1 << 5,
   C_botmove   = 1 << 6
 } component_t;
-
-typedef struct {
-  bool forward;
-  bool back;
-  bool left;
-  bool right;
-  bool rotate_left;
-  bool rotate_right;
-  bool attack;
-  float aim_x;
-  float aim_y;
-} usercmd_t;
 
 typedef struct game_s {
   transform_t transform[ENTITY_MAX];

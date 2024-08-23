@@ -1,7 +1,6 @@
 #include <game/boss.h>
 #include <game/enemy.h>
 #include <game/shoot.h>
-#include <game/movement.h>
 #include <game/game.h>
 #include <stdio.h>
 #include <stdbool.h>
