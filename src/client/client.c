@@ -37,7 +37,7 @@ void cl_init()
   cl.lag_time = 0;  
   
   map_t map = map_load("assets/map/1.map");
-  renderer_map_load(map);
+  renderer_load_map(map);
   game_map_load(&cl.gs, map);
 }
 

@@ -4,8 +4,8 @@
 #include <gfx/mesh.h>
 #include <gfx/camera.h>
 #include <gfx/target.h>
-#include <gfx/renderer_sprite.h>
-#include <gfx/renderer_map.h>
+#include <gfx/sprite_renderer.h>
+#include <gfx/map_renderer.h>
 #include <gfx/gui.h>
 #include <stdio.h>
 #include <GL/glew.h>
@@ -44,90 +44,19 @@ struct {
 } renderer;
 
 static shader_t frame_shader_load(const char *path);
-static void renderer_pipeline_init();
 
 void renderer_init()
 {
   camera_init(FOV, FOV * ASPECT_RATIO);
   vbuffer_init(MAX_VERTICES);
   vbuffer_bind();
-  renderer_pipeline_init();
-  gui_init(renderer.quad);
-  renderer_sprite_init(renderer.quad);
-  renderer_map_init();
   
   glCullFace(GL_BACK);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-}
-
-float t = 0.0;
-
-void renderer_render(const game_t *gs)
-{
-  t += 0.015;
   
-  camera_move(gs->view_pos, gs->view_rot);
-  
-  glViewport(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
-  
-  target_bind(renderer.to_buffer_and_bloom);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    texture_bind(renderer.sheet, GL_TEXTURE_2D, 0);
-    texture_bind(renderer.emit, GL_TEXTURE_2D, 1);
-    
-    camera_isometric();
-    camera_update(identity());
-    renderer_map_draw();
-    
-    camera_orthographic();
-    camera_update(identity());
-    renderer_sprite_draw(gs);
-  target_unbind();
-  
-  glDepthMask(GL_FALSE);
-  glDisable(GL_DEPTH_TEST);
-  
-  shader_bind(renderer.blur);
-  for (int i = 0; i < 4; i++) {
-    glUniform1i(renderer.ul_horizontal, i % 2);
-    
-    target_bind(renderer.to_buffer[1]);
-      texture_bind(renderer.bloom, GL_TEXTURE_2D, 0);
-      vbuffer_draw(renderer.quad);
-    target_unbind();
-    
-    target_bind(renderer.to_bloom);
-      texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
-      vbuffer_draw(renderer.quad);
-    target_unbind();
-  }
-  
-  target_bind(renderer.to_buffer[1]);
-    texture_bind(renderer.buffer[0], GL_TEXTURE_2D, 0);
-    texture_bind(renderer.bloom, GL_TEXTURE_2D, 1);
-    shader_bind(renderer.shroud);
-    vbuffer_draw(renderer.quad);
-  target_unbind();
-  
-  glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-  
-  glEnable(GL_BLEND);
-  texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
-  shader_bind(renderer.dither);
-  vbuffer_draw(renderer.quad);
-  gui_draw();
-  glDisable(GL_BLEND);
-  
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(GL_TRUE);
-}
-
-void renderer_pipeline_init()
-{
   renderer.sheet = texture_load_image("assets/sheet/color.png");
   renderer.emit = texture_load_image("assets/sheet/emit.png");
   
@@ -164,12 +93,85 @@ void renderer_pipeline_init()
     meshdata_add_quad(md, identity(), identity());
     renderer.quad = vbuffer_add(md);
   meshdata_destroy(md);
+  
+  gui_init(renderer.quad);
+  sprite_renderer_init(renderer.quad);
+  map_renderer_init();
+}
+
+float t = 0.0;
+
+void renderer_render(const game_t *gs)
+{
+  t += 0.015;
+  
+  camera_move(gs->view_pos, gs->view_rot);
+  
+  glViewport(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+  
+  target_bind(renderer.to_buffer_and_bloom);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    texture_bind(renderer.sheet, GL_TEXTURE_2D, 0);
+    texture_bind(renderer.emit, GL_TEXTURE_2D, 1);
+    
+    camera_isometric();
+    camera_update(identity());
+    map_renderer_draw();
+    
+    camera_orthographic();
+    camera_update(identity());
+    sprite_renderer_draw(gs);
+  target_unbind();
+  
+  glDepthMask(GL_FALSE);
+  glDisable(GL_DEPTH_TEST);
+  
+  shader_bind(renderer.blur);
+  
+  for (int i = 0; i < 4; i++) {
+    glUniform1i(renderer.ul_horizontal, i % 2);
+    
+    target_bind(renderer.to_buffer[1]);
+      texture_bind(renderer.bloom, GL_TEXTURE_2D, 0);
+      vbuffer_draw(renderer.quad);
+    target_unbind();
+    
+    target_bind(renderer.to_bloom);
+      texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
+      vbuffer_draw(renderer.quad);
+    target_unbind();
+  }
+  
+  target_bind(renderer.to_buffer[1]);
+    texture_bind(renderer.buffer[0], GL_TEXTURE_2D, 0);
+    texture_bind(renderer.bloom, GL_TEXTURE_2D, 1);
+    shader_bind(renderer.shroud);
+    vbuffer_draw(renderer.quad);
+  target_unbind();
+  
+  glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+  
+  glEnable(GL_BLEND);
+  texture_bind(renderer.buffer[1], GL_TEXTURE_2D, 0);
+  shader_bind(renderer.dither);
+  vbuffer_draw(renderer.quad);
+  gui_draw();
+  glDisable(GL_BLEND);
+  
+  glEnable(GL_DEPTH_TEST);
+  glDepthMask(GL_TRUE);
+}
+
+void renderer_load_map(map_t map)
+{
+  map_renderer_load(map);
 }
 
 void renderer_deinit()
 {
-  renderer_map_deinit();
-  renderer_sprite_deinit();
+  map_renderer_deinit();
+  sprite_renderer_deinit();
   gui_deinit();
   target_destroy(renderer.to_bloom);
   target_destroy(renderer.to_buffer[0]);

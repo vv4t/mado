@@ -1,4 +1,4 @@
-#include <gfx/renderer_map.h>
+#include <gfx/map_renderer.h>
 #include <gfx/r_def.h>
 #include <gfx/camera.h>
 #include <gfx/mesh.h>
@@ -18,31 +18,31 @@ enum {
 struct {
   mesh_t mesh;
   shader_t shader;
-} renderer_map;
+} map_renderer;
 
 static int skip_wall_check(map_t map, int x, int y, int z);
 static void add_tile(meshdata_t md, int x, int y, int z, int tx, int ty);
 static void add_block(meshdata_t md, int x, int y, int z, int skip, int tx, int ty);
 
-void renderer_map_init()
+void map_renderer_init()
 {
   shaderdata_t sd = shaderdata_create();
     camera_shader_import(sd);
     shaderdata_source(sd, "assets/shader/vertex/mvp.vert", SD_VERT);
     shaderdata_source(sd, "assets/shader/fragment/world.frag", SD_FRAG);
-    renderer_map.shader = shader_load(sd);
-    camera_shader_attach(renderer_map.shader);
-    glUniform1i(glGetUniformLocation(renderer_map.shader, "emit"), 1);
+    map_renderer.shader = shader_load(sd);
+    camera_shader_attach(map_renderer.shader);
+    glUniform1i(glGetUniformLocation(map_renderer.shader, "emit"), 1);
   shaderdata_destroy(sd);
 }
 
-void renderer_map_draw()
+void map_renderer_draw()
 {
-  shader_bind(renderer_map.shader);
-  vbuffer_draw(renderer_map.mesh);
+  shader_bind(map_renderer.shader);
+  vbuffer_draw(map_renderer.mesh);
 }
 
-void renderer_map_load(map_t map)
+void map_renderer_load(map_t map)
 {
   meshdata_t md = meshdata_create();
   
@@ -74,13 +74,13 @@ void renderer_map_load(map_t map)
     }
   }
   
-  renderer_map.mesh = vbuffer_add(md);
+  map_renderer.mesh = vbuffer_add(md);
   meshdata_destroy(md);
 }
 
-void renderer_map_deinit()
+void map_renderer_deinit()
 {
-  shader_destroy(renderer_map.shader);
+  shader_destroy(map_renderer.shader);
 }
 
 int skip_wall_check(map_t map, int x, int y, int z)

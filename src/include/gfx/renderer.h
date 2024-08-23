@@ -6,7 +6,7 @@
 
 void renderer_init();
 void renderer_render(const game_t *game);
-void renderer_map_load(map_t map);
+void renderer_load_map(map_t map);
 void renderer_deinit();
 
 #endif
