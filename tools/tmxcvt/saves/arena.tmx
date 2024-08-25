@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="4" nextobjectid="26">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="4" nextobjectid="31">
  <tileset firstgid="1" name="sheet" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -40,6 +40,6 @@
 </data>
  </layer>
  <objectgroup id="2" name="entities">
-  <object id="21" name="player" gid="225" x="123.125" y="150.625" width="8" height="8"/>
+  <object id="21" name="spawn_player" gid="225" x="156.125" y="176.375" width="8" height="8"/>
  </objectgroup>
 </map>

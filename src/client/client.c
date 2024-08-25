@@ -5,8 +5,16 @@
 
 struct {
   game_t gs;
+  map_t map;
   client_scene_t scene;
-} client;
+} client = {
+  .map = NULL,
+  .scene = {
+    .map = NULL,
+    .load = NULL,
+    .update = NULL
+  }
+};
 
 int main(int argc, char *argv[])
 {
@@ -14,13 +22,7 @@ int main(int argc, char *argv[])
   renderer_init();
   game_init(&client.gs);
   
-  map_t map = map_load("assets/map/1.map");
-  renderer_load_map(map);
-  game_map_load(&client.gs, map);
-  
-  client.scene = client_scene1;
-  
-  client.scene.load();
+  client_load_scene(client_scene1);
   
   int prev_time = window_get_time();
   int lag_time = 0;  
@@ -43,6 +45,24 @@ int main(int argc, char *argv[])
   window_deinit();
   
   return 0;
+}
+
+void client_load_scene(client_scene_t scene)
+{
+  client.scene = scene;
+  client_load_map(scene.map);
+  client.scene.load();
+}
+
+void client_load_map(const char *map)
+{
+  if (client.map) {
+    map_destroy(client.map);
+  }
+  
+  client.map = map_load(map);
+  renderer_load_map(client.map);
+  game_map_load(&client.gs, client.map);
 }
 
 game_t *client_get_game()
