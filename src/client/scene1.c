@@ -15,6 +15,7 @@ static void scene1_load()
   gui_node_update(scene1.info);
   
   player_spawn(client_get_game());
+  enemy_spawn_mr_fire(client_get_game(), vec2(32.0, 32.0));
 }
 
 static void scene1_update()
