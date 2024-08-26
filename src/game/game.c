@@ -7,13 +7,14 @@
 
 static void game_move_camera(game_t *gs, const input_t in);
 
-void game_init(game_t *gs)
+void game_init(game_t *gs, map_t map)
 {
   *gs = (game_t) {0};
   gs->num_entities = 0;
-  
+  gs->map = map;
+
   player_init(gs);
-  entity_t boss_group = enemy_spawn_mr_boss_group(gs, vec2(32/2, 4 * 32 / 6));
+  entity_t boss_group = enemy_spawn_mr_boss_group(gs, map_landmark(map, "BossSpawnLocation"));
   actor_do(entity_get_component(gs, boss_group, actor), ACT0, 0.0);
 }
 
@@ -29,11 +30,6 @@ void game_update(game_t *gs, const input_t in)
   system_update_health(gs);
   game_move_camera(gs, in);
   gs->time += 0.015;
-}
-
-void game_load_map(game_t *gs, map_t map)
-{
-  gs->map = map;
 }
 
 void game_move_camera(game_t *gs, const input_t in)

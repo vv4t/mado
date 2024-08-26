@@ -47,7 +47,7 @@ typedef struct game_s {
   float       time;
 } game_t;
 
-void game_init(game_t *gs);
+void game_init(game_t *gs, map_t map);
 void game_load_map(game_t *gs, map_t map);
 void game_update(game_t *gs, const input_t in);
 

@@ -20,17 +20,18 @@ int main(int argc, char *argv[])
 {
   window_init(WIDTH, HEIGHT, "mado");
   renderer_init();
-  game_init(&mado.gs);
-  mado.in = input_create();
   
   map_t map = map_load("assets/map/1.map");
   
-  renderer_load_map(map);
-  game_load_map(&mado.gs, map);
+  game_init(&mado.gs, map);
   
+  mado.in = input_create();
+
+  renderer_load_map(map);
+
   int prev_time = window_get_time();
   int lag_time = 0;
-  
+
   while (window_loop(mado.in)) {
     if (lag_time > 15) {
       lag_time -= 15;
@@ -38,14 +39,14 @@ int main(int argc, char *argv[])
       renderer_render(&mado.gs);
       window_swap();
     }
-    
+
     int now_time = window_get_time();
     lag_time += now_time - prev_time;
     prev_time = now_time;
   }
-  
+
   renderer_deinit();
   window_deinit();
-  
+
   return 0;
 }

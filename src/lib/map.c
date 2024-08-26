@@ -3,12 +3,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <lib/log.h>
+#include <string.h>
 
 struct map_s {
   tilename_t *data;
   bool *solid;
   int width;
   int height;
+  landmark_t *landmarks;
+  int numLandmarks;
 };
 
 struct { tilename_t tilename; tile_t tile; } tiledata[] = {
@@ -46,32 +49,57 @@ map_t map_load(const char *path)
     perror(path);
     exit(1);
   }
-  
-  map_t m = malloc(sizeof(*m));
-  
-  if (fscanf(fp, "%i %i", &m->width, &m->height) < 0) {
-    LOG_ERROR("%s: bad header", path);
+
+  map_t m = malloc(sizeof(struct map_s));
+
+  int numLandmarks;
+  if (fscanf(fp, "%i", &numLandmarks) < 0) {
+    LOG_ERROR("%s: malformed num landmarks", path);
   }
-  
+
+  m->numLandmarks = numLandmarks;
+
+  m->landmarks = calloc(m->numLandmarks, sizeof(landmark_t));
+
+  for (int i = 0; i < m->numLandmarks; i++) {
+    float lmX;
+    float lmY;
+    int lmNameLen;
+    if (fscanf(fp, "%i", &lmNameLen) < 0) {
+      LOG_ERROR("%s: malformed landmark name length", path);
+    }
+    char *lmName = calloc(lmNameLen + 1, sizeof(char));
+    if (fscanf(fp, "%s %f %f", lmName, &lmX, &lmY) < 0) {
+      LOG_ERROR("%s: malformed landmark data", path);
+    }
+    m->landmarks[i].name = lmName;
+    m->landmarks[i].position.x = lmX / 8.0;
+    m->landmarks[i].position.y = lmY / 8.0;
+  }
+
+  if (fscanf(fp, "%i %i", &m->width, &m->height) < 0) {
+    LOG_ERROR("%s: malformed width height", path);
+  }
+
   m->data = calloc(m->width * m->height, sizeof(tilename_t));
   m->solid = calloc(m->width * m->height, sizeof(bool));
-  
+
   for (int i = 0; i < m->height; i++) {
     for (int j = 0; j < m->width; j++) {
       if (fscanf(fp, "%x", &m->data[i * m->width + j]) < 0) {
-        LOG_ERROR("%s: bad data", path);
+        LOG_ERROR("%s: malformed data", path);
       }
-      
+
       tilename_t tilename = m->data[i * m->width + j];
       tile_t tile;
       tile_get(&tile, tilename);
-      
+
       if (tile.solid) {
         m->solid[i * m->width + j] = true;
       }
     }
   }
-  
+
   return m;
 }
 
@@ -121,7 +149,19 @@ int map_collide(map_t m, vector p, vector d)
 void map_destroy(map_t m)
 {
   free(m->data);
-  free(m);
+  free(m->solid);
+  free(m->landmarks);
+}
+
+vector map_landmark(map_t m , char *name) {
+  for (int i = 0; i < m->numLandmarks; i++) {
+    landmark_t lm = m->landmarks[i];
+    LOG_INFO("%s %f %f", lm.name, lm.position.x, lm.position.y);
+    if (strcmp(lm.name, name) == 0) {
+      return lm.position;
+    }
+  }
+  return vec2(0.0, 0.0);
 }
 
 void tile_get(tile_t *tile, tilename_t tilename)
