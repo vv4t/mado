@@ -38,6 +38,9 @@ void window_init()
     LOG_ERROR("SDL_Error: %s", SDL_GetError());
   }
   
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
   window.window = SDL_CreateWindow(
     "mado",
     SDL_WINDOWPOS_CENTERED,

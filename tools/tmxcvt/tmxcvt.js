@@ -11,13 +11,23 @@ if (process.argv.length != 3 && process.argv.length != 4) {
 const text = fs.readFileSync(process.argv[2], { encoding: "utf8", flag: "r" });
 const xml = new XMLParser({ ignoreAttributes: false }).parse(text);
 
-const width = parseInt(xml.map.layer["@_width"]);
-const height = parseInt(xml.map.layer["@_height"]);
-
 const map_data = xml.map.layer.data["#text"].split(",").map((x) => parseInt(x).toString(16));
 
 const out = [];
 
+const numObjects = xml.map.objectgroup.object.length;
+out.push(numObjects)
+
+for (let i = 0; i < numObjects; i++) {
+  const object = xml.map.objectgroup.object[i]
+  out.push(object["@_name"].length)
+  out.push(object["@_name"])
+  out.push(object["@_x"])
+  out.push(object["@_y"])
+}
+
+const width = parseInt(xml.map.layer["@_width"]);
+const height = parseInt(xml.map.layer["@_height"]);
 out.push(width);
 out.push(height);
 

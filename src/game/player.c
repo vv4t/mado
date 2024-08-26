@@ -33,7 +33,7 @@ void player_init(game_t *gs)
   entity_t e = entity_add(gs, ENT_PLAYER);
   entity_add_component(gs, e, transform);
     transform_t *t = entity_get_component(gs, e, transform);
-    t->position = vec2(24, 24);
+    t->position = map_landmark(gs->map, "PlayerSpawnLocation");
   gs->player = e;
   player_kill(gs);
 }

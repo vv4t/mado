@@ -7,9 +7,10 @@
 
 static void game_move_camera(game_t *gs);
 
-void game_init(game_t *gs)
+void game_init(game_t *gs, map_t map)
 {
   *gs = (game_t) {0};
+  gs->map = map;
   player_init(gs);
 }
 
@@ -25,11 +26,6 @@ void game_update(game_t *gs, const usercmd_t *usercmd)
   system_update_health(gs);
   game_move_camera(gs);
   gs->time += 0.015;
-}
-
-void game_map_load(game_t *gs, map_t map)
-{
-  gs->map = map;
 }
 
 void game_move_camera(game_t *gs)
