@@ -1,4 +1,4 @@
-#include <renderer/shader.h>
+#include <gfx/shader.h>
 #include <lib/log.h>
 #include <stdio.h>
 #include <stdlib.h>

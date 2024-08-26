@@ -1,17 +1,16 @@
 #include <client/window.h>
-#include <lib/log.h>
+#include <client/input.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <lib/log.h>
+
+#define WIDTH 1280
+#define HEIGHT 960
 
 struct {
   SDL_Window *window;
   SDL_GLContext *gl;
-  int width;
-  int height;
 } window;
-
-static int window_poll(input_t in);
-void window_swap();
 
 void GLAPIENTRY
 MessageCallback( GLenum source,
@@ -23,8 +22,7 @@ MessageCallback( GLenum source,
                  const void* userParam )
 {
   if (type == GL_DEBUG_TYPE_ERROR) {
-    fprintf(
-      stderr,
+    LOG_ERROR(
       "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
       (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
       type,
@@ -34,7 +32,7 @@ MessageCallback( GLenum source,
   }
 }
 
-void window_init(int width, int height, const char *title)
+void window_init()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     LOG_ERROR("SDL_Error: %s", SDL_GetError());
@@ -44,17 +42,15 @@ void window_init(int width, int height, const char *title)
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
   window.window = SDL_CreateWindow(
-    title,
+    "mado",
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
-    width,
-    height,
+    WIDTH,
+    HEIGHT,
     SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
   );
   
   window.gl = SDL_GL_CreateContext(window.window);
-  window.width = width;
-  window.height = height;
   
   glewExperimental = 1;
   GLenum status = glewInit();
@@ -66,40 +62,30 @@ void window_init(int width, int height, const char *title)
   glDebugMessageCallback(MessageCallback, 0);
 }
 
-void window_swap()
-{
-  SDL_GL_SwapWindow(window.window);
-}
-
-int window_loop(input_t in)
-{
-  if (!window_poll(in)) {
-    return 0;
-  }
-  
-  return 1;
-}
-
-int window_poll(input_t in)
+int window_poll()
 {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
       return 0;
+    case SDL_TEXTINPUT:
+      // event.text.text;
+      break;
     case SDL_KEYUP:
-      input_key_up(in, event.key.keysym.sym);
+      input_key_press(event.key.keysym.sym, 0);
       break;
     case SDL_KEYDOWN:
-      input_key_down(in, event.key.keysym.sym);
-    case SDL_MOUSEBUTTONDOWN:
-      input_mouse_down(in, event.button.button);
+      input_key_press(event.key.keysym.sym, 1);
       break;
     case SDL_MOUSEBUTTONUP:
-      input_mouse_up(in, event.button.button);
+      input_mouse_press(event.button.button, 0);
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      input_mouse_press(event.button.button, 1);
       break;
     case SDL_MOUSEMOTION:
-      input_mouse_move(in, event.motion.x / (float) window.width, event.motion.y / (float) window.height);
+      input_mouse_move(event.motion.x, event.motion.y);
       break;
     }
   }
@@ -114,6 +100,12 @@ void window_deinit()
   SDL_Quit();
 }
 
-int window_get_time() {
+int window_get_time()
+{
   return SDL_GetTicks();
+}
+
+void window_swap()
+{
+  SDL_GL_SwapWindow(window.window);
 }

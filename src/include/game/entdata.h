@@ -16,7 +16,7 @@ typedef enum {
 typedef struct {
   union {
     struct { int name; } act;
-    struct { int e; } entcol;
+    struct { int e; } col;
   };
   event_type_t type;
 } event_t;

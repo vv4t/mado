@@ -1,4 +1,4 @@
-#include <renderer/camera.h>
+#include <gfx/camera.h>
 #include <GL/glew.h>
 
 struct ub_camera {

@@ -1,5 +1,5 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#ifndef renderer_H
+#define renderer_H
 
 #include <game/game.h>
 #include <lib/map.h>

@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <game/usercmd.h>
 #include <game/transform.h>
 #include <game/sprite.h>
 #include <game/rigidbody.h>
@@ -8,7 +9,6 @@
 #include <game/bullet.h>
 #include <game/health.h>
 #include <game/botmove.h>
-#include <lib/input.h>
 #include <lib/map.h>
 
 #define ENTITY_MAX 2048
@@ -39,17 +39,16 @@ typedef struct game_s {
   
   map_t       map;
   entity_t    player;
-  entity_t    boss[3];
   
-  vector      view_position;
-  vector      view_rotation;
+  vector      view_pos;
+  vector      view_rot;
   
   float       time;
 } game_t;
 
-void game_init(game_t *gs, map_t map);
-void game_load_map(game_t *gs, map_t map);
-void game_update(game_t *gs, const input_t in);
+void game_init(game_t *gs);
+void game_map_load(game_t *gs, map_t map);
+void game_update(game_t *gs, const usercmd_t *usercmd);
 
 entity_t  entity_add(game_t *gs, entname_t name);
 void      entity_kill(game_t *gs, entity_t e);
@@ -62,6 +61,11 @@ void      *entity_get_context(game_t *gs, entity_t e, int context_size);
 {\
   (gs)->component[e] = create_##component();\
   (gs)->entdict[e] |= C_##component;\
+}
+
+#define entity_remove_component(gs, e, component) \
+{\
+  (gs)->entdict[e] &= ~(C_##component);\
 }
 
 #define entity_get_component(gs, e, component) (&(gs)->component[e])
