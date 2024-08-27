@@ -2,7 +2,10 @@
 #include <game/shoot.h>
 #include <game/game.h>
 #include <game/conditions.h>
+#include <lib/log.h>
+
 #include <stdio.h>
+
 
 static const animation_t mr_warrior_idle   = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 static const animation_t mr_warrior_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
@@ -45,6 +48,8 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     statemachine_t *st = entity_get_component(gs, e, statemachine);
     statemachine_add_transition(st, STATE0, STATE1, cond_greater_distance, gs->player, 5.0);
     statemachine_add_transition(st, STATE1, STATE0, cond_lesser_distance, gs->player, 5.0);
+    statemachine_add_transition(st, STATE0, STATE2, cond_lesser_hp_percent, -1, 0.5);
+    statemachine_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent, -1, 0.5);
   entity_bind(gs, e, mr_warrior_invoke);
   return e;
 }
@@ -72,6 +77,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
       break;
     case ACT2:
+      shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 15);
       break;
     case ACT3:
       break;
@@ -94,6 +100,12 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_stop_all(a);
       botmove_stop(bm);
       actor_do(a, ACT0, 0.0);
+      break;
+    case STATE2:
+      actor_stop_all(a);
+      botmove_stop(bm);
+      actor_repeat(a, ACT2, 0.0, 0, 1.0);
+      LOG_INFO("hello")
       break;
     }
     break;
