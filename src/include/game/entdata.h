@@ -7,6 +7,7 @@ struct game_s;
 
 typedef enum {
   EV_ACT,
+  EV_TRANSITION,
   EV_MAP_COLLIDE,
   EV_ENTITY_COLLIDE,
   EV_HIT,
@@ -17,6 +18,7 @@ typedef struct {
   union {
     struct { int name; } act;
     struct { int e; } col;
+    struct { int state; } transition;
   };
   event_type_t type;
 } event_t;
