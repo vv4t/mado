@@ -7,10 +7,9 @@
 
 static void game_move_camera(game_t *gs);
 
-void game_init(game_t *gs, map_t map)
+void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
-  gs->map = map;
   player_init(gs);
 }
 
@@ -35,4 +34,11 @@ void game_move_camera(game_t *gs)
   
   gs->view_rot.z = pt->rotation.z;
   gs->view_pos = pt->position;
+}
+
+void game_load_map(game_t *gs, map_t map)
+{
+  gs->map = map;
+  transform_t *t = entity_get_component(gs, gs->player, transform);
+  t->position = map_landmark(gs->map, "PlayerSpawnLocation");
 }

@@ -12,10 +12,10 @@ int main(int argc, char *argv[])
 {
   window_init();
   renderer_init();
+  game_init(&client.gs);
   
   map_t map = map_load("assets/map/1.map");
-  game_init(&client.gs, map);
-
+  game_load_map(&client.gs, map);
   renderer_load_map(map);
 
   client.scene = client_scene1;
