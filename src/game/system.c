@@ -232,8 +232,9 @@ void system_update_transitions(game_t *gs)
       transition_t tr = st->transitions[i];
       if (tr.active
           && tr.from == st->currentState
-          && tr.condition(gs, e, tr.arg1, tr.arg2)) {
+          && (tr.condition == NULL || tr.condition(gs, e, tr.arg1, tr.arg2))) {
         st->currentState = tr.to;
+        st->lastTransitionTime = gs->time;
         entity_invoke(gs, e, (event_t) { .type = EV_TRANSITION, .transition.state = tr.to });
       }
     }

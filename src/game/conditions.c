@@ -24,3 +24,8 @@ bool cond_lesser_hp_percent(game_t *gs, entity_t e, entity_t arg1, float arg2) {
     const health_t *h = entity_get_component(gs, e, health);
     return h->hp < h->max_hp * arg2;
 }
+
+bool cond_time_elapsed(game_t *gs, entity_t e, entity_t arg1, float arg2) {
+    const statemachine_t *st = entity_get_component(gs, e, statemachine);
+    return gs->time - st->lastTransitionTime >= arg2;
+}

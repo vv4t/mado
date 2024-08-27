@@ -9,6 +9,7 @@ typedef int entity_t;
 #define TRANSITION_MAX 8
 
 typedef enum {
+  NOSTATE,
   STATE0,
   STATE1,
   STATE2,
@@ -33,15 +34,8 @@ typedef struct {
 typedef struct {
   state_t      currentState;
   transition_t transitions[TRANSITION_MAX];
+  float        lastTransitionTime;
 } statemachine_t;
-
-inline static statemachine_t create_statemachine()
-{
-  return (statemachine_t) {
-    .currentState = STATE0,
-    .transitions = {{0}}
-  };
-}
 
 inline static void statemachine_add_transition(statemachine_t *st, state_t from, state_t to, condition_t cond, entity_t arg1, float arg2) {
   for (int i = 0; i < TRANSITION_MAX; i++) {
@@ -57,6 +51,17 @@ inline static void statemachine_add_transition(statemachine_t *st, state_t from,
       break;
     }
   }
+}
+
+inline static statemachine_t create_statemachine()
+{
+  statemachine_t st = (statemachine_t) {
+    .currentState = NOSTATE,
+    .transitions = {{0}},
+    .lastTransitionTime = 0,
+  };
+  statemachine_add_transition(&st, NOSTATE, STATE0, NULL, 0, 0.0);
+  return st;
 }
 
 #endif

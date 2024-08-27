@@ -32,7 +32,6 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     sprite_repeat(s, &mr_warrior_idle);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT1, 0.0, 0, 0.5);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -50,6 +49,7 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     statemachine_add_transition(st, STATE1, STATE0, cond_lesser_distance, gs->player, 5.0);
     statemachine_add_transition(st, STATE0, STATE2, cond_lesser_hp_percent, -1, 0.5);
     statemachine_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent, -1, 0.5);
+    statemachine_add_transition(st, STATE2, STATE3, cond_time_elapsed, -1, 5.0);
   entity_bind(gs, e, mr_warrior_invoke);
   return e;
 }
@@ -80,6 +80,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 15);
       break;
     case ACT3:
+      shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_wave, 1.0, 5.0, 10);
       break;
     case ACT4:
       break;
@@ -105,7 +106,11 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_stop_all(a);
       botmove_stop(bm);
       actor_repeat(a, ACT2, 0.0, 0, 1.0);
-      LOG_INFO("hello")
+      break;
+    case STATE3:
+      actor_stop_all(a);
+      botmove_stop(bm);
+      actor_repeat(a, ACT3, 0.0, 0, 0.5);
       break;
     }
     break;
