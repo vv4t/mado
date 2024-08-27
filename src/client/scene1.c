@@ -14,8 +14,10 @@ static void scene1_load()
   gui_text_resize(scene1.thing, 0.025);
   gui_text_printf(scene1.thing, "Play");
   gui_node_update(scene1.thing);
-  
-  player_spawn(client_get_game());
+
+  game_t *gs = client_get_game();
+  player_spawn(gs);
+  enemy_spawn_mr_warrior(gs, map_landmark(gs->map, "BossSpawnLocation"));
 }
 
 static void scene1_update()

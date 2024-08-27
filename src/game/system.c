@@ -1,4 +1,5 @@
 #include <game/system.h>
+#include <lib/log.h>
 #include <stdio.h>
 
 void system_collide(game_t *gs)
@@ -215,6 +216,26 @@ void system_update_botmove(game_t *gs)
       break;
     case BH_ORBIT:
       break;
+    }
+  }
+}
+
+void system_update_transitions(game_t *gs)
+{
+  for (entity_t e = 0; e < gs->num_entities; e++) {
+    if (!entity_match(gs, e, C_statemachine)) {
+      continue;
+    }
+
+    statemachine_t *st = entity_get_component(gs, e, statemachine);
+    for (int i = 0; i < TRANSITION_MAX; i++) {
+      transition_t tr = st->transitions[i];
+      if (tr.active
+          && tr.from == st->currentState
+          && tr.condition(gs, e, tr.arg1, tr.arg2)) {
+        st->currentState = tr.to;
+        entity_invoke(gs, e, (event_t) { .type = EV_TRANSITION, .transition.state = tr.to });
+      }
     }
   }
 }

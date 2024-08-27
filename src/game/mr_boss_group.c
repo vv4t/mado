@@ -29,9 +29,12 @@ entity_t enemy_spawn_mr_boss_group(game_t *gs, vector pos)
   
   ctx->phase = BOSS_PHASE_INACTIVE;
 
+
   ctx->scytheboss = enemy_spawn_mr_scytheboss(gs, vsubv(pos, vec2(2.0, 0.0)));
   ctx->mageboss = enemy_spawn_mr_mageboss(gs, vaddv(pos, vec2(0.0, 3.0)));
   ctx->swordboss = enemy_spawn_mr_swordboss(gs, vaddv(pos, vec2(2.0, 0.0)));
+
+  actor_do(entity_get_component(gs, e, actor), ACT0, 0.0);
 
   return e;
 }
