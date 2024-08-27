@@ -16,7 +16,7 @@ void game_init(game_t *gs)
 void game_update(game_t *gs, const usercmd_t *usercmd)
 {
   player_update(gs, usercmd);
-  system_update_botmove(gs);
+  system_update_npcmove(gs);
   system_update_transitions(gs);
   system_animate(gs);
   system_update_bullet(gs);

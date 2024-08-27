@@ -51,9 +51,9 @@ entity_t enemy_spawn_mr_scytheboss(game_t *gs, vector pos)
     h->hp = 20000;
     h->max_hp = 20000;
     h->invincible = true;
-  entity_add_component(gs, e, botmove);
-    botmove_t *bm = entity_get_component(gs, e, botmove);
-    botmove_stop(bm);
+  entity_add_component(gs, e, npcmove);
+    npcmove_t *bm = entity_get_component(gs, e, npcmove);
+    npcmove_stop(bm);
   entity_bind(gs, e, mr_scytheboss_invoke);
 
   bossctx_t *ctx = entity_get_context(gs, e, sizeof(bossctx_t));
@@ -110,7 +110,7 @@ void mr_scytheboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   actor_t *a = entity_get_component(gs, e, actor);
   sprite_t *s = entity_get_component(gs, e, sprite);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   vector to_player = normalize(vsubv(pt->position, t->position));
@@ -121,7 +121,7 @@ void mr_scytheboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
 
       vector pivot = vec2(24.0, 24.0);
       vector closest = vaddv(fdotv(12.0, normalize(vsubv(t->position, pivot))), pivot);
-      botmove_travel(bm, closest, 5.0);
+      npcmove_travel(bm, closest, 5.0);
 
       actor_stop_all(a);
       actor_repeat(a, ACT3, 0.0, 0, 0.1);
@@ -146,7 +146,7 @@ void mr_scytheboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
       if (dist <= 12.0 + 5.0 * 0.015 && dist >= 12.0 - 5.0 * 0.015) {
         actor_stop(a, ACT3);
         actor_repeat(a, ACT1, 1.0, 0, 2.0);
-        botmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 15.0);
+        npcmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 15.0);
       }
       break;
     case ACT4:
@@ -161,7 +161,7 @@ void mr_scytheboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -170,7 +170,7 @@ void mr_scytheboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(22.0, 10.0), 20.0);
+      npcmove_travel(bm, vec2(22.0, 10.0), 20.0);
       actor_stop_all(a);
       actor_repeat(a, ACT3, 0.0, 0, 0.1);
       break;
@@ -214,7 +214,7 @@ void mr_scytheboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -226,7 +226,7 @@ void mr_scytheboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
 
       vector pivot = vec2(24.0, 24.0);
       vector closest = vaddv(fdotv(2.0, normalize(vsubv(t->position, pivot))), pivot);
-      botmove_travel(bm, closest, 5.0);
+      npcmove_travel(bm, closest, 5.0);
 
       actor_stop_all(a);
       actor_repeat(a, ACT7, 0.0, 0, 0.1);
@@ -253,7 +253,7 @@ void mr_scytheboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
       if (dist <= 2.0 + 5.0 * 0.015 && dist >= 2.0 - 5.0 * 0.015) {
         actor_stop(a, ACT7);
         actor_repeat(a, ACT1, 0.0, 0, 0.3);
-        botmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 9.0);
+        npcmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 9.0);
       }
       break;
   }
@@ -263,7 +263,7 @@ void mr_scytheboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -275,7 +275,7 @@ void mr_scytheboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
 
       vector pivot = vec2(24.0, 24.0);
       vector closest = vaddv(fdotv(2.0, normalize(vsubv(t->position, pivot))), pivot);
-      botmove_travel(bm, closest, 5.0);
+      npcmove_travel(bm, closest, 5.0);
 
       actor_stop_all(a);
       actor_repeat(a, ACT3, 0.0, 0, 0.1);
@@ -300,7 +300,7 @@ void mr_scytheboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
         actor_stop(a, ACT3);
         actor_repeat(a, ACT1, 1.0, 0, 2.0);
         actor_repeat(a, ACT4, 1.0, 0, 1.0);
-        botmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 9.0);
+        npcmove_orbit(bm, vsubv(vec2(24.0, 24.0), t->position), 9.0);
       }
       break;
     case ACT4:
@@ -324,7 +324,7 @@ void mr_scytheboss_phase4_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -333,7 +333,7 @@ void mr_scytheboss_phase4_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(16.0, 32.0), 10.0);
+      npcmove_travel(bm, vec2(16.0, 32.0), 10.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 0.0, 0, 0.1);
       break;

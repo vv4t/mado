@@ -49,9 +49,9 @@ entity_t enemy_spawn_mr_swordboss(game_t *gs, vector pos)
     h->hp = 20000;
     h->max_hp = 20000;
     h->invincible = true;
-  entity_add_component(gs, e, botmove);
-    botmove_t *bm = entity_get_component(gs, e, botmove);
-    botmove_stop(bm);
+  entity_add_component(gs, e, npcmove);
+    npcmove_t *bm = entity_get_component(gs, e, npcmove);
+    npcmove_stop(bm);
   entity_bind(gs, e, mr_swordboss_invoke);
 
   bossctx_t *ctx = entity_get_context(gs, e, sizeof(bossctx_t));
@@ -108,7 +108,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   actor_t *a = entity_get_component(gs, e, actor);
   sprite_t *s = entity_get_component(gs, e, sprite);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   vector to_player = normalize(vsubv(pt->position, t->position));
@@ -116,7 +116,7 @@ void mr_swordboss_phase0_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_chase(bm, 3.0);
+      npcmove_chase(bm, 3.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 2.0, 0, 2.0);
       break;
@@ -147,7 +147,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -156,7 +156,7 @@ void mr_swordboss_phase1_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(24.0, 10.0), 20.0);
+      npcmove_travel(bm, vec2(24.0, 10.0), 20.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 2.0, 0, 4.0);
       actor_repeat(a, ACT2, 4.0, 0, 4.0);
@@ -208,7 +208,7 @@ void mr_swordboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -217,7 +217,7 @@ void mr_swordboss_phase2_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(24.5, 24.0), 10.0);
+      npcmove_travel(bm, vec2(24.5, 24.0), 10.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 0.0, 0, 4.0);
       break;
@@ -248,7 +248,7 @@ void mr_swordboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -257,7 +257,7 @@ void mr_swordboss_phase3_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(23.5, 24.0), 10.0);
+      npcmove_travel(bm, vec2(23.5, 24.0), 10.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 0.0, 0, 0.5);
       break;
@@ -288,7 +288,7 @@ void mr_swordboss_phase4_invoke(game_t *gs, entity_t e, event_t ev) {
   transform_t *t = entity_get_component(gs, e, transform);
   actor_t *a = entity_get_component(gs, e, actor);
   health_t *h = entity_get_component(gs, e, health);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   sprite_t *s = entity_get_component(gs, e, sprite);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
@@ -297,7 +297,7 @@ void mr_swordboss_phase4_invoke(game_t *gs, entity_t e, event_t ev) {
   switch(ev.act.name) {
     case ACT0:
       h->invincible = false;
-      botmove_travel(bm, vec2(32.0, 32.0), 10.0);
+      npcmove_travel(bm, vec2(32.0, 32.0), 10.0);
       actor_stop_all(a);
       actor_repeat(a, ACT1, 0.0, 0, 0.1);
       break;
