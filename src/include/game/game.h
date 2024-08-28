@@ -9,7 +9,7 @@
 #include <game/bullet.h>
 #include <game/health.h>
 #include <game/npcmove.h>
-#include <game/statemachine.h>
+#include <game/automaton.h>
 #include <lib/map.h>
 
 #define ENTITY_MAX 2048
@@ -24,7 +24,7 @@ typedef enum {
   C_bullet       = 1 << 4,
   C_health       = 1 << 5,
   C_npcmove      = 1 << 6,
-  C_statemachine = 1 << 7
+  C_automaton    = 1 << 7
 } component_t;
 
 typedef struct game_s {
@@ -37,7 +37,7 @@ typedef struct game_s {
   npcmove_t      npcmove[ENTITY_MAX];
   entdata_t      entdata[ENTITY_MAX];
   component_t    entdict[ENTITY_MAX];
-  statemachine_t statemachine[ENTITY_MAX];
+  automaton_t automaton[ENTITY_MAX];
   int            num_entities;
 
   map_t       map;

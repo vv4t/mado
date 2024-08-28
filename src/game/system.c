@@ -223,18 +223,18 @@ void system_update_npcmove(game_t *gs)
 void system_update_transitions(game_t *gs)
 {
   for (entity_t e = 0; e < gs->num_entities; e++) {
-    if (!entity_match(gs, e, C_statemachine)) {
+    if (!entity_match(gs, e, C_automaton)) {
       continue;
     }
 
-    statemachine_t *st = entity_get_component(gs, e, statemachine);
+    automaton_t *st = entity_get_component(gs, e, automaton);
     for (int i = 0; i < TRANSITION_MAX; i++) {
       transition_t tr = st->transitions[i];
       if (tr.active
-          && tr.from == st->currentState
-          && (tr.condition == NULL || tr.condition(gs, e, tr.arg1, tr.arg2))) {
-        st->currentState = tr.to;
-        st->lastTransitionTime = gs->time;
+          && tr.from == st->current_state
+          && (tr.condition.test == NULL || tr.condition.test(gs, e, tr.condition.args))) {
+        st->current_state = tr.to;
+        st->last_transition_time = gs->time;
         entity_invoke(gs, e, (event_t) { .type = EV_TRANSITION, .transition.state = tr.to });
       }
     }
