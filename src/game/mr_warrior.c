@@ -43,13 +43,13 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     botmove_t *bm = entity_get_component(gs, e, botmove);
     bm->speed = 4.0;
     bm->behave = BH_CHASE;
-  entity_add_component(gs, e, statemachine);
-    statemachine_t *st = entity_get_component(gs, e, statemachine);
-    statemachine_add_transition(st, STATE0, STATE1, cond_greater_distance, gs->player, 5.0);
-    statemachine_add_transition(st, STATE1, STATE0, cond_lesser_distance, gs->player, 5.0);
-    statemachine_add_transition(st, STATE0, STATE2, cond_lesser_hp_percent, -1, 0.5);
-    statemachine_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent, -1, 0.5);
-    statemachine_add_transition(st, STATE2, STATE3, cond_time_elapsed, -1, 5.0);
+  entity_add_component(gs, e, automaton);
+    automaton_t *st = entity_get_component(gs, e, automaton);
+    automaton_add_transition(st, STATE0, STATE1, cond_greater_distance(gs->player, 5.0));
+    automaton_add_transition(st, STATE1, STATE0, cond_lesser_distance(gs->player, 5.0));
+    automaton_add_transition(st, STATE0, STATE2, cond_lesser_hp_percent(0.5));
+    automaton_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent(0.5));
+    automaton_add_transition(st, STATE2, STATE3, cond_time_elapsed(5.0));
   entity_bind(gs, e, mr_warrior_invoke);
   return e;
 }
