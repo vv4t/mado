@@ -22,8 +22,8 @@ struct { tilename_t tilename; tile_t tile; } tiledata[] = {
   {
     .tilename = 130,
     .tile = {
-      .tx = 1, .ty = 7, .solid = 1, .num_block = 1,
-      .block = { { .tx = 1, .ty = 7 } }
+      .tx = 1, .ty = 7, .solid = 1, .num_block = 2,
+      .block = { { .tx = 1, .ty = 7 }, { .tx = 1, .ty = 7 } }
     }
   },
   {
