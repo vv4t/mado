@@ -19,7 +19,7 @@ static shooter_t mr_warrior_shooter = {
 static void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev);
 vector mr_warrior_movement(game_t *gs, entity_t e, float speed, float a2, float a3, float a4);
 
-entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
+void enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
 {
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
@@ -50,7 +50,6 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     automaton_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent(0.5));
     automaton_add_transition(st, STATE2, STATE3, cond_time_elapsed(5.0));
   entity_bind(gs, e, mr_warrior_invoke);
-  return e;
 }
 
 void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)

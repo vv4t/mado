@@ -51,8 +51,11 @@ void player_kill(game_t *gs)
   ctx->state = PS_DEAD;
 }
 
-void player_spawn(game_t *gs)
+void player_spawn(game_t *gs, vector position)
 {
+  transform_t *pt = entity_get_component(gs, gs->player, transform);
+  pt->position = position;
+  
   entity_add_component(gs, gs->player, sprite);
     sprite_t *s = entity_get_component(gs, gs->player, sprite);
     sprite_repeat(s, &walk_forward);

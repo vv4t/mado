@@ -19,11 +19,10 @@ const numObjects = xml.map.objectgroup.object.length;
 out.push(numObjects)
 
 for (let i = 0; i < numObjects; i++) {
-  const object = xml.map.objectgroup.object[i]
-  out.push(object["@_name"].length)
-  out.push(object["@_name"])
-  out.push(object["@_x"])
-  out.push(object["@_y"])
+  const object = xml.map.objectgroup.object[i];
+  out.push(object["@_name"]);
+  out.push(object["@_x"]);
+  out.push(object["@_y"]);
 }
 
 const width = parseInt(xml.map.layer["@_width"]);

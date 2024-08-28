@@ -3,8 +3,8 @@
 
 #include <lib/math3d.h>
 
-struct game_s;
+typedef struct game_s game_t;
 
-int enemy_spawn_mr_warrior(struct game_s *gs, vector spawn_pos);
+void enemy_spawn_mr_warrior(game_t *gs, vector position);
 
 #endif

@@ -5,42 +5,49 @@
 #include <lib/log.h>
 #include <string.h>
 
-struct map_s {
-  tilename_t *data;
-  bool *solid;
-  int width;
-  int height;
-  landmark_t *landmarks;
-  int numLandmarks;
+struct landmark_s {
+  char name[32];
+  vector position;
+  landmark_t next;
 };
 
-struct { tilename_t tilename; tile_t tile; } tiledata[] = {
+struct map_s {
+  tile_t *data;
+  int width;
+  int height;
+  landmark_t landmarks;
+  int num_landmarks;
+};
+
+struct { int name; tile_t tile; } tiledata[] = {
   {
-    .tilename = 0,
+    .name = 0,
     .tile = { .tx = 0, .ty = 0, .solid = 1, .num_block = 0 }
   },
   {
-    .tilename = 130,
+    .name = 130,
     .tile = {
       .tx = 1, .ty = 7, .solid = 1, .num_block = 1,
       .block = { { .tx = 1, .ty = 7 } }
     }
   },
   {
-    .tilename = 131,
+    .name = 131,
     .tile = {
       .tx = 1, .ty = 7, .solid = 1, .num_block = 2,
       .block = { { .tx = 1, .ty = 7 },  { .tx = 2, .ty = 7 } }
     }
   },
   {
-    .tilename = 132,
+    .name = 132,
     .tile = {
       .tx = 3, .ty = 7, .solid = 1, .num_block = 1,
       .block = { { .tx = 3, .ty = 7 } }
     }
   },
 };
+
+static tile_t tile_get(int name);
 
 map_t map_load(const char *path)
 {
@@ -52,51 +59,44 @@ map_t map_load(const char *path)
 
   map_t m = malloc(sizeof(struct map_s));
 
-  int numLandmarks;
-  if (fscanf(fp, "%i", &numLandmarks) < 0) {
+  int num_landmarks;
+  if (fscanf(fp, "%i", &num_landmarks) < 0) {
     LOG_ERROR("%s: malformed num landmarks", path);
   }
 
-  m->numLandmarks = numLandmarks;
+  m->num_landmarks = num_landmarks;
 
-  m->landmarks = calloc(m->numLandmarks, sizeof(landmark_t));
+  m->landmarks = calloc(m->num_landmarks, sizeof(struct landmark_s));
 
-  for (int i = 0; i < m->numLandmarks; i++) {
-    float lmX;
-    float lmY;
-    int lmNameLen;
-    if (fscanf(fp, "%i", &lmNameLen) < 0) {
-      LOG_ERROR("%s: malformed landmark name length", path);
-    }
-    char *lmName = calloc(lmNameLen + 1, sizeof(char));
-    if (fscanf(fp, "%s %f %f", lmName, &lmX, &lmY) < 0) {
+  for (int i = 0; i < m->num_landmarks; i++) {
+    float x, y;
+    if (fscanf(fp, "%32s %f %f", m->landmarks[i].name, &x, &y) < 0) {
       LOG_ERROR("%s: malformed landmark data", path);
     }
-    m->landmarks[i].name = lmName;
-    m->landmarks[i].position.x = lmX / 8.0;
-    m->landmarks[i].position.y = lmY / 8.0;
+    
+    m->landmarks[i].position.x = x / 8.0;
+    m->landmarks[i].position.y = y / 8.0;
+    m->landmarks[i].next = NULL;
+    
+    if (i > 0) {
+      m->landmarks[i - 1].next = &m->landmarks[i];
+    }
   }
 
   if (fscanf(fp, "%i %i", &m->width, &m->height) < 0) {
     LOG_ERROR("%s: malformed width height", path);
   }
 
-  m->data = calloc(m->width * m->height, sizeof(tilename_t));
-  m->solid = calloc(m->width * m->height, sizeof(bool));
+  m->data = calloc(m->width * m->height, sizeof(tile_t));
 
   for (int i = 0; i < m->height; i++) {
     for (int j = 0; j < m->width; j++) {
-      if (fscanf(fp, "%x", &m->data[i * m->width + j]) < 0) {
+      int name;
+      if (fscanf(fp, "%x", &name) < 0) {
         LOG_ERROR("%s: malformed data", path);
       }
-
-      tilename_t tilename = m->data[i * m->width + j];
-      tile_t tile;
-      tile_get(&tile, tilename);
-
-      if (tile.solid) {
-        m->solid[i * m->width + j] = true;
-      }
+      
+      m->data[i * m->width + j] = tile_get(name);
     }
   }
 
@@ -113,19 +113,12 @@ int map_get_height(map_t m)
   return m->height;
 }
 
-int map_solid(map_t m, int x, int y)
+tile_t map_get(map_t m, int x, int y)
 {
   if (x < 0 || y < 0 || x >= m->width || y >= m->height) {
-    return true;
-  }
-  
-  return m->solid[x + y * m->width];
-}
-
-tilename_t map_get(map_t m, int x, int y)
-{
-  if (x < 0 || y < 0 || x >= m->width || y >= m->height) {
-    return 0;
+    return (tile_t) {
+      .tx = 0, .ty = 0, .solid = 1, .num_block = 0
+    };
   }
   
   return m->data[x + y * m->width];
@@ -138,44 +131,52 @@ int map_collide(map_t m, vector p, vector d)
   int x1 = (int) floor(p.x + d.x);
   int y1 = (int) floor(p.y + d.y);
   
-  if (map_solid(m, x0, y0) > 0) return 1;
-  if (map_solid(m, x1, y0) > 0) return 1;
-  if (map_solid(m, x0, y1) > 0) return 1;
-  if (map_solid(m, x1, y1) > 0) return 1;
+  if (map_get(m, x0, y0).solid > 0) return 1;
+  if (map_get(m, x1, y0).solid > 0) return 1;
+  if (map_get(m, x0, y1).solid > 0) return 1;
+  if (map_get(m, x1, y1).solid > 0) return 1;
   
   return 0;
+}
+
+landmark_t map_get_landmarks(map_t m)
+{
+  return m->landmarks;
 }
 
 void map_destroy(map_t m)
 {
   free(m->data);
-  free(m->solid);
   free(m->landmarks);
+  free(m);
 }
 
-vector map_landmark(map_t m , char *name) {
-  for (int i = 0; i < m->numLandmarks; i++) {
-    landmark_t lm = m->landmarks[i];
-    LOG_INFO("%s %f %f", lm.name, lm.position.x, lm.position.y);
-    if (strcmp(lm.name, name) == 0) {
-      return lm.position;
-    }
-  }
-  return vec2(0.0, 0.0);
+const char *landmark_get_name(landmark_t lm)
+{
+  return lm->name;
 }
 
-void tile_get(tile_t *tile, tilename_t tilename)
+vector landmark_get_position(landmark_t lm)
+{
+  return lm->position;
+}
+
+landmark_t landmark_next(landmark_t lm)
+{
+  return lm->next;
+}
+
+tile_t tile_get(int name)
 {
   for (int i = 0; i < sizeof(tiledata) / sizeof(tiledata[0]); i++) {
-    if (tiledata[i].tilename == tilename) {
-      *tile = tiledata[i].tile;
-      return;
+    if (tiledata[i].name == name) {
+      return tiledata[i].tile;
     }
   }
   
-  *tile = (tile_t) {
-    .tx = (tilename - 1) % 16,
-    .ty = 15 - (tilename - 1) / 16,
+  return (tile_t) {
+    .tx = (name - 1) % 16,
+    .ty = 15 - (name - 1) / 16,
     .solid = false,
     .num_block = 0
   };

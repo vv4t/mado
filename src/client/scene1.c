@@ -16,10 +16,12 @@ static void scene1_load()
   gui_node_update(scene1.thing);
 
   game_t *gs = client_get_game();
-  player_spawn(gs);
-  transform_t *t = entity_get_component(gs, gs->player, transform);
-  t->position = map_landmark(gs->map, "PlayerSpawnLocation");
-  enemy_spawn_mr_warrior(gs, map_landmark(gs->map, "BossSpawnLocation"));
+  
+  player_spawn(gs, vec2(32, 32));
+  
+  // transform_t *t = entity_get_component(gs, gs->player, transform);
+  // t->position = vec2(32.0, 32.0); 
+  // enemy_spawn_mr_warrior(gs, map_landmark(gs->map, "BossSpawnLocation"));
 }
 
 static void scene1_update()

@@ -48,14 +48,7 @@ void map_renderer_load(map_t map)
   
   for (int i = 0; i < map_get_width(map); i++) {
     for (int j = 0; j < map_get_height(map); j++) {
-      tilename_t tilename = map_get(map, i, j);
-      
-      if (tilename == 0) {
-        continue;
-      }
-      
-      tile_t tile;
-      tile_get(&tile, tilename);
+      tile_t tile = map_get(map, i, j);
       
       int z = 0;
       
@@ -85,12 +78,7 @@ void map_renderer_deinit()
 
 int skip_wall_check(map_t map, int x, int y, int z)
 {
-  tilename_t tilename = map_get(map, x, y);
-  
-  tile_t tile;
-  tile_get(&tile, tilename);
-  
-  return tile.num_block > z;
+  return map_get(map, x, y).num_block > z;
 }
 
 void add_tile(meshdata_t md, int x, int y, int z, int tx, int ty)
