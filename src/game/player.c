@@ -32,8 +32,6 @@ void player_init(game_t *gs)
 {
   entity_t e = entity_add(gs, ENT_PLAYER);
   entity_add_component(gs, e, transform);
-    transform_t *t = entity_get_component(gs, e, transform);
-    t->position = map_landmark(gs->map, "PlayerSpawnLocation");
   gs->player = e;
   player_kill(gs);
 }
@@ -53,8 +51,11 @@ void player_kill(game_t *gs)
   ctx->state = PS_DEAD;
 }
 
-void player_spawn(game_t *gs)
+void player_spawn(game_t *gs, vector position)
 {
+  transform_t *pt = entity_get_component(gs, gs->player, transform);
+  pt->position = position;
+  
   entity_add_component(gs, gs->player, sprite);
     sprite_t *s = entity_get_component(gs, gs->player, sprite);
     sprite_repeat(s, &walk_forward);

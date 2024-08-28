@@ -1,7 +1,6 @@
 #include <game/enemy.h>
 #include <game/shoot.h>
 #include <game/game.h>
-#include <game/conditions.h>
 #include <lib/log.h>
 
 #include <stdio.h>
@@ -20,7 +19,7 @@ static shooter_t mr_warrior_shooter = {
 static void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev);
 vector mr_warrior_movement(game_t *gs, entity_t e, float speed, float a2, float a3, float a4);
 
-entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
+void enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
 {
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
@@ -39,8 +38,8 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     health_t *h = entity_get_component(gs, e, health);
     h->hp = 1000;
     h->max_hp = 1000;
-  entity_add_component(gs, e, botmove);
-    botmove_t *bm = entity_get_component(gs, e, botmove);
+  entity_add_component(gs, e, npcmove);
+    npcmove_t *bm = entity_get_component(gs, e, npcmove);
     bm->speed = 4.0;
     bm->behave = BH_CHASE;
   entity_add_component(gs, e, automaton);
@@ -51,7 +50,6 @@ entity_t enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     automaton_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent(0.5));
     automaton_add_transition(st, STATE2, STATE3, cond_time_elapsed(5.0));
   entity_bind(gs, e, mr_warrior_invoke);
-  return e;
 }
 
 void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
@@ -61,7 +59,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  botmove_t *bm = entity_get_component(gs, e, botmove);
+  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   
   float pdist = length(vsubv(pt->position, t->position));
   
@@ -71,7 +69,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      botmove_chase(bm, 6.0);
+      npcmove_chase(bm, 6.0);
       break;
     case ACT1:
       shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
@@ -94,22 +92,22 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
     switch (ev.transition.state) {
     case STATE0:
       actor_stop_all(a);
-      botmove_stop(bm);
+      npcmove_stop(bm);
       actor_repeat(a, ACT1, 0.0, 0, 0.5);
       break;
     case STATE1:
       actor_stop_all(a);
-      botmove_stop(bm);
+      npcmove_stop(bm);
       actor_do(a, ACT0, 0.0);
       break;
     case STATE2:
       actor_stop_all(a);
-      botmove_stop(bm);
+      npcmove_stop(bm);
       actor_repeat(a, ACT2, 0.0, 0, 1.0);
       break;
     case STATE3:
       actor_stop_all(a);
-      botmove_stop(bm);
+      npcmove_stop(bm);
       actor_repeat(a, ACT3, 0.0, 0, 0.5);
       break;
     }

@@ -163,16 +163,16 @@ void system_update_health(game_t *gs)
   }
 }
 
-void system_update_botmove(game_t *gs)
+void system_update_npcmove(game_t *gs)
 {
   for (entity_t e = 0; e < gs->num_entities; e++) {
-    if (!entity_match(gs, e, C_botmove | C_transform | C_rigidbody)) {
+    if (!entity_match(gs, e, C_npcmove | C_transform | C_rigidbody)) {
       continue;
     }
 
     transform_t *t = entity_get_component(gs, e, transform);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
-    botmove_t *bm = entity_get_component(gs, e, botmove);
+    npcmove_t *bm = entity_get_component(gs, e, npcmove);
     
     if (bm->behave == BH_STOP) {
       rb->velocity = vec2(0.0, 0.0);

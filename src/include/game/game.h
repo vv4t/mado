@@ -8,7 +8,7 @@
 #include <game/actor.h>
 #include <game/bullet.h>
 #include <game/health.h>
-#include <game/botmove.h>
+#include <game/npcmove.h>
 #include <game/automaton.h>
 #include <lib/map.h>
 
@@ -23,22 +23,22 @@ typedef enum {
   C_actor        = 1 << 3,
   C_bullet       = 1 << 4,
   C_health       = 1 << 5,
-  C_botmove      = 1 << 6,
-  C_automaton = 1 << 7
+  C_npcmove      = 1 << 6,
+  C_automaton    = 1 << 7
 } component_t;
 
 typedef struct game_s {
-  transform_t    transform[ENTITY_MAX];
-  sprite_t       sprite[ENTITY_MAX];
-  rigidbody_t    rigidbody[ENTITY_MAX];
-  actor_t        actor[ENTITY_MAX];
-  bullet_t       bullet[ENTITY_MAX];
-  health_t       health[ENTITY_MAX];
-  botmove_t      botmove[ENTITY_MAX];
-  entdata_t      entdata[ENTITY_MAX];
-  component_t    entdict[ENTITY_MAX];
-  automaton_t automaton[ENTITY_MAX];
-  int            num_entities;
+  transform_t     transform[ENTITY_MAX];
+  sprite_t        sprite[ENTITY_MAX];
+  rigidbody_t     rigidbody[ENTITY_MAX];
+  actor_t         actor[ENTITY_MAX];
+  bullet_t        bullet[ENTITY_MAX];
+  health_t        health[ENTITY_MAX];
+  npcmove_t       npcmove[ENTITY_MAX];
+  entdata_t       entdata[ENTITY_MAX];
+  component_t     entdict[ENTITY_MAX];
+  automaton_t     automaton[ENTITY_MAX];
+  int             num_entities;
 
   map_t       map;
   entity_t    player;
@@ -49,8 +49,10 @@ typedef struct game_s {
   float       time;
 } game_t;
 
-void game_init(game_t *gs, map_t map);
+void game_init(game_t *gs);
+void game_load_map(game_t *gs, map_t map);
 void game_update(game_t *gs, const usercmd_t *usercmd);
+void game_spawn_group(game_t *gs, const char *name);
 
 entity_t  entity_add(game_t *gs, entname_t name);
 void      entity_kill(game_t *gs, entity_t e);

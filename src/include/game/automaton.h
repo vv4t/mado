@@ -1,10 +1,11 @@
 #ifndef AUTOMATON_H
 #define AUTOMATON_H
 
+#include <stdbool.h>
 #include <lib/math3d.h>
-#include <game/game.h>
 
 typedef int entity_t;
+typedef struct game_s game_t;
 
 #define TRANSITION_MAX 8
 
@@ -21,14 +22,14 @@ typedef enum {
 } state_t;
 
 typedef union {
-    struct { entity_t other; float trigger_dist; } distance;
-    struct { float trigger_hp; } health;
-    struct { float delay; } time;
+  struct { entity_t other; float trigger_dist; } distance;
+  struct { float trigger_hp; } health;
+  struct { float delay; } time;
 } condition_args_t;
 
-typedef bool (*test_t)(struct game_s *gs, entity_t e, condition_args_t args);
+typedef bool (*test_t)(game_t *gs, entity_t e, condition_args_t args);
 
-typedef struct {
+typedef struct condition_s {
   test_t test;
   condition_args_t args;
 } condition_t;
@@ -41,9 +42,9 @@ typedef struct {
 } transition_t;
 
 typedef struct {
-  state_t      current_state;
-  transition_t transitions[TRANSITION_MAX];
-  float        last_transition_time;
+  state_t       current_state;
+  transition_t  transitions[TRANSITION_MAX];
+  float         last_transition_time;
 } automaton_t;
 
 inline static void automaton_add_transition(automaton_t *st, state_t from, state_t to, condition_t cond) {
@@ -70,5 +71,11 @@ inline static automaton_t create_automaton()
   automaton_add_transition(&st, NOSTATE, STATE0, (condition_t) { 0 });
   return st;
 }
+
+condition_t cond_greater_distance(entity_t other, float dist);
+condition_t cond_lesser_distance(entity_t other, float dist);
+condition_t cond_lesser_hp_flat(float hp);
+condition_t cond_lesser_hp_percent(float hp);
+condition_t cond_time_elapsed(float delay);
 
 #endif
