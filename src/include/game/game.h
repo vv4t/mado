@@ -28,17 +28,17 @@ typedef enum {
 } component_t;
 
 typedef struct game_s {
-  transform_t    transform[ENTITY_MAX];
-  sprite_t       sprite[ENTITY_MAX];
-  rigidbody_t    rigidbody[ENTITY_MAX];
-  actor_t        actor[ENTITY_MAX];
-  bullet_t       bullet[ENTITY_MAX];
-  health_t       health[ENTITY_MAX];
-  npcmove_t      npcmove[ENTITY_MAX];
-  entdata_t      entdata[ENTITY_MAX];
-  component_t    entdict[ENTITY_MAX];
-  automaton_t automaton[ENTITY_MAX];
-  int            num_entities;
+  transform_t     transform[ENTITY_MAX];
+  sprite_t        sprite[ENTITY_MAX];
+  rigidbody_t     rigidbody[ENTITY_MAX];
+  actor_t         actor[ENTITY_MAX];
+  bullet_t        bullet[ENTITY_MAX];
+  health_t        health[ENTITY_MAX];
+  npcmove_t       npcmove[ENTITY_MAX];
+  entdata_t       entdata[ENTITY_MAX];
+  component_t     entdict[ENTITY_MAX];
+  automaton_t     automaton[ENTITY_MAX];
+  int             num_entities;
 
   map_t       map;
   entity_t    player;

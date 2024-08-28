@@ -1,7 +1,6 @@
 #include <game/enemy.h>
 #include <game/shoot.h>
 #include <game/game.h>
-#include <game/conditions.h>
 #include <lib/log.h>
 
 #include <stdio.h>
