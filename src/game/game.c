@@ -39,6 +39,4 @@ void game_move_camera(game_t *gs)
 void game_load_map(game_t *gs, map_t map)
 {
   gs->map = map;
-  transform_t *t = entity_get_component(gs, gs->player, transform);
-  t->position = map_landmark(gs->map, "PlayerSpawnLocation");
 }

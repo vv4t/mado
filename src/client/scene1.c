@@ -17,6 +17,8 @@ static void scene1_load()
 
   game_t *gs = client_get_game();
   player_spawn(gs);
+  transform_t *t = entity_get_component(gs, gs->player, transform);
+  t->position = map_landmark(gs->map, "PlayerSpawnLocation");
   enemy_spawn_mr_warrior(gs, map_landmark(gs->map, "BossSpawnLocation"));
 }
 
@@ -26,6 +28,7 @@ static void scene1_update()
 }
 
 client_scene_t client_scene1 = {
+  .map = "assets/map/1.map",
   .load = scene1_load,
   .update = scene1_update
 };
