@@ -52,7 +52,7 @@ typedef struct game_s {
 void game_init(game_t *gs);
 void game_load_map(game_t *gs, map_t map);
 void game_update(game_t *gs, const usercmd_t *usercmd);
-void game_spawn_group(game_t *gs);
+void game_spawn_group(game_t *gs, const char *name);
 
 entity_t  entity_add(game_t *gs, entname_t name);
 void      entity_kill(game_t *gs, entity_t e);

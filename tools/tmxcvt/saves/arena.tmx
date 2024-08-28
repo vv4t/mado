@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="12">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="14">
  <tileset firstgid="1" name="sheet" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -55,7 +55,7 @@
 132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132,132
 </data>
  </layer>
- <objectgroup id="2" name="Object Layer 1">
+ <objectgroup id="2" name="main">
   <object id="2" name="mr_warrior" x="190.25" y="208.583">
    <point/>
   </object>
@@ -66,6 +66,14 @@
    <point/>
   </object>
   <object id="11" name="mr_warrior" x="190.25" y="151">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="4" name="other">
+  <object id="12" name="mr_warrior" x="158" y="91.5">
+   <point/>
+  </object>
+  <object id="13" name="mr_warrior" x="183.25" y="89">
    <point/>
   </object>
  </objectgroup>

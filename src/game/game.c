@@ -41,12 +41,11 @@ void game_move_camera(game_t *gs)
 void game_load_map(game_t *gs, map_t map)
 {
   gs->map = map;
-  game_spawn_group(gs);
 }
 
-void game_spawn_group(game_t *gs)
+void game_spawn_group(game_t *gs, const char *name)
 {
-  landmark_t lm = map_get_landmarks(gs->map);
+  landmark_t lm = map_get_group(gs->map, name);
   
   while (lm) {
     game_spawn_landmark(gs, lm);

@@ -11,12 +11,18 @@ struct landmark_s {
   landmark_t next;
 };
 
+typedef struct {
+  char name[32];
+  landmark_t landmarks;
+  int num_landmarks;
+} group_t;
+
 struct map_s {
   tile_t *data;
   int width;
   int height;
-  landmark_t landmarks;
-  int num_landmarks;
+  group_t *groups;
+  int num_groups;
 };
 
 struct { int name; tile_t tile; } tiledata[] = {
@@ -48,6 +54,7 @@ struct { int name; tile_t tile; } tiledata[] = {
 };
 
 static tile_t tile_get(int name);
+static group_t group_load(FILE *fp, const char *path);
 
 map_t map_load(const char *path)
 {
@@ -58,37 +65,21 @@ map_t map_load(const char *path)
   }
 
   map_t m = malloc(sizeof(struct map_s));
-
-  int num_landmarks;
-  if (fscanf(fp, "%i", &num_landmarks) < 0) {
-    LOG_ERROR("%s: malformed num landmarks", path);
+  
+  if (fscanf(fp, "%i", &m->num_groups) < 0) {
+    LOG_ERROR("%s: malformed num groups", path);
   }
-
-  m->num_landmarks = num_landmarks;
-
-  m->landmarks = calloc(m->num_landmarks, sizeof(struct landmark_s));
-
-  for (int i = 0; i < m->num_landmarks; i++) {
-    float x, y;
-    if (fscanf(fp, "%32s %f %f", m->landmarks[i].name, &x, &y) < 0) {
-      LOG_ERROR("%s: malformed landmark data", path);
-    }
-    
-    m->landmarks[i].position.x = x / 8.0;
-    m->landmarks[i].position.y = y / 8.0;
-    m->landmarks[i].next = NULL;
-    
-    if (i > 0) {
-      m->landmarks[i - 1].next = &m->landmarks[i];
-    }
+  
+  m->groups = calloc(m->num_groups, sizeof(group_t));
+  for (int i = 0; i < m->num_groups; i++) {
+    m->groups[i] = group_load(fp, path);
   }
-
+  
   if (fscanf(fp, "%i %i", &m->width, &m->height) < 0) {
     LOG_ERROR("%s: malformed width height", path);
   }
 
   m->data = calloc(m->width * m->height, sizeof(tile_t));
-
   for (int i = 0; i < m->height; i++) {
     for (int j = 0; j < m->width; j++) {
       int name;
@@ -101,6 +92,34 @@ map_t map_load(const char *path)
   }
 
   return m;
+}
+
+group_t group_load(FILE *fp, const char *path)
+{
+  group_t group;
+  
+  if (fscanf(fp, "%32s %i", group.name, &group.num_landmarks) < 0) {
+    LOG_ERROR("%s: malformed group data", path);
+  }
+  
+  group.landmarks = calloc(group.num_landmarks, sizeof(struct landmark_s));
+
+  for (int i = 0; i < group.num_landmarks; i++) {
+    float x, y;
+    if (fscanf(fp, "%32s %f %f", group.landmarks[i].name, &x, &y) < 0) {
+      LOG_ERROR("%s: malformed landmark data", path);
+    }
+    
+    group.landmarks[i].position.x = x / 8.0;
+    group.landmarks[i].position.y = y / 8.0;
+    group.landmarks[i].next = NULL;
+    
+    if (i > 0) {
+      group.landmarks[i - 1].next = &group.landmarks[i];
+    }
+  }
+  
+  return group;
 }
 
 int map_get_width(map_t m)
@@ -139,15 +158,25 @@ int map_collide(map_t m, vector p, vector d)
   return 0;
 }
 
-landmark_t map_get_landmarks(map_t m)
+landmark_t map_get_group(map_t m, const char *name)
 {
-  return m->landmarks;
+  for (int i = 0; i < m->num_groups; i++) {
+    if (strcmp(name, m->groups[i].name) == 0) {
+      return m->groups[i].landmarks;
+    }
+  }
+  
+  return NULL;
 }
 
 void map_destroy(map_t m)
 {
+  for (int i = 0; i < m->num_groups; i++) {
+    free(m->groups[i].landmarks);
+  }
+  
   free(m->data);
-  free(m->landmarks);
+  free(m->groups);
   free(m);
 }
 

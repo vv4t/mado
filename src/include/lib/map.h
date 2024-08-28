@@ -19,7 +19,7 @@ int map_get_width(map_t m);
 int map_get_height(map_t m);
 tile_t map_get(const map_t m, int x, int y);
 int map_collide(map_t m, vector p, vector d);
-landmark_t map_get_landmarks(map_t m);
+landmark_t map_get_group(map_t m, const char *name);
 void map_destroy(map_t m);
 
 const char *landmark_get_name(landmark_t lm);
