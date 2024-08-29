@@ -228,6 +228,9 @@ void system_update_transitions(game_t *gs)
     }
 
     automaton_t *st = entity_get_component(gs, e, automaton);
+    if (st->locked) {
+      continue;
+    }
     for (int i = 0; i < TRANSITION_MAX; i++) {
       transition_t tr = st->transitions[i];
       if (tr.active

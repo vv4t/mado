@@ -33,8 +33,8 @@ struct { int name; tile_t tile; } tiledata[] = {
   {
     .name = 130,
     .tile = {
-      .tx = 1, .ty = 7, .solid = 1, .num_block = 1,
-      .block = { { .tx = 1, .ty = 7 } }
+      .tx = 1, .ty = 7, .solid = 1, .num_block = 2,
+      .block = { { .tx = 1, .ty = 7 }, { .tx = 1, .ty = 7 } }
     }
   },
   {

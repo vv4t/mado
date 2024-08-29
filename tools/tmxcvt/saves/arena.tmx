@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="14">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="14">
  <tileset firstgid="1" name="sheet" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -56,16 +56,16 @@
 </data>
  </layer>
  <objectgroup id="2" name="main">
-  <object id="2" name="mr_warrior" x="190.25" y="208.583">
+  <object id="2" name="mr_shadow" x="190.25" y="208.583">
    <point/>
   </object>
   <object id="4" name="player" x="110.25" y="143.417">
    <point/>
   </object>
-  <object id="10" name="mr_warrior" x="148.25" y="198">
+  <object id="10" name="mr_small_warrior" x="148.25" y="198">
    <point/>
   </object>
-  <object id="11" name="mr_warrior" x="190.25" y="151">
+  <object id="11" name="mr_small_warrior" x="190.25" y="151">
    <point/>
   </object>
  </objectgroup>
