@@ -1,4 +1,5 @@
 #include <client/input.h>
+#include <gfx/gui.h>
 
 #define WIDTH 1280
 #define HEIGHT 960
@@ -9,8 +10,13 @@ struct {
 
 void input_mouse_move(int x, int y)
 {
-  input.usercmd.aim_x = x / (float) WIDTH - 0.5;
-  input.usercmd.aim_y = y / (float) HEIGHT - 0.5;
+  float sx = x / (float) WIDTH;
+  float sy = y / (float) HEIGHT;
+  
+  gui_mouse_move(sx, sy);
+  
+  input.usercmd.aim_x = sx - 0.5;
+  input.usercmd.aim_y = sy - 0.5;
 }
 
 void input_key_press(int key, int action)

@@ -74,12 +74,12 @@ inline static automaton_t create_automaton()
   return st;
 }
 
-inline static automaton_t automaton_lock(automaton_t *st)
+inline static void automaton_lock(automaton_t *st)
 {
   st->locked = true;
 }
 
-inline static automaton_t automaton_unlock(automaton_t *st)
+inline static void automaton_unlock(automaton_t *st)
 {
   st->locked = false;
 }

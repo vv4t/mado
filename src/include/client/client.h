@@ -7,6 +7,7 @@ typedef struct {
   const char *map;
   void (*load)();
   void (*update)();
+  void (*destroy)();
 } client_scene_t;
 
 game_t *client_get_game();

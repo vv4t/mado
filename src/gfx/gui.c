@@ -38,6 +38,7 @@ struct gui_node_s {
     } text;
   };
   float x, y;
+  gui_node_t next;
   gui_node_type_t type;
 };
 
@@ -45,6 +46,7 @@ struct {
   mesh_t      mesh;
   texture_t   sheet;
   shader_t    shader;
+  gui_node_t  root;
   GLuint      ubo;
   int         top;
 } gui;
@@ -52,6 +54,7 @@ struct {
 static gui_node_t gui_create_node();
 static void gui_rect_update(const gui_node_t node);
 static void gui_text_update(const gui_node_t node);
+static vector gui_node_space(const gui_node_t node);
 static void sub_rect(int offset, rect_t rect);
 
 void gui_init(mesh_t mesh)
@@ -88,17 +91,16 @@ void gui_deinit()
   shader_destroy(gui.shader);
 }
 
-void gui_node_update(const gui_node_t node)
+void gui_mouse_move(float x, float y)
 {
-  switch (node->type) {
-  case GUI_RECT:
-    gui_rect_update(node);
-    break;
-  case GUI_TEXT:
-    gui_text_update(node);
-    break;
-  default:
-    break;
+  gui_node_t node = gui.root;
+  
+  while (node) {
+    vector space = gui_node_space(node);
+    if (x > space.x && y > space.y && x < space.z && y < space.w) {
+      printf("REAL\n");
+    }
+    node = node->next;
   }
 }
 
@@ -225,8 +227,10 @@ gui_node_t gui_create_node(gui_node_type_t type)
 {
   gui_node_t node = malloc(sizeof(*node));
   node->type = type;
+  node->next = gui.root;
   node->x = 0.0;
   node->y = 0.0;
+  gui.root = node;
   return node;
 }
 
@@ -234,6 +238,37 @@ void gui_node_move(gui_node_t node, float x, float y)
 {
   node->x = x;
   node->y = y;
+}
+
+vector gui_node_space(const gui_node_t node)
+{
+  switch (node->type) {
+  case GUI_RECT:
+    return vec4(node->x, node->y, node->x + node->rect.w, node->y + node->rect.h);
+  case GUI_TEXT:
+    return vec4(
+      node->x, node->y,
+      node->x + node->text.col * node->text.size,
+      node->y + node->text.row * node->text.size
+    );
+  default:
+    return vec4(0, 0, 0, 0);
+    break;
+  }
+}
+
+void gui_node_update(const gui_node_t node)
+{
+  switch (node->type) {
+  case GUI_RECT:
+    gui_rect_update(node);
+    break;
+  case GUI_TEXT:
+    gui_text_update(node);
+    break;
+  default:
+    break;
+  }
 }
 
 /*

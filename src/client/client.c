@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
   renderer_init();
   game_init(&client.gs);
   
+  client.scene.destroy = NULL;
   client_load_scene(client_scene1);
   
   int prev_time = window_get_time();
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
     prev_time = now_time;
   }
   
+  client.scene.destroy();
   renderer_deinit();
   window_deinit();
   
@@ -42,6 +44,10 @@ int main(int argc, char *argv[])
 
 void client_load_scene(client_scene_t scene)
 {
+  if (client.scene.destroy) {
+    client.scene.destroy();
+  }
+  
   client.map = map_load(scene.map);
   game_load_map(&client.gs, client.map);
   renderer_load_map(client.map);

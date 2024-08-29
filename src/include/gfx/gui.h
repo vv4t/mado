@@ -19,5 +19,6 @@ void gui_text_clear(gui_node_t node);
 void gui_init(mesh_t mesh);
 void gui_draw();
 void gui_deinit();
+void gui_mouse_move(float x, float y);
 
 #endif
