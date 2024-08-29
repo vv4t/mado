@@ -60,7 +60,8 @@ void game_spawn_landmark(game_t *gs, landmark_t lm)
     void (*spawn)(game_t *gs, vector position);
   } spawn_table[] = {
     { .match = "player", .spawn = player_spawn },
-    { .match = "mr_warrior", .spawn = enemy_spawn_mr_warrior }
+    { .match = "mr_warrior", .spawn = enemy_spawn_mr_warrior },
+    { .match = "mr_shadow", .spawn = enemy_spawn_mr_shadow },
   };
   
   int num_spawn_table = sizeof(spawn_table) / sizeof(spawn_table[0]);

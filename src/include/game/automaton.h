@@ -45,6 +45,7 @@ typedef struct {
   state_t       current_state;
   transition_t  transitions[TRANSITION_MAX];
   float         last_transition_time;
+  bool          locked;
 } automaton_t;
 
 inline static void automaton_add_transition(automaton_t *st, state_t from, state_t to, condition_t cond) {
@@ -67,9 +68,20 @@ inline static automaton_t create_automaton()
     .current_state = NOSTATE,
     .transitions = {{0}},
     .last_transition_time = 0,
+    .locked = false,
   };
   automaton_add_transition(&st, NOSTATE, STATE0, (condition_t) { 0 });
   return st;
+}
+
+inline static automaton_t automaton_lock(automaton_t *st)
+{
+  st->locked = true;
+}
+
+inline static automaton_t automaton_unlock(automaton_t *st)
+{
+  st->locked = false;
 }
 
 condition_t cond_greater_distance(entity_t other, float dist);
