@@ -39,9 +39,6 @@ void enemy_spawn_mr_shadow(game_t *gs, vector spawn_pos)
     h->hp = 1000;
     h->max_hp = 1000;
   entity_add_component(gs, e, npcmove);
-    npcmove_t *bm = entity_get_component(gs, e, npcmove);
-    bm->speed = 4.0;
-    bm->behave = BH_CHASE;
   entity_add_component(gs, e, automaton);
     automaton_t *st = entity_get_component(gs, e, automaton);
     automaton_add_transition(st, STATE0, STATE1, cond_lesser_hp_percent(0.5));
