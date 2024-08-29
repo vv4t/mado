@@ -22,9 +22,10 @@ static void scene1_update()
 {
   game_t *gs = client_get_game();
   transform_t *pt = entity_get_component(gs, gs->player, transform);
+  health_t *ph = entity_get_component(gs, gs->player, health);
   
   gui_text_clear(scene1.thing);
-  gui_text_printf(scene1.thing, "X:%.2f Y:%.2f", pt->position.x, pt->position.y);
+  gui_text_printf(scene1.thing, "HP:%02i X:%.2f Y:%.2f", ph->hp, pt->position.x, pt->position.y);
   gui_node_update(scene1.thing);
 }
 
