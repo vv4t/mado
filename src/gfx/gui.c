@@ -39,6 +39,7 @@ struct gui_node_s {
   };
   float x, y;
   gui_node_t next;
+  gui_handle_t handle;
   gui_node_type_t type;
 };
 
@@ -97,8 +98,8 @@ void gui_mouse_move(float x, float y)
   
   while (node) {
     vector space = gui_node_space(node);
-    if (x > space.x && y > space.y && x < space.z && y < space.w) {
-      printf("REAL\n");
+    if (x > space.x && y > space.y && x < space.z && y < space.w && node->handle) {
+      node->handle(node, GUI_EV_HOVER);
     }
     node = node->next;
   }
@@ -228,6 +229,7 @@ gui_node_t gui_create_node(gui_node_type_t type)
   gui_node_t node = malloc(sizeof(*node));
   node->type = type;
   node->next = gui.root;
+  node->handle = NULL;
   node->x = 0.0;
   node->y = 0.0;
   gui.root = node;
@@ -238,6 +240,11 @@ void gui_node_move(gui_node_t node, float x, float y)
 {
   node->x = x;
   node->y = y;
+}
+
+void gui_node_bind(gui_node_t node, gui_handle_t handle)
+{
+  node->handle = handle;
 }
 
 vector gui_node_space(const gui_node_t node)

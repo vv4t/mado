@@ -9,9 +9,12 @@ static struct {
   gui_node_t thing;
 } scene1;
 
+static void hud_handle(gui_node_t node, gui_event_t event);
+
 static void scene1_load()
 {
   scene1.hud = gui_create_text(32, 2);
+  gui_node_bind(scene1.hud, hud_handle);
   gui_text_resize(scene1.hud, 0.025);
   gui_node_update(scene1.hud);
 
@@ -31,6 +34,10 @@ static void scene1_update()
 }
 
 static void scene1_destroy()
+{
+}
+
+static void hud_handle(gui_node_t node, gui_event_t event)
 {
 }
 

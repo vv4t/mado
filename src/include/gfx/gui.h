@@ -3,10 +3,17 @@
 
 #include <gfx/mesh.h>
 
+typedef enum {
+  GUI_EV_CLICK,
+  GUI_EV_HOVER
+} gui_event_t;
+
 typedef struct gui_node_s *gui_node_t;
+typedef void (*gui_handle_t)(gui_node_t node, gui_event_t event);
 
 void gui_node_move(gui_node_t node, float x, float y);
 void gui_node_update(const gui_node_t node);
+void gui_node_bind(gui_node_t node, gui_handle_t handle);
 
 gui_node_t gui_create_rect();
 void gui_rect_resize(gui_node_t node, float w, float h);
