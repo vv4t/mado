@@ -28,6 +28,7 @@ static void scene1_load()
 
   game_t *gs = client_get_game();
   game_spawn_group(gs, "main");
+  game_spawn_group(gs, "fire_test");
 }
 
 static void scene1_update()
