@@ -16,6 +16,7 @@ typedef enum {
 
 typedef struct {
   union {
+    struct { int damage; } hit;
     struct { int name; } act;
     struct { int e; } col;
     struct { int state; } transition;

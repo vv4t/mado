@@ -29,8 +29,6 @@ void enemy_spawn_mr_shadow(game_t *gs, vector spawn_pos)
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
     sprite_repeat(s, &mr_shadow_idle);
-  entity_add_component(gs, e, actor);
-    actor_t *a = entity_get_component(gs, e, actor);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -38,10 +36,11 @@ void enemy_spawn_mr_shadow(game_t *gs, vector spawn_pos)
     health_t *h = entity_get_component(gs, e, health);
     h->hp = 1000;
     h->max_hp = 1000;
-  entity_add_component(gs, e, npcmove);
   entity_add_component(gs, e, automaton);
     automaton_t *st = entity_get_component(gs, e, automaton);
     automaton_add_transition(st, STATE0, STATE1, cond_lesser_hp_percent(0.5));
+  entity_add_component(gs, e, npcmove);
+  entity_add_component(gs, e, actor);
   entity_bind(gs, e, mr_shadow_invoke);
 }
 
@@ -54,8 +53,7 @@ void mr_shadow_invoke(game_t *gs, entity_t e, event_t ev)
   actor_t *a = entity_get_component(gs, e, actor);
   npcmove_t *bm = entity_get_component(gs, e, npcmove);
   automaton_t *st = entity_get_component(gs, e, automaton);
-  
-  float pdist = length(vsubv(pt->position, t->position));
+  health_t *h = entity_get_component(gs, e, health);
   
   vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
   
@@ -98,9 +96,7 @@ void mr_shadow_invoke(game_t *gs, entity_t e, event_t ev)
     }
     break;
   case EV_HIT:
-    bullet_t *b = entity_get_component(gs, ev.col.e, bullet);
-    health_t *h = entity_get_component(gs, e, health);
-    h->hp -= b->damage;
+    h->hp -= ev.hit.damage;
     break;
   case EV_NO_HEALTH:
     entity_kill(gs, e);

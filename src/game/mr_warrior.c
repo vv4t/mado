@@ -60,8 +60,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
   npcmove_t *bm = entity_get_component(gs, e, npcmove);
-  
-  float pdist = length(vsubv(pt->position, t->position));
+  health_t *h = entity_get_component(gs, e, health);
   
   vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
   
@@ -113,9 +112,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
     }
     break;
   case EV_HIT:
-    bullet_t *b = entity_get_component(gs, ev.col.e, bullet);
-    health_t *h = entity_get_component(gs, e, health);
-    h->hp -= b->damage;
+    h->hp -= ev.hit.damage;
     break;
   case EV_NO_HEALTH:
     entity_kill(gs, e);

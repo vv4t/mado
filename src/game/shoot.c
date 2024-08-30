@@ -96,12 +96,11 @@ void bullet_invoke(game_t *gs, entity_t e, event_t ev)
     break;
   case EV_ENTITY_COLLIDE:
     if (b->target == entity_get_name(gs, ev.col.e)) {
-      entity_invoke(gs, ev.col.e, (event_t) { .type = EV_HIT, .col.e = e });
+      entity_invoke(gs, ev.col.e, (event_t) { .type = EV_HIT, .hit.damage = b->damage });
       entity_kill(gs, e);
     }
     break;
-  case EV_HIT:
-  case EV_NO_HEALTH:
+  default:
     break;
   }
 }
