@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="8" nextobjectid="15">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="48" height="48" tilewidth="8" tileheight="8" infinite="0" nextlayerid="8" nextobjectid="17">
  <tileset firstgid="1" name="sheet" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -61,7 +61,13 @@
   </object>
  </objectgroup>
  <objectgroup id="7" name="fire_test">
-  <object id="14" name="mr_fire" x="168.75" y="160.5">
+  <object id="14" name="mr_fire" x="153.25" y="171.5">
+   <point/>
+  </object>
+  <object id="15" name="mr_phoenix" x="148.75" y="216.25">
+   <point/>
+  </object>
+  <object id="16" name="mr_fire" x="112.5" y="210.25">
    <point/>
   </object>
  </objectgroup>
