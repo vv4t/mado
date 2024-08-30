@@ -30,7 +30,7 @@ void enemy_spawn_mr_fire(game_t *gs, vector spawn_pos)
     sprite_repeat(s, &mr_fire_attack);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT1, 1.0, 0, 6.0);
+    actor_repeat(a, ACT1, (rand() % 256) / 256.0 * 3, 0, 6.0);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
