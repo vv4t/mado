@@ -101,6 +101,7 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
     break;
   case EV_MAP_COLLIDE:
   case EV_ENTITY_COLLIDE:
+  case EV_TRANSITION:
     break;
   }
 }

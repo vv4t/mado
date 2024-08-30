@@ -6,17 +6,25 @@
 
 static struct {
   gui_node_t hud;
-  gui_node_t thing;
+  gui_node_t reset;
 } scene1;
 
-static void hud_handle(gui_node_t node, gui_event_t event);
+static void reset_handle(gui_node_t node, gui_event_t event);
 
 static void scene1_load()
 {
-  scene1.hud = gui_create_text(32, 2);
-  gui_node_bind(scene1.hud, hud_handle);
-  gui_text_resize(scene1.hud, 0.025);
-  gui_node_update(scene1.hud);
+  gui_node_t hud = gui_create_text(32, 2);
+  gui_text_resize(hud, 0.025);
+  gui_node_update(hud);
+  scene1.hud = hud;
+  
+  gui_node_t reset = gui_create_text(7, 1);
+  gui_text_printf(reset, "[RESET]");
+  gui_text_resize(reset, 0.025);
+  gui_node_move(reset, 0.025, 0.04);
+  gui_node_bind(reset, reset_handle);
+  gui_node_update(reset);
+  scene1.reset = reset;
 
   game_t *gs = client_get_game();
   game_spawn_group(gs, "main");
@@ -29,7 +37,7 @@ static void scene1_update()
   health_t *ph = entity_get_component(gs, gs->player, health);
   
   gui_text_clear(scene1.hud);
-  gui_text_printf(scene1.hud, "HP:%02i X:%.2f Y:%.2f", ph->hp, pt->position.x, pt->position.y);
+  gui_text_printf(scene1.hud, "HP:%i X:%.2f Y:%.2f", ph->hp, pt->position.x, pt->position.y);
   gui_node_update(scene1.hud);
 }
 
@@ -37,8 +45,24 @@ static void scene1_destroy()
 {
 }
 
-static void hud_handle(gui_node_t node, gui_event_t event)
+static void reset_handle(gui_node_t node, gui_event_t event)
 {
+  game_t *gs = client_get_game();
+  
+  switch (event) {
+  case GUI_EV_HOVER_ENTER:
+    gui_text_color(scene1.reset, vec3(0.5, 0.5, 0.5));
+    break;
+  case GUI_EV_HOVER_LEAVE:
+    gui_text_color(scene1.reset, vec3(1.0, 1.0, 1.0));
+    break;
+  case GUI_EV_CLICK:
+    game_reset(gs);
+    game_spawn_group(gs, "main");
+    break;
+  }
+  
+  gui_node_update(scene1.reset);
 }
 
 client_scene_t client_scene1 = {

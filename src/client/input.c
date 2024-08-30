@@ -45,6 +45,10 @@ void input_key_press(int key, int action)
 
 void input_mouse_press(int button, int action)
 {
+  if (button == 1 && action) {
+    gui_click();
+  }
+  
   if (button == 1) {
     input.usercmd.attack = action;
   }

@@ -12,7 +12,7 @@ static void game_spawn_landmark(game_t *gs, landmark_t lm);
 void game_init(game_t *gs)
 {
   *gs = (game_t) {0};
-  player_init(gs);
+  game_reset(gs);
 }
 
 void game_update(game_t *gs, const usercmd_t *usercmd)
@@ -41,6 +41,15 @@ void game_move_camera(game_t *gs)
 void game_load_map(game_t *gs, map_t map)
 {
   gs->map = map;
+}
+
+void game_reset(game_t *gs)
+{
+  for (int i = 0; i < ENTITY_MAX; i++) {
+    gs->entdict[i] = 0;
+  }
+  gs->num_entities = 0;
+  player_init(gs);
 }
 
 void game_spawn_group(game_t *gs, const char *name)
