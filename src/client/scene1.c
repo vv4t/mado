@@ -60,6 +60,7 @@ static void reset_handle(gui_node_t node, gui_event_t event)
   case GUI_EV_CLICK:
     game_reset(gs);
     game_spawn_group(gs, "main");
+    game_spawn_group(gs, "fire_test");
     break;
   }
   

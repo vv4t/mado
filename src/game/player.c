@@ -61,7 +61,7 @@ void player_spawn(game_t *gs, vector position)
     sprite_repeat(s, &walk_forward);
   entity_add_component(gs, gs->player, actor);
     actor_t *a = entity_get_component(gs, gs->player, actor);
-    actor_repeat(a, ACT0, 0.0, 0, 0.15);
+    actor_repeat(a, ACT0, 2.0, 0, 0.15);
     actor_stop(a, ACT0);
   entity_add_component(gs, gs->player, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, gs->player, rigidbody);
