@@ -104,8 +104,10 @@ float t = 0.0;
 void renderer_render(const game_t *gs)
 {
   t += 0.015;
+
+  transform_t *pt = entity_get_component(gs, gs->player, transform);
   
-  camera_move(gs->view_pos, gs->view_rot);
+  camera_move(pt->position, pt->rotation);
   
   glViewport(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
   

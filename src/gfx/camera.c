@@ -61,12 +61,12 @@ void camera_isometric()
   );
 }
 
-void camera_move(vector position, vector rotation)
+void camera_move(vector position, float rotation)
 {
   vector view_offset = fdotv(-1.0, position);
-  vector view_angle = fdotv(-1.0, rotation);
+  float view_angle = -rotation;
   camera.view_pos = position;
-  camera.v = mdotm(translate(view_offset), rotate_zyx(view_angle));
+  camera.v = mdotm(translate(view_offset), rotate_z(view_angle));
 }
 
 void camera_update(matrix model)

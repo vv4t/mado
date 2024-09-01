@@ -8,7 +8,7 @@ void camera_init(float w, float h);
 
 void camera_orthographic();
 void camera_isometric();
-void camera_move(vector position, vector rotation);
+void camera_move(vector position, float rotation);
 void camera_update(matrix m);
 
 void camera_shader_attach(shader_t shader);

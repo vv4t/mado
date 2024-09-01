@@ -153,12 +153,12 @@ void player_move(game_t *gs, const usercmd_t *usercmd)
   walk.x += usercmd->right;
   
   struct playerctx *ctx = entity_get_context(gs, gs->player, sizeof(struct playerctx));
-  pt->rotation.z += usercmd->rotate_left * rot_speed;
-  pt->rotation.z -= usercmd->rotate_right * rot_speed;
-  ctx->aim_rot = pt->rotation.z + atan2(-usercmd->aim_x, -usercmd->aim_y);
+  pt->rotation += usercmd->rotate_left * rot_speed;
+  pt->rotation -= usercmd->rotate_right * rot_speed;
+  ctx->aim_rot = pt->rotation + atan2(-usercmd->aim_x, -usercmd->aim_y);
   
   if (dot(walk, walk) > 0.0) {
-    walk = fdotv(speed, normalize(mdotv(rotate_z(pt->rotation.z), walk)));
+    walk = fdotv(speed, normalize(mdotv(rotate_z(pt->rotation), walk)));
     rb->velocity = walk;
   } else {
     ps->repeat = NULL;

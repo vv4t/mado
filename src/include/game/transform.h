@@ -5,7 +5,7 @@
 
 typedef struct {
   vector position;
-  vector rotation;
+  float rotation;
   vector scale;
 } transform_t;
 
@@ -13,7 +13,7 @@ inline static transform_t create_transform()
 {
   return (transform_t) {
     .position = vec3(0, 0, 0),
-    .rotation = vec3(0, 0, 0),
+    .rotation = 0.0,
     .scale = vec3(1, 1, 1)
   };
 }
