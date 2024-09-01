@@ -28,7 +28,6 @@ static void scene1_load()
 
   game_t *gs = client_get_game();
   game_spawn_group(gs, "main");
-  game_spawn_group(gs, "fire_test");
 }
 
 static void scene1_update()
@@ -60,7 +59,6 @@ static void reset_handle(gui_node_t node, gui_event_t event)
   case GUI_EV_CLICK:
     game_reset(gs);
     game_spawn_group(gs, "main");
-    game_spawn_group(gs, "fire_test");
     break;
   }
   
@@ -68,7 +66,7 @@ static void reset_handle(gui_node_t node, gui_event_t event)
 }
 
 client_scene_t client_scene1 = {
-  .map = "assets/map/1.map",
+  .map = "assets/map/library.map",
   .load = scene1_load,
   .update = scene1_update,
   .destroy = scene1_destroy

@@ -17,6 +17,9 @@ const xml = new XMLParser({
 const layer = xml.map.layer[0];
 const map_data = layer.data["#text"].split(",").map((x) => parseInt(x).toString(16));
 
+const width = layer["@_width"];
+const height = layer["@_height"];
+
 const out = [];
 
 out.push(xml.map.objectgroup.length);
@@ -27,13 +30,11 @@ for (const group of xml.map.objectgroup) {
   
   for (const object of group.object) {
     out.push(object["@_name"]);
-    out.push(object["@_x"]);
-    out.push(object["@_y"]);
+    out.push(object["@_x"] / xml.map['@_tilewidth']);
+    out.push(height - object["@_y"] / xml.map['@_tileheight']);
   }
 }
 
-const width = parseInt(layer["@_width"]);
-const height = parseInt(layer["@_height"]);
 out.push(width);
 out.push(height);
 

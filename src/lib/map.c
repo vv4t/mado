@@ -45,12 +45,26 @@ struct { int name; tile_t tile; } tiledata[] = {
     }
   },
   {
-    .name = 132,
+    .name = 146,
     .tile = {
-      .tx = 3, .ty = 7, .solid = 1, .num_block = 1,
-      .block = { { .tx = 3, .ty = 7 } }
+      .tx = 0, .ty = 6, .solid = 1, .num_block = 2,
+      .block = { { .tx = 1, .ty = 6 }, { .tx = 1, .ty = 6 } }
     }
   },
+  {
+    .name = 148,
+    .tile = {
+      .tx = 3, .ty = 6, .solid = 1, .num_block = 2,
+      .block = { { .tx = 3, .ty = 6 }, { .tx = 3, .ty = 6 } }
+    }
+  },
+  {
+    .name = 161,
+    .tile = {
+      .tx = 3, .ty = 6, .solid = 1, .num_block = 2,
+      .block = { { .tx = 3, .ty = 6 }, { .tx = 0, .ty = 5 } }
+    }
+  }
 };
 
 static tile_t tile_get(int name);
@@ -110,8 +124,8 @@ group_t group_load(FILE *fp, const char *path)
       LOG_ERROR("%s: malformed landmark data", path);
     }
     
-    group.landmarks[i].position.x = x / 8.0;
-    group.landmarks[i].position.y = y / 8.0;
+    group.landmarks[i].position.x = x;
+    group.landmarks[i].position.y = y;
     group.landmarks[i].next = NULL;
     
     if (i > 0) {
