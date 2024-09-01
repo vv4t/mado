@@ -30,7 +30,7 @@ void enemy_spawn_mr_fire(game_t *gs, vector spawn_pos)
     sprite_repeat(s, &mr_fire_attack);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT1, (rand() % 256) / 256.0 * 3, 0, 6.0);
+    actor_do(a, ACT3, 0.2);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -40,7 +40,7 @@ void enemy_spawn_mr_fire(game_t *gs, vector spawn_pos)
     h->max_hp = 300;
   entity_add_component(gs, e, npcmove);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
-    npcmove_chase(bm, 5.0);
+    npcmove_stop(bm);
   entity_bind(gs, e, mr_fire_invoke);
 }
 
@@ -63,11 +63,15 @@ void mr_fire_invoke(game_t *gs, entity_t e, event_t ev)
       break;
     case ACT1:
       bm->speed = 2.0;
-      actor_repeat(a, ACT0, 0.0, 32, 0.075);
+      actor_repeat(a, ACT0, 0.0, 16, 0.075);
       actor_do(a, ACT2, 40 * 0.075);
       break;
     case ACT2:
       bm->speed = 5.0;
+      break;
+    case ACT3:
+      npcmove_chase(bm, 5.0);
+      actor_repeat(a, ACT1, (rand() % 256) / 256.0 * 3, 0, 4.0);
       break;
     }
     break;
