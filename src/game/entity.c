@@ -35,6 +35,10 @@ void entity_kill(game_t *gs, entity_t e)
   }
   
   gs->entdict[e] = 0;
+  
+  while (gs->num_entities > 0 && gs->entdict[gs->num_entities - 1] == 0) {
+    gs->num_entities--;
+  }
 }
 
 void entity_invoke(game_t *gs, entity_t e, event_t ev)

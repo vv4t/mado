@@ -40,13 +40,11 @@ typedef struct game_s {
   automaton_t     automaton[ENTITY_MAX];
   int             num_entities;
 
-  map_t       map;
-  entity_t    player;
-
-  vector      view_pos;
-  vector      view_rot;
-
-  float       time;
+  map_t     map;
+  entity_t  player;
+  vector    view_pos;
+  float     view_rot;
+  float     time;
 } game_t;
 
 void game_init(game_t *gs);

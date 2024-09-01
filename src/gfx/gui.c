@@ -310,6 +310,11 @@ void gui_text_update(const gui_node_t node)
       break;
     }
   }
+  
+  for (int i = strlen(node->text.src); i < node->text.row * node->text.col; i++) {
+    rect_t empty = (rect_t) {0};
+    sub_rect(node->text.offset + i, empty);
+  }
 }
 
 void sub_rect(int offset, rect_t rect)

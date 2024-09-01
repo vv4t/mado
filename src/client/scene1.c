@@ -13,7 +13,7 @@ static void reset_handle(gui_node_t node, gui_event_t event);
 
 static void scene1_load()
 {
-  gui_node_t hud = gui_create_text(32, 2);
+  gui_node_t hud = gui_create_text(32, 1);
   gui_text_resize(hud, 0.025);
   gui_node_update(hud);
   scene1.hud = hud;
@@ -37,7 +37,7 @@ static void scene1_update()
   health_t *ph = entity_get_component(gs, gs->player, health);
   
   gui_text_clear(scene1.hud);
-  gui_text_printf(scene1.hud, "HP:%i X:%.2f Y:%.2f", ph->hp, pt->position.x, pt->position.y);
+  gui_text_printf(scene1.hud, "HP:%i X:%05.2f Y:%05.2f E:%i", ph->hp, pt->position.x, pt->position.y, gs->num_entities);
   gui_node_update(scene1.hud);
 }
 

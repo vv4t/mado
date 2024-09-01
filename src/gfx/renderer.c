@@ -105,9 +105,7 @@ void renderer_render(const game_t *gs)
 {
   t += 0.015;
 
-  transform_t *pt = entity_get_component(gs, gs->player, transform);
-  
-  camera_move(pt->position, pt->rotation);
+  camera_move(gs->view_pos, gs->view_rot);
   
   glViewport(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
   
@@ -168,6 +166,7 @@ void renderer_render(const game_t *gs)
 void renderer_load_map(map_t map)
 {
   map_renderer_load(map);
+  sprite_renderer_load_props(map);
 }
 
 void renderer_deinit()

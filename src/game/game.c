@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
+static void game_move_camera(game_t *gs);
 static void game_spawn_landmark(game_t *gs, landmark_t lm);
 
 void game_init(game_t *gs)
@@ -25,7 +26,15 @@ void game_update(game_t *gs, const usercmd_t *usercmd)
   system_integrate(gs);
   system_collide(gs);
   system_update_health(gs);
+  game_move_camera(gs);
   gs->time += 0.015;
+}
+
+static void game_move_camera(game_t *gs)
+{
+  transform_t *pt = entity_get_component(gs, gs->player, transform);
+  gs->view_pos = pt->position;
+  gs->view_rot = pt->rotation;
 }
 
 void game_load_map(game_t *gs, map_t map)
