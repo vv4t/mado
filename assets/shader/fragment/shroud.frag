@@ -14,8 +14,8 @@ void main()
   frag_color.rgb *= 0.5 + clamp(0.2 / pow(dot(d_p, d_p), 2.0), 0.0, 0.5);
   frag_color.rgb += texture(bloom, vs_uv).xyz * 2.0;
   
-  const float gamma = 0.5;
-  const float exposure = 2.5;
+  const float gamma = 0.3;
+  const float exposure = 3.0;
   
   vec3 hdr_color = frag_color.rgb;
   

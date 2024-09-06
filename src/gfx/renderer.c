@@ -61,11 +61,11 @@ void renderer_init()
   renderer.emit = texture_load_image("assets/sheet/emit.png");
   
   renderer.depth = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
-  renderer.bloom = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE);
+  renderer.bloom = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_RGBA, GL_FLOAT);
   renderer.to_bloom = target_create(2, GL_COLOR_ATTACHMENT0, renderer.bloom, GL_DEPTH_ATTACHMENT, renderer.depth);
   
   for (int i = 0; i < 2; i++) {
-    renderer.buffer[i] = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE);
+    renderer.buffer[i] = texture_create(VIEW_WIDTH, VIEW_HEIGHT, GL_RGBA, GL_FLOAT);
     renderer.to_buffer[i] = target_create(
       2,
       GL_COLOR_ATTACHMENT0, renderer.buffer[i],
