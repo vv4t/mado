@@ -67,7 +67,7 @@ static void spawn_handle(gui_node_t node, gui_event_t event)
     gui_text_color(node, vec3(1.0, 1.0, 1.0));
     break;
   case GUI_EV_CLICK:
-    game_spawn_group(gs, "enemies");
+    game_spawn_group(gs, "wave2");
     break;
   }
   

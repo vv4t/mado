@@ -124,8 +124,7 @@ group_t group_load(FILE *fp, const char *path)
       LOG_ERROR("%s: malformed landmark data", path);
     }
     
-    group.landmarks[i].position.x = x;
-    group.landmarks[i].position.y = y;
+    group.landmarks[i].position = vec2(x, y);
     group.landmarks[i].next = NULL;
     
     if (i > 0) {

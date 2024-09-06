@@ -7,7 +7,7 @@
 
 
 static const animation_t mr_shadow_idle   = { .tx = 12, .ty = 10, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
-static const animation_t mr_shadow_attack = { .tx = 12, .ty = 8, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
+static const animation_t mr_shadow_attack = { .tx = 12, .ty = 8, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.25 };
 
 static shooter_t mr_shadow_shooter = {
   .tx = 3, .ty = 0,
