@@ -59,7 +59,6 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
   transform_t *t = entity_get_component(gs, e, transform);
   sprite_t *s = entity_get_component(gs, e, sprite);
   actor_t *a = entity_get_component(gs, e, actor);
-  npcmove_t *bm = entity_get_component(gs, e, npcmove);
   health_t *h = entity_get_component(gs, e, health);
   
   vector forward = fdotv(8.0, normalize(vsubv(pt->position, t->position)));
@@ -72,10 +71,13 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT1, 0.3);
       break;
     case ACT1:
-      for (int i = -4; i <= 4; i++) {
-        float theta = i / 4.0 * M_PI;
-        vector p = vaddv(forward, mdotv(rotate_z(M_PI - theta), fdotv(0.25, forward)));
-        shoot_wave(gs, &mr_mage_shooter, 3.0, t->position, p, 2.0, 8.0, 0.0);
+      for (int j = -1; j <= 1; j++) {
+        vector forward2 = mdotv(rotate_z(j * 0.9), forward);
+        for (int i = -4; i <= 4; i++) {
+          float theta = i / 4.0 * M_PI;
+          vector forward3 = vaddv(forward2, mdotv(rotate_z(M_PI - theta), fdotv(0.25, forward2)));
+          shoot_wave(gs, &mr_mage_shooter, 3.0, t->position, forward3, 1.0, 4.0, 0.0);
+        }
       }
       break;
     default:
