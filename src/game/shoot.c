@@ -37,6 +37,11 @@ entity_t shoot_linear(game_t *gs, const shooter_t *sh, float ttl, vector o, vect
   return shoot(gs, sh, ttl, o, fwd, 1.0, flight_linear, 0.0, 0.0);
 }
 
+entity_t shoot_spin(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float ang_vel)
+{
+  return shoot(gs, sh, ttl, o, fwd, 1.0, flight_spin, ang_vel, 0.0);
+}
+
 entity_t shoot_wave(game_t *gs, const shooter_t *sh, float ttl, vector o, vector fwd, float amp, float freq, float phase)
 {
   return shoot(gs, sh, ttl, o, fwd, amp, flight_wave, freq, phase);
@@ -118,4 +123,9 @@ vector flight_wave(float time, float a1, float a2)
 vector flight_accelerate(float time, float accel, float a2)
 {
   return vec4(0.0, time * accel, 0.0, time * accel);
+}
+
+vector flight_spin(float time, float ang_vel, float a2)
+{
+  return vec4(0.0, 1.0, cos(time * ang_vel), sin(time * ang_vel));
 }
