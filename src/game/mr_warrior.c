@@ -72,7 +72,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
       actor_do(a, ACT1, 0.2);
       break;
     case ACT1:
-      shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 3, M_PI / 3);
+      shoot_shotgun(gs, &mr_warrior_shooter, 2.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 4, M_PI / 3);
       break;
     case ACT2:
       actor_repeat(a, ACT0, 0.0, 3, 0.3);
