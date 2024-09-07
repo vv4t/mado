@@ -71,8 +71,9 @@ void game_spawn_landmark(game_t *gs, landmark_t lm)
     { .match = "mr_warrior", .spawn = enemy_spawn_mr_warrior },
     { .match = "mr_shadow", .spawn = enemy_spawn_mr_shadow },
     { .match = "mr_small_warrior", .spawn = enemy_spawn_mr_small_warrior },
+    { .match = "mr_small_mage", .spawn = enemy_spawn_mr_small_mage },
     { .match = "mr_fire", .spawn = enemy_spawn_mr_fire },
-    { .match = "mr_phoenix", .spawn = enemy_spawn_mr_phoenix }
+    { .match = "mr_phoenix", .spawn = enemy_spawn_mr_phoenix },
   };
   
   int num_spawn_table = sizeof(spawn_table) / sizeof(spawn_table[0]);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="8" nextobjectid="53">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="57">
  <tileset firstgid="1" name="color" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -85,7 +85,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="6" name="wave2">
+ <objectgroup id="6" name="wave2" visible="0">
   <object id="46" name="mr_shadow" x="257.5" y="256">
    <point/>
   </object>
@@ -122,6 +122,11 @@
    <point/>
   </object>
   <object id="45" name="mr_phoenix" x="257.25" y="257.25">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="test">
+  <object id="55" name="mr_warrior" x="257.818" y="234">
    <point/>
   </object>
  </objectgroup>

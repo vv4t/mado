@@ -5,20 +5,20 @@
 
 #include <stdio.h>
 
-// static const animation_t mr_small_warrior_idle   = { .tx = 4, .ty = 10, .tw = 1, .th = 1, .framecount = 1, .frametime = 0.50 };
-static const animation_t mr_small_warrior_attack = { .tx = 4, .ty = 10, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.2 };
+// static const animation_t mr_small_mage_idle   = { .tx = 4, .ty = 10, .tw = 1, .th = 1, .framecount = 1, .frametime = 0.50 };
+static const animation_t mr_small_mage_attack = { .tx = 4, .ty = 11, .tw = 1, .th = 1, .framecount = 2, .frametime = 0.2 };
 
-static shooter_t mr_small_warrior_shooter = {
-  .tx = 2, .ty = 4,
+static shooter_t mr_small_mage_shooter = {
+  .tx = 1, .ty = 0,
   .tw = 1, .th = 1,
   .target = ENT_PLAYER,
-  .damage = 20
+  .damage = 5
 };
 
-static void mr_small_warrior_invoke(game_t *gs, entity_t e, event_t ev);
-vector mr_small_warrior_movement(game_t *gs, entity_t e, float speed, float a2, float a3, float a4);
+static void mr_small_mage_invoke(game_t *gs, entity_t e, event_t ev);
+vector mr_small_mage_movement(game_t *gs, entity_t e, float speed, float a2, float a3, float a4);
 
-void enemy_spawn_mr_small_warrior(game_t *gs, vector spawn_pos)
+void enemy_spawn_mr_small_mage(game_t *gs, vector spawn_pos)
 {
   entity_t e = entity_add(gs, ENT_ENEMY);
   entity_add_component(gs, e, transform);
@@ -27,10 +27,10 @@ void enemy_spawn_mr_small_warrior(game_t *gs, vector spawn_pos)
     t->position = spawn_pos;
   entity_add_component(gs, e, sprite);
     sprite_t *s = entity_get_component(gs, e, sprite);
-    sprite_repeat(s, &mr_small_warrior_attack);
+    sprite_repeat(s, &mr_small_mage_attack);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_repeat(a, ACT0, 0.0, 0, 0.4);
+    actor_repeat(a, ACT0, (rand() % 256) / 256.0 * 2.0, 0, 0.35);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -42,23 +42,24 @@ void enemy_spawn_mr_small_warrior(game_t *gs, vector spawn_pos)
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
     bm->speed = 4.0;
     bm->behave = BH_CHASE;
-  entity_bind(gs, e, mr_small_warrior_invoke);
+    npcmove_orbit(bm, 4.0);
+  entity_bind(gs, e, mr_small_mage_invoke);
 }
 
-void mr_small_warrior_invoke(game_t *gs, entity_t e, event_t ev)
+void mr_small_mage_invoke(game_t *gs, entity_t e, event_t ev)
 {
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
   
   transform_t *t = entity_get_component(gs, e, transform);
   health_t *h = entity_get_component(gs, e, health);
 
-  vector forward = fdotv(6.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(8.0, normalize(vsubv(pt->position, t->position)));
 
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_linear(gs, &mr_small_warrior_shooter, 1.0, t->position, forward);
+      shoot_wave(gs, &mr_small_mage_shooter, 2.0, t->position, forward, 1.0, 4.0, ((rand() % 256) / 256.0 - 0.5) * M_PI);
       break;
     }
     break;

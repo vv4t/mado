@@ -9,8 +9,7 @@ typedef enum {
   BH_STOP,
   BH_TRAVEL,
   BH_CHASE,
-  BH_RETREAT,
-  BH_ORBIT
+  BH_RETREAT
 } behave_t;
 
 typedef struct {
@@ -18,6 +17,7 @@ typedef struct {
   vector    target;
   float     speed;
   float     time;
+  float     radius;
 } npcmove_t;
 
 inline static npcmove_t create_npcmove()
@@ -26,7 +26,8 @@ inline static npcmove_t create_npcmove()
     .behave = BH_STOP,
     .target = vec2(0.0, 0.0),
     .speed = 1.0,
-    .time = 0.0
+    .radius = 0.0,
+    .time = (rand() % 256) / 256.0 * 2 * M_PI
   };
 }
 
@@ -54,12 +55,9 @@ inline static void npcmove_travel(npcmove_t *bm, vector target, float speed)
   bm->speed = speed;
 }
 
-inline static void npcmove_orbit(npcmove_t *bm, vector target, float speed)
+inline static void npcmove_orbit(npcmove_t *bm, float radius)
 {
-  bm->behave = BH_ORBIT;
-  bm->time = 0.0;
-  bm->target = target; 
-  bm->speed = speed;
+  bm->radius = radius;
 }
 
 #endif

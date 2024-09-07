@@ -174,26 +174,30 @@ void system_update_npcmove(game_t *gs)
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
     
+    vector target = bm->target;
+    
     if (bm->behave == BH_STOP) {
       rb->velocity = vec2(0.0, 0.0);
       continue;
-    } else if (bm->behave == BH_ORBIT) {
+    } else if (bm->radius > 0.0) {
       vector forward = fdotv(bm->speed, normalize(bm->target));
       vector side = cross(forward, vec3(0.0, 0.0, 1.0));
       
-      float x = cos(bm->time * (bm->speed / length(bm->target)));
-      float y = sin(bm->time * (bm->speed / length(bm->target)));
-
-      rb->velocity = vaddv(fdotv(x, side), fdotv(y, forward));
+      target = vaddv(
+        target,
+        vec2(
+          cos(bm->time * (bm->speed / bm->radius)) * bm->radius,
+          sin(bm->time * (bm->speed / bm->radius)) * bm->radius
+        )
+      );
       
       bm->time += 0.015;
-      continue;
     }
     
-    vector target_delta = vsubv(bm->target, t->position);
+    vector target_delta = vsubv(target, t->position);
 
     if (length(target_delta) <= bm->speed * 0.015 * 2) {
-      t->position = bm->target;
+      t->position = target;
     } else {
       rb->velocity = fdotv(bm->speed, normalize(target_delta));
     }
@@ -205,16 +209,13 @@ void system_update_npcmove(game_t *gs)
     transform_t *pt = entity_get_component(gs, gs->player, transform);
     
     switch (bm->behave) {
-    case BH_STOP:
-    case BH_TRAVEL:
-      break;
     case BH_CHASE:
       bm->target = pt->position;
       break;
     case BH_RETREAT:
       bm->target = vaddv(t->position, vsubv(t->position, pt->position));
       break;
-    case BH_ORBIT:
+    default:
       break;
     }
   }

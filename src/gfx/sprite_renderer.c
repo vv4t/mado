@@ -73,7 +73,7 @@ void sprite_renderer_load_props(map_t map)
     float scale;
     animation_t animation;
   } prop_table[] = {
-    { .match = "candle", .scale = 0.5, .animation = { .tx = 0, .ty = 4, .tw = 1, .th = 1, } }
+    { .match = "candle", .scale = 0.75, .animation = { .tx = 0, .ty = 4, .tw = 1, .th = 1, } }
   };
   
   int num_prop_table = sizeof(prop_table) / sizeof(prop_table[0]);

@@ -8,9 +8,10 @@
 
 static const animation_t mr_warrior_idle   = { .tx = 4, .ty = 6, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 static const animation_t mr_warrior_attack = { .tx = 4, .ty = 4, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.20 };
+static const animation_t mr_warrior_fall = { .tx = 4, .ty = 8, .tw = 2, .th = 2, .framecount = 2, .frametime = 0.50 };
 
 static shooter_t mr_warrior_shooter = {
-  .tx = 3, .ty = 0,
+  .tx = 3, .ty = 3,
   .tw = 1, .th = 1,
   .target = ENT_PLAYER,
   .damage = 20
@@ -36,19 +37,18 @@ void enemy_spawn_mr_warrior(game_t *gs, vector spawn_pos)
     rb->radius = 0.8;
   entity_add_component(gs, e, health);
     health_t *h = entity_get_component(gs, e, health);
-    h->hp = 1000;
-    h->max_hp = 1000;
+    h->hp = 2000;
+    h->max_hp = 2000;
   entity_add_component(gs, e, npcmove);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
-    bm->speed = 4.0;
-    bm->behave = BH_CHASE;
+    npcmove_chase(bm, 4.0);
+    npcmove_orbit(bm, 4.0);
   entity_add_component(gs, e, automaton);
     automaton_t *st = entity_get_component(gs, e, automaton);
-    automaton_add_transition(st, STATE0, STATE1, cond_greater_distance(gs->player, 5.0));
-    automaton_add_transition(st, STATE1, STATE0, cond_lesser_distance(gs->player, 5.0));
-    automaton_add_transition(st, STATE0, STATE2, cond_lesser_hp_percent(0.5));
-    automaton_add_transition(st, STATE1, STATE2, cond_lesser_hp_percent(0.5));
-    automaton_add_transition(st, STATE2, STATE3, cond_time_elapsed(5.0));
+    automaton_add_transition(st, STATE0, STATE1, cond_time_elapsed(2.5));
+    automaton_add_transition(st, STATE0, STATE3, cond_lesser_hp_flat(700));
+    automaton_add_transition(st, STATE1, STATE2, cond_lesser_distance(gs->player, 5.0));
+    automaton_add_transition(st, STATE2, STATE0, cond_time_elapsed(0.9));
   entity_bind(gs, e, mr_warrior_invoke);
 }
 
@@ -62,52 +62,49 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   npcmove_t *bm = entity_get_component(gs, e, npcmove);
   health_t *h = entity_get_component(gs, e, health);
   
-  vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(8.0, normalize(vsubv(pt->position, t->position)));
   
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      npcmove_chase(bm, 6.0);
+      sprite_play(s, &mr_warrior_attack);
+      actor_do(a, ACT1, 0.2);
       break;
     case ACT1:
-      shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 3);
+      shoot_shotgun(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 3, M_PI / 3);
       break;
     case ACT2:
-      shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 15);
-      break;
-    case ACT3:
-      shoot_radial(gs, &mr_warrior_shooter, 1.0, t->position, forward, 1.0, flight_wave, 1.0, 5.0, 10);
+      actor_repeat(a, ACT0, 0.0, 3, 0.3);
       break;
     case ACT4:
+      shoot_radial(gs, &mr_warrior_shooter, 5.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 15);
       break;
-    case ACT5:
-      break;
-    case ACT6:
+    default:
       break;
     }
     break;
   case EV_TRANSITION:
     switch (ev.transition.state) {
     case STATE0:
-      actor_stop_all(a);
-      npcmove_stop(bm);
-      actor_repeat(a, ACT1, 0.0, 0, 0.5);
+      npcmove_chase(bm, 4.0);
+      npcmove_orbit(bm, 4.0);
       break;
     case STATE1:
-      actor_stop_all(a);
-      npcmove_stop(bm);
-      actor_do(a, ACT0, 0.0);
+      npcmove_chase(bm, 16.0);
+      npcmove_orbit(bm, 3.0);
       break;
     case STATE2:
-      actor_stop_all(a);
-      npcmove_stop(bm);
-      actor_repeat(a, ACT2, 0.0, 0, 1.0);
+      npcmove_chase(bm, 14.0);
+      actor_do(a, ACT2, 0.0);
       break;
     case STATE3:
-      actor_stop_all(a);
       npcmove_stop(bm);
-      actor_repeat(a, ACT3, 0.0, 0, 0.5);
+      actor_stop_all(a);
+      sprite_repeat(s, &mr_warrior_fall);
+      actor_repeat(a, ACT4, 0.0, 0, 1.0);
+      break;
+    default:
       break;
     }
     break;
@@ -117,8 +114,7 @@ void mr_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_NO_HEALTH:
     entity_kill(gs, e);
     break;
-  case EV_ENTITY_COLLIDE:
-  case EV_MAP_COLLIDE:
+  default:
     break;
   }
 }
