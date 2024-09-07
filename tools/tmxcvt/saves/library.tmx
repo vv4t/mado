@@ -126,7 +126,7 @@
   </object>
  </objectgroup>
  <objectgroup id="8" name="test">
-  <object id="55" name="mr_warrior" x="257.818" y="234">
+  <object id="55" name="mr_mage" x="257.818" y="234">
    <point/>
   </object>
  </objectgroup>
