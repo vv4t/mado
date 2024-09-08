@@ -45,7 +45,7 @@ void game_load_map(game_t *gs, map_t map)
 void game_reset(game_t *gs)
 {
   for (int i = 0; i < ENTITY_MAX; i++) {
-    gs->entdict[i] = 0;
+    entity_kill(gs, i);
   }
   gs->num_entities = 0;
   player_init(gs);

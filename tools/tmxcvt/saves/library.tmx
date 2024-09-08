@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="57">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="11" nextobjectid="72">
  <tileset firstgid="1" name="color" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -85,6 +85,31 @@
    <point/>
   </object>
  </objectgroup>
+ <objectgroup id="7" name="wave4">
+  <object id="69" name="mr_warrior" x="241.375" y="255">
+   <point/>
+  </object>
+  <object id="71" name="mr_warrior" x="272" y="255.25">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="wave3" visible="0">
+  <object id="64" name="mr_fire" x="256.833" y="239.917">
+   <point/>
+  </object>
+  <object id="65" name="mr_fire" x="238.625" y="257.75">
+   <point/>
+  </object>
+  <object id="66" name="mr_fire" x="275" y="255">
+   <point/>
+  </object>
+  <object id="67" name="mr_fire" x="256.5" y="276.375">
+   <point/>
+  </object>
+  <object id="68" name="mr_phoenix" x="257.25" y="257.25">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="6" name="wave2" visible="0">
   <object id="46" name="mr_shadow" x="257.5" y="256">
    <point/>
@@ -107,26 +132,18 @@
   <object id="52" name="mr_small_warrior" x="354" y="366.5">
    <point/>
   </object>
- </objectgroup>
- <objectgroup id="7" name="wave1" visible="0">
-  <object id="41" name="mr_fire" x="256.833" y="239.917">
+  <object id="57" name="mr_small_warrior" x="351" y="153.333">
    <point/>
   </object>
-  <object id="42" name="mr_fire" x="238.625" y="257.75">
-   <point/>
-  </object>
-  <object id="43" name="mr_fire" x="275" y="255">
-   <point/>
-  </object>
-  <object id="44" name="mr_fire" x="256.5" y="276.375">
-   <point/>
-  </object>
-  <object id="45" name="mr_phoenix" x="257.25" y="257.25">
+  <object id="58" name="mr_small_warrior" x="159.333" y="146.667">
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="8" name="test">
-  <object id="55" name="mr_reaper" x="257.818" y="234">
+ <objectgroup id="9" name="wave1" visible="0">
+  <object id="59" name="mr_fire" x="256.833" y="239.917">
+   <point/>
+  </object>
+  <object id="62" name="mr_fire" x="256.5" y="276.375">
    <point/>
   </object>
  </objectgroup>

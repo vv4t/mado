@@ -25,6 +25,10 @@ entity_t entity_add(game_t *gs, entname_t name)
     .invoke = NULL
   };
   
+  if (name == ENT_ENEMY) {
+    gs->num_enemies++;
+  }
+  
   return e;
 }
 
@@ -35,6 +39,10 @@ void entity_kill(game_t *gs, entity_t e)
   }
   
   gs->entdict[e] = 0;
+  
+  if (gs->entdata[e].name == ENT_ENEMY) {
+    gs->num_enemies--;
+  }
   
   while (gs->num_entities > 0 && gs->entdict[gs->num_entities - 1] == 0) {
     gs->num_entities--;

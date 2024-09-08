@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 
-// static const animation_t mr_fire_idle   = { .tx = 4, .ty = 10, .tw = 1, .th = 1, .framecount = 1, .frametime = 0.50 };
 static const animation_t mr_fire_attack = { .tx = 8, .ty = 0, .tw = 1, .th = 1, .framecount = 3, .frametime = 0.125 };
 
 static shooter_t mr_fire_shooter = {

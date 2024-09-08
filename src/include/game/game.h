@@ -45,6 +45,7 @@ typedef struct game_s {
   vector    view_pos;
   float     view_rot;
   float     time;
+  int       num_enemies;
 } game_t;
 
 void game_init(game_t *gs);

@@ -184,6 +184,10 @@ landmark_t map_get_group(map_t m, const char *name)
 
 void map_destroy(map_t m)
 {
+  if (!m) {
+    return;
+  }
+  
   for (int i = 0; i < m->num_groups; i++) {
     free(m->groups[i].landmarks);
   }

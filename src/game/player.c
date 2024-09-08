@@ -81,14 +81,14 @@ void player_invoke(game_t *gs, entity_t e, event_t ev)
   health_t *h = entity_get_component(gs, e, health);
   struct playerctx *ctx = entity_get_context(gs, e, sizeof(struct playerctx));
   
-  vector forward = mdotv(rotate_z(ctx->aim_rot), vec2(0, 10));
+  vector forward = mdotv(rotate_z(ctx->aim_rot), vec2(0, 16));
 
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 22.0, 0.0);
-      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 22.0, M_PI);
+      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 36.0, 0.0);
+      shoot_wave(gs, &player_shooter, 0.6, pt->position, forward, 1.0, 36.0, M_PI);
       break;
     }
     break;

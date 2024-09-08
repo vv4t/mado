@@ -7,7 +7,10 @@ struct {
   game_t gs;
   map_t map;
   client_scene_t scene;
-} client;
+} client = {
+  .map = NULL,
+  .scene.destroy = NULL
+};
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +18,6 @@ int main(int argc, char *argv[])
   renderer_init();
   game_init(&client.gs);
   
-  client.scene.destroy = NULL;
   client_load_scene(client_scene1);
   
   int prev_time = window_get_time();
@@ -35,9 +37,11 @@ int main(int argc, char *argv[])
     prev_time = now_time;
   }
   
+  
   client.scene.destroy();
   renderer_deinit();
   window_deinit();
+  map_destroy(client.map);
   
   return 0;
 }
