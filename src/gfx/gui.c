@@ -55,7 +55,7 @@ struct {
   int         top;
 } gui;
 
-static gui_node_t gui_create_node();
+static gui_node_t gui_create_node(gui_node_type_t type);
 static void gui_rect_update(const gui_node_t node);
 static void gui_text_update(const gui_node_t node);
 static bool gui_node_test_bound(const gui_node_t node, vector point);
@@ -73,7 +73,7 @@ void gui_init(mesh_t mesh)
     shaderdata_source(sd, "assets/shader/vertex/gui.vert", SD_VERT);
     shaderdata_source(sd, "assets/shader/fragment/gui.frag", SD_FRAG);
     gui.shader = shader_load(sd);
-    glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "ubo_gui"), 2);
+    glUniformBlockBinding(gui.shader, glGetUniformBlockIndex(gui.shader, "rectdata"), 2);
   shaderdata_destroy(sd);
   
   gui.root = NULL;

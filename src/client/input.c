@@ -7,7 +7,7 @@ struct {
 
 void input_mouse_move(float x, float y)
 {
-  gui_mouse_move(x, y);
+  gui_mouse_move(x, 1.0 - y);
   
   input.usercmd.aim_x = x - 0.5;
   input.usercmd.aim_y = y - 0.5;

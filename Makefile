@@ -20,8 +20,8 @@ ASSETS_GLSL=$(wildcard assets/*/*/*.glsl)
 ASSETS_SRC=$(ASSETS_PNG) $(ASSETS_MAP) $(ASSETS_VERT) $(ASSETS_FRAG) $(ASSETS_GLSL)
 
 WEB_OUT=web/build/index.html
-WEB_CFLAGS=-s WASM=1 -O3 --shell-file web/shell.html
-WEB_LDFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_WEBGL2=1
+WEB_CFLAGS=-s WASM=1 -O3
+WEB_LDFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_WEBGL2=1 --shell-file web/shell.html
 WEB_SRC=src/*/*.c
 WEB_ASSETS=$(patsubst %, --preload-file %, $(ASSETS_SRC)) --use-preload-plugins
 
@@ -38,7 +38,7 @@ bin/%.o: src/%.c $(SRC_H)
 build:
 	gcc $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRC) -o mado
 
-web: src/*/*.c src/*/*/*.h $(ASSETS_SRC) web/shell.html
+web: src/*/*.c src/*/*/*.h $(ASSETS_SRC)
 	mkdir -p web
 	mkdir -p web/build
 	echo $(ASSETS_MAP)

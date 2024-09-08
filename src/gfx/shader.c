@@ -80,14 +80,14 @@ shaderdata_t shaderdata_create()
   
   sd->num_vert = 0;
   sd->max_vert = 8;
-  sd->vert = calloc(sizeof(*sd->vert), sd->max_vert);
+  sd->vert = calloc(sizeof(const char*), sd->max_vert);
   
   sd->num_frag = 0;
   sd->max_frag = 8;
-  sd->frag = calloc(sizeof(*sd->frag), sd->max_frag);
+  sd->frag = calloc(sizeof(const char*), sd->max_frag);
   
   shaderdata_line(sd, "#version 300 es", SD_VERT | SD_FRAG);
-  shaderdata_line(sd, "precision mediump float;", SD_VERT | SD_FRAG);
+  shaderdata_line(sd, "precision highp float;", SD_FRAG);
   
   return sd;
 }
