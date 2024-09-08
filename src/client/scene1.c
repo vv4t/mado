@@ -4,7 +4,7 @@
 #include <game/enemy.h>
 #include <gfx/gui.h>
 
-#define SPAWN_TIME 5.0
+#define SPAWN_TIME 3.0
 
 typedef enum {
   S1_WAIT,
@@ -14,6 +14,7 @@ typedef enum {
 } scene1_state_t;
 
 static struct {
+  gui_node_t health;
   gui_node_t hud;
   gui_node_t reset;
   scene1_state_t state;
@@ -25,7 +26,17 @@ static const char *scene1_waves[] = {
   "wave1",
   "wave2",
   "wave3",
-  "wave4"
+  "wave4",
+  "wave5",
+  "wave6",
+  "wave7",
+  "wave8",
+  "wave9",
+  "wave10",
+  "wave11",
+  "wave12",
+  "wave13",
+  "wave14",
 };
 
 static const int max_wave = sizeof(scene1_waves) / sizeof(scene1_waves[0]);
@@ -35,21 +46,30 @@ static void scene1_transition(scene1_state_t state);
 
 static void scene1_load()
 {
+  gui_node_t health = gui_create_rect();
+  gui_rect_resize(health, 0.7, 0.025);
+  gui_rect_color(health, vec4(0.9, 0.2, 0.2, 0.5));
+  gui_node_move(health, 0.01, 0.01);
+  gui_node_update(health);
+  scene1.health = health;
+  
   gui_node_t hud = gui_create_text(64, 1);
   gui_text_resize(hud, 0.025);
+  gui_node_move(hud, 0.025, 0.01 + 0.025 + 0.01);
   gui_node_update(hud);
   scene1.hud = hud;
   
   gui_node_t reset = gui_create_text(9, 1);
   gui_text_printf(reset, "[RESTART]");
   gui_text_resize(reset, 0.025);
-  gui_node_move(reset, 0.025, 0.04);
+  gui_node_move(reset, 0.02, 0.09);
   gui_node_bind(reset, reset_handle);
   gui_node_update(reset);
   scene1.reset = reset;
   
   scene1.time = 0.0;
-  scene1.wave = -1;
+  // scene1.wave = -1;
+  scene1.wave = 12;
   
   game_t *gs = client_get_game();
   game_spawn_group(gs, "main");
@@ -62,8 +82,11 @@ static void scene1_update()
   game_t *gs = client_get_game();
   health_t *ph = entity_get_component(gs, gs->player, health);
   
+  gui_rect_resize(scene1.health, 0.7 * ph->hp / ph->max_hp, 0.025);
+  gui_node_update(scene1.health);
+  
   gui_text_clear(scene1.hud);
-  gui_text_printf(scene1.hud, "HP:%i | WAVE %i", ph->hp, scene1.wave + 1);
+  gui_text_printf(scene1.hud, "WAVE %i", scene1.wave + 1);
   if (scene1.state == S1_WAIT)
     gui_text_printf(scene1.hud, " | NEXT WAVE IN %.2fs", SPAWN_TIME - scene1.time);
   else if (scene1.state == S1_FIGHT)

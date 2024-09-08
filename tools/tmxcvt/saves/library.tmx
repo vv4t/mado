@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="11" nextobjectid="72">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="8" tileheight="8" infinite="0" nextlayerid="25" nextobjectid="164">
  <tileset firstgid="1" name="color" tilewidth="8" tileheight="8" tilecount="256" columns="16">
   <image source="../../../assets/sheet/color.png" width="128" height="128"/>
  </tileset>
@@ -85,70 +85,207 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="7" name="wave4">
-  <object id="69" name="mr_warrior" x="241.375" y="255">
+ <objectgroup id="14" name="wave14">
+  <object id="102" name="mr_reaper" x="238.314" y="258.705">
    <point/>
   </object>
-  <object id="71" name="mr_warrior" x="272" y="255.25">
-   <point/>
-  </object>
- </objectgroup>
- <objectgroup id="10" name="wave3" visible="0">
-  <object id="64" name="mr_fire" x="256.833" y="239.917">
-   <point/>
-  </object>
-  <object id="65" name="mr_fire" x="238.625" y="257.75">
-   <point/>
-  </object>
-  <object id="66" name="mr_fire" x="275" y="255">
-   <point/>
-  </object>
-  <object id="67" name="mr_fire" x="256.5" y="276.375">
-   <point/>
-  </object>
-  <object id="68" name="mr_phoenix" x="257.25" y="257.25">
+  <object id="162" name="mr_mage" x="274.909" y="258.909">
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="6" name="wave2" visible="0">
-  <object id="46" name="mr_shadow" x="257.5" y="256">
+ <objectgroup id="24" name="wave13" visible="0">
+  <object id="159" name="mr_reaper" x="255.042" y="257.25">
    <point/>
   </object>
-  <object id="47" name="mr_small_warrior" x="255.212" y="279.061">
+  <object id="160" name="mr_small_mage" x="255.75" y="234.333">
    <point/>
   </object>
-  <object id="48" name="mr_small_warrior" x="236.545" y="259.273">
-   <point/>
-  </object>
-  <object id="49" name="mr_small_warrior" x="257.818" y="238">
-   <point/>
-  </object>
-  <object id="50" name="mr_small_warrior" x="276.364" y="257.636">
-   <point/>
-  </object>
-  <object id="51" name="mr_small_warrior" x="161.5" y="367.5">
-   <point/>
-  </object>
-  <object id="52" name="mr_small_warrior" x="354" y="366.5">
-   <point/>
-  </object>
-  <object id="57" name="mr_small_warrior" x="351" y="153.333">
-   <point/>
-  </object>
-  <object id="58" name="mr_small_warrior" x="159.333" y="146.667">
+  <object id="161" name="mr_small_warrior" x="257.25" y="281.25">
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="9" name="wave1" visible="0">
-  <object id="59" name="mr_fire" x="256.833" y="239.917">
+ <objectgroup id="23" name="wave12" visible="0">
+  <object id="155" name="mr_mage" x="216.042" y="260">
+   <point/>
+  </object>
+  <object id="156" name="mr_phoenix" x="289" y="291.667">
+   <point/>
+  </object>
+  <object id="157" name="mr_phoenix" x="290" y="217.333">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="15" name="wave11" visible="0">
+  <object id="109" name="mr_mage" x="257.042" y="259.667">
+   <point/>
+  </object>
+  <object id="111" name="mr_fire" x="241" y="261.333">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="17" name="wave10" visible="0">
+  <object id="146" name="mr_shadow" x="273" y="258.75">
+   <point/>
+  </object>
+  <object id="147" name="mr_small_warrior" x="254.5" y="458.75">
+   <point/>
+  </object>
+  <object id="148" name="mr_small_warrior" x="254.5" y="99.2045">
+   <point/>
+  </object>
+  <object id="154" name="mr_shadow" x="236.5" y="258">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="22" name="wave9" visible="0">
+  <object id="149" name="mr_small_warrior" x="254.75" y="241.375">
+   <point/>
+  </object>
+  <object id="150" name="mr_small_warrior" x="237.75" y="257.25">
+   <point/>
+  </object>
+  <object id="151" name="mr_shadow" x="257.25" y="260.25">
+   <point/>
+  </object>
+  <object id="152" name="mr_small_warrior" x="276.5" y="255.75">
+   <point/>
+  </object>
+  <object id="153" name="mr_small_warrior" x="256.5" y="272.75">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="21" name="wave8" visible="0">
+  <object id="142" name="mr_warrior" x="237.375" y="258.958">
+   <point/>
+  </object>
+  <object id="143" name="mr_small_warrior" x="256.5" y="238">
+   <point/>
+  </object>
+  <object id="144" name="mr_warrior" x="278.5" y="257.75">
+   <point/>
+  </object>
+  <object id="145" name="mr_small_warrior" x="256.5" y="279">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="20" name="wave7" visible="0">
+  <object id="136" name="mr_warrior" x="257.375" y="260.458">
+   <point/>
+  </object>
+  <object id="137" name="mr_small_warrior" x="476.333" y="270">
+   <point/>
+  </object>
+  <object id="138" name="mr_small_warrior" x="40.6667" y="277.667">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="18" name="wave6" visible="0">
+  <object id="128" name="mr_small_warrior" x="256.042" y="275.792">
+   <point/>
+  </object>
+  <object id="129" name="mr_small_warrior" x="256.875" y="238.125">
+   <point/>
+  </object>
+  <object id="130" name="mr_fire" x="239.667" y="253.333">
+   <point/>
+  </object>
+  <object id="131" name="mr_small_warrior" x="347.333" y="153.667">
+   <point/>
+  </object>
+  <object id="132" name="mr_small_warrior" x="350.667" y="363.667">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="wave5" visible="0">
+  <object id="69" name="mr_phoenix" x="236.042" y="258.667">
+   <point/>
+  </object>
+  <object id="118" name="mr_fire" x="256.5" y="259.25">
+   <point/>
+  </object>
+  <object id="119" name="mr_phoenix" x="275.788" y="257.909">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="wave4" visible="0">
+  <object id="115" name="mr_phoenix" x="257.042" y="259.667">
+   <point/>
+  </object>
+  <object id="116" name="mr_fire" x="254.833" y="304.833">
+   <point/>
+  </object>
+  <object id="117" name="mr_fire" x="257" y="216">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="wave3" visible="0">
+  <object id="59" name="mr_fire" x="479.083" y="258.417">
    <point/>
   </object>
   <object id="62" name="mr_fire" x="256.5" y="276.375">
    <point/>
   </object>
+  <object id="72" name="mr_fire" x="257.625" y="237.5">
+   <point/>
+  </object>
+  <object id="73" name="mr_fire" x="66.375" y="257.5">
+   <point/>
+  </object>
+  <object id="94" name="mr_small_mage" x="256" y="112">
+   <point/>
+  </object>
+  <object id="95" name="mr_small_mage" x="276.75" y="260.75">
+   <point/>
+  </object>
+  <object id="96" name="mr_small_mage" x="235.75" y="257.5">
+   <point/>
+  </object>
+  <object id="97" name="mr_small_mage" x="261" y="409.5">
+   <point/>
+  </object>
+  <object id="98" name="mr_fire" x="68" y="279.5">
+   <point/>
+  </object>
+  <object id="99" name="mr_fire" x="479" y="274">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="wave2" visible="0">
+  <object id="84" name="mr_small_mage" x="94.2497" y="371.167">
+   <point/>
+  </object>
+  <object id="85" name="mr_fire" x="234.333" y="259.375">
+   <point/>
+  </object>
+  <object id="86" name="mr_fire" x="281.625" y="260.667">
+   <point/>
+  </object>
+  <object id="87" name="mr_small_mage" x="418.542" y="372.833">
+   <point/>
+  </object>
+  <object id="100" name="mr_small_mage" x="85" y="136">
+   <point/>
+  </object>
+  <object id="101" name="mr_small_mage" x="432" y="136.5">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="13" name="wave1" visible="0">
+  <object id="88" name="mr_fire" x="274.583" y="257.167">
+   <point/>
+  </object>
+  <object id="89" name="mr_fire" x="256.5" y="276.375">
+   <point/>
+  </object>
+  <object id="90" name="mr_fire" x="257.625" y="237.5">
+   <point/>
+  </object>
+  <object id="91" name="mr_fire" x="236.875" y="256.5">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="2" name="main" visible="0">
-  <object id="2" name="player" x="255.947" y="481.917">
+  <object id="2" name="player" x="255.947" y="339.917">
    <point/>
   </object>
  </objectgroup>

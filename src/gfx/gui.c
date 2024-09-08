@@ -157,6 +157,11 @@ void gui_rect_resize(gui_node_t node, float w, float h)
   node->rect.h = h;
 }
 
+void gui_rect_color(gui_node_t node, vector color)
+{
+  node->rect.color = color;
+}
+
 gui_node_t gui_create_node(gui_node_type_t type)
 {
   gui_node_t node = malloc(sizeof(*node));

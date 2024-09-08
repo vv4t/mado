@@ -11,7 +11,7 @@ static shooter_t mr_small_warrior_shooter = {
   .tx = 2, .ty = 4,
   .tw = 1, .th = 1,
   .target = ENT_PLAYER,
-  .damage = 20
+  .damage = 8
 };
 
 static void mr_small_warrior_invoke(game_t *gs, entity_t e, event_t ev);
@@ -39,8 +39,9 @@ void enemy_spawn_mr_small_warrior(game_t *gs, vector spawn_pos)
     h->max_hp = 400;
   entity_add_component(gs, e, npcmove);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
-    bm->speed = 4.0;
+    bm->speed = 6.0;
     bm->behave = BH_CHASE;
+    npcmove_orbit(bm, 4.0);
   entity_bind(gs, e, mr_small_warrior_invoke);
 }
 
@@ -51,13 +52,13 @@ void mr_small_warrior_invoke(game_t *gs, entity_t e, event_t ev)
   transform_t *t = entity_get_component(gs, e, transform);
   health_t *h = entity_get_component(gs, e, health);
 
-  vector forward = fdotv(6.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(11.0, normalize(vsubv(pt->position, t->position)));
 
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_linear(gs, &mr_small_warrior_shooter, 1.0, t->position, forward);
+      shoot_linear(gs, &mr_small_warrior_shooter, 4.0, t->position, forward);
       break;
     }
     break;

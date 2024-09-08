@@ -29,7 +29,7 @@ void enemy_spawn_mr_phoenix(game_t *gs, vector spawn_pos)
     sprite_repeat(s, &mr_phoenix_attack);
   entity_add_component(gs, e, actor);
     actor_t *a = entity_get_component(gs, e, actor);
-    actor_do(a, ACT2, 0.5);
+    actor_do(a, ACT1, 0.5);
   entity_add_component(gs, e, rigidbody);
     rigidbody_t *rb = entity_get_component(gs, e, rigidbody);
     rb->radius = 0.8;
@@ -51,21 +51,18 @@ void mr_phoenix_invoke(game_t *gs, entity_t e, event_t ev)
   npcmove_t *bm = entity_get_component(gs, e, npcmove);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
-  vector forward = fdotv(16.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(13.0, normalize(vsubv(pt->position, t->position)));
 
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_shotgun(gs, &mr_phoenix_shooter, 5.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 5, M_PI / 7.0);
+      shoot_shotgun(gs, &mr_phoenix_shooter, 5.0, t->position, forward, 1.0, flight_linear, 0.0, 0.0, 4, M_PI / 5.0);
       break;
     case ACT1:
-      vector target = vaddv(pt->position, mdotv(rotate_z(gs->time * 7.0 / 5.0), vec2(0, 5)));
-      npcmove_travel(bm, target, 7.0);
-      break;
-    case ACT2:
       actor_repeat(a, ACT0, 1.0, 0, 2.0);
-      actor_repeat(a, ACT1, 0.0, 0, 0.25);
+      npcmove_orbit(bm, 6.0);
+      npcmove_chase(bm, 7.0);
       break;
     }
     break;

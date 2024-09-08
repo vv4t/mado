@@ -55,7 +55,7 @@ void mr_shadow_invoke(game_t *gs, entity_t e, event_t ev)
   automaton_t *st = entity_get_component(gs, e, automaton);
   health_t *h = entity_get_component(gs, e, health);
   
-  vector forward = fdotv(3.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(9.0, normalize(vsubv(pt->position, t->position)));
   
   switch (ev.type) {
   case EV_ACT:
@@ -86,7 +86,7 @@ void mr_shadow_invoke(game_t *gs, entity_t e, event_t ev)
     case STATE0:
       actor_stop_all(a);
       npcmove_stop(bm);
-      actor_repeat(a, ACT1, 0.0, 0, 1.5);
+      actor_repeat(a, ACT1, (rand() % 256) / 256.0 * 1.5, 0, 1.5);
       break;
     case STATE1:
       actor_stop_all(a);

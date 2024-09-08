@@ -12,7 +12,7 @@ static shooter_t mr_small_mage_shooter = {
   .tx = 1, .ty = 0,
   .tw = 1, .th = 1,
   .target = ENT_PLAYER,
-  .damage = 5
+  .damage = 8
 };
 
 static void mr_small_mage_invoke(game_t *gs, entity_t e, event_t ev);
@@ -40,9 +40,8 @@ void enemy_spawn_mr_small_mage(game_t *gs, vector spawn_pos)
     h->max_hp = 400;
   entity_add_component(gs, e, npcmove);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
-    bm->speed = 4.0;
-    bm->behave = BH_CHASE;
-    npcmove_orbit(bm, 4.0);
+    npcmove_chase(bm, 3.0);
+    npcmove_orbit(bm, 5.0);
   entity_bind(gs, e, mr_small_mage_invoke);
 }
 
@@ -59,7 +58,7 @@ void mr_small_mage_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      shoot_wave(gs, &mr_small_mage_shooter, 2.0, t->position, forward, 1.0, 4.0, ((rand() % 256) / 256.0 - 0.5) * M_PI);
+      shoot_wave(gs, &mr_small_mage_shooter, 4.0, t->position, forward, 1.0, 16.0, ((rand() % 256) / 256.0 - 0.5) * M_PI);
       break;
     }
     break;

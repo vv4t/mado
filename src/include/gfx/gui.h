@@ -19,6 +19,7 @@ void gui_node_bind(gui_node_t node, gui_handle_t handle);
 
 gui_node_t gui_create_rect();
 void gui_rect_resize(gui_node_t node, float w, float h);
+void gui_rect_color(gui_node_t node, vector color);
 
 gui_node_t gui_create_text(int col, int row);
 void gui_text_resize(gui_node_t node, float size);

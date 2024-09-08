@@ -40,6 +40,7 @@ void enemy_spawn_mr_fire(game_t *gs, vector spawn_pos)
   entity_add_component(gs, e, npcmove);
     npcmove_t *bm = entity_get_component(gs, e, npcmove);
     npcmove_stop(bm);
+    npcmove_orbit(bm, 4.0);
   entity_bind(gs, e, mr_fire_invoke);
 }
 
@@ -51,25 +52,25 @@ void mr_fire_invoke(game_t *gs, entity_t e, event_t ev)
   npcmove_t *bm = entity_get_component(gs, e, npcmove);
 
   const transform_t *pt = entity_get_component(gs, gs->player, transform);
-  vector forward = fdotv(8.0, normalize(vsubv(pt->position, t->position)));
+  vector forward = fdotv(11.0, normalize(vsubv(pt->position, t->position)));
 
   switch (ev.type) {
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      float theta = cos(a->action[ev.act.name].count * M_PI / 4.0) * 0.5;
+      float theta = cos(a->action[ev.act.name].count * M_PI / 3.0) * 0.7;
       shoot_linear(gs, &mr_fire_shooter, 1.5, t->position, mdotv(rotate_z(theta), forward));
       break;
     case ACT1:
-      bm->speed = 2.0;
-      actor_repeat(a, ACT0, 0.0, 16, 0.075);
-      actor_do(a, ACT2, 40 * 0.075);
+      bm->speed = 4.0;
+      actor_repeat(a, ACT0, 0.0, 12, 0.125);
+      actor_do(a, ACT2, 40 * 0.125);
       break;
     case ACT2:
-      bm->speed = 5.0;
+      bm->speed = 6.0;
       break;
     case ACT3:
-      npcmove_chase(bm, 5.0);
+      npcmove_chase(bm, 6.0);
       actor_repeat(a, ACT1, (rand() % 256) / 256.0 * 3, 0, 4.0);
       break;
     }
