@@ -12,8 +12,8 @@
 
 #define FOV (1.0 / 12.0)
 
-#define SCR_WIDTH 1024
-#define SCR_HEIGHT 768
+#define SCR_WIDTH 1280
+#define SCR_HEIGHT 960
 #define SCR_SCALE 2
 #define ASPECT_RATIO ((float) SCR_WIDTH / (float) SCR_HEIGHT)
 
