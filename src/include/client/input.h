@@ -5,7 +5,7 @@
 
 void input_key_press(int key, int action);
 void input_mouse_press(int button, int action);
-void input_mouse_move(int x, int y);
+void input_mouse_move(float x, float y);
 const usercmd_t *input_get_usercmd();
 
 #endif

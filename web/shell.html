@@ -2,11 +2,33 @@
 <html>
   <head>
     <title>mado</title>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background-color: black;
+        overflow: hidden;
+      }
+      
+      .container {
+        text-align: center;
+        height: 100%;
+      }
+      
+      #canvas {
+        top: 0px;
+        left: 0px;
+        margin: 0px;
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
-    <div id="main">
-      <canvas width="1280" height="720" id="canvas"></canvas>
-    </div>
+    <div class="container">
+      <canvas width="1280" height="960" id="canvas"></canvas>
+    <div>
     <script>
       var Module = {
         preRun: [],
@@ -14,7 +36,6 @@
         canvas: document.getElementById("canvas")
       };
     </script>
-    <script src="main.js"></script>
     {{{ SCRIPT }}}
   </body>
 </html>

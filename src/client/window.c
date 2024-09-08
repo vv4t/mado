@@ -90,7 +90,7 @@ int window_poll()
       input_mouse_press(event.button.button, 1);
       break;
     case SDL_MOUSEMOTION:
-      input_mouse_move(event.motion.x, event.motion.y);
+      input_mouse_move(event.motion.x / (float) WIDTH, event.motion.y / (float) HEIGHT);
       break;
     default:
       break;

@@ -86,7 +86,7 @@ static void scene1_update()
   gui_node_update(scene1.health);
   
   gui_text_clear(scene1.hud);
-  gui_text_printf(scene1.hud, "WAVE %i", scene1.wave + 1);
+  gui_text_printf(scene1.hud, "WAVE %i/%i", scene1.wave + 1, max_wave);
   if (scene1.state == S1_WAIT)
     gui_text_printf(scene1.hud, " | NEXT WAVE IN %.2fs", SPAWN_TIME - scene1.time);
   else if (scene1.state == S1_FIGHT)

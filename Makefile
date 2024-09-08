@@ -38,7 +38,7 @@ bin/%.o: src/%.c $(SRC_H)
 build:
 	gcc $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRC) -o mado
 
-web: src/*/*.c src/*/*/*.h $(ASSETS_SRC)
+web: src/*/*.c src/*/*/*.h $(ASSETS_SRC) web/shell.html
 	mkdir -p web
 	mkdir -p web/build
 	echo $(ASSETS_MAP)
