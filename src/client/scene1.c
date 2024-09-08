@@ -68,8 +68,8 @@ static void scene1_load()
   scene1.reset = reset;
   
   scene1.time = 0.0;
-  // scene1.wave = -1;
-  scene1.wave = 12;
+  scene1.wave = -1;
+  // scene1.wave = 12;
   
   game_t *gs = client_get_game();
   game_spawn_group(gs, "main");
