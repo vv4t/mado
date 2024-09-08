@@ -40,6 +40,12 @@ void window_init()
   
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
   window.window = SDL_CreateWindow(
     "mado",
@@ -51,7 +57,8 @@ void window_init()
   );
   
   window.gl = SDL_GL_CreateContext(window.window);
-  
+
+#ifndef __EMSCRIPTEN__ 
   glewExperimental = 1;
   GLenum status = glewInit();
   if (status != GLEW_OK) {
@@ -60,6 +67,7 @@ void window_init()
   
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(MessageCallback, 0);
+#endif
 }
 
 int window_poll()
@@ -69,9 +77,6 @@ int window_poll()
     switch (event.type) {
     case SDL_QUIT:
       return 0;
-    case SDL_TEXTINPUT:
-      // event.text.text;
-      break;
     case SDL_KEYUP:
       input_key_press(event.key.keysym.sym, 0);
       break;
@@ -86,6 +91,8 @@ int window_poll()
       break;
     case SDL_MOUSEMOTION:
       input_mouse_move(event.motion.x, event.motion.y);
+      break;
+    default:
       break;
     }
   }

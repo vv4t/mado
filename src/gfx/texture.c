@@ -80,7 +80,7 @@ texture_t texture_load_cubemap(const char *base, const char *ext)
   return texture;
 }
 
-texture_t texture_create(int width, int height, GLuint format, GLuint type)
+texture_t texture_create(int width, int height, GLuint internalformat, GLuint format, GLuint type)
 {
   texture_t texture;
   glGenTextures(1, &texture);
@@ -91,7 +91,7 @@ texture_t texture_create(int width, int height, GLuint format, GLuint type)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   
-  glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, type, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, NULL);
   
   return texture;
 }

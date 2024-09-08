@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>mado</title>
+  </head>
+  <body>
+    <div id="main">
+      <canvas width="1280" height="720" id="canvas"></canvas>
+    </div>
+    <script>
+      var Module = {
+        preRun: [],
+        postRun: [],
+        canvas: document.getElementById("canvas")
+      };
+    </script>
+    <script src="main.js"></script>
+    {{{ SCRIPT }}}
+  </body>
+</html>
+

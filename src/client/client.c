@@ -3,6 +3,10 @@
 #include <client/input.h>
 #include <gfx/renderer.h>
 
+#ifdef __EMSCRIPTEN__
+  #include <emscripten.h>
+#endif
+
 struct {
   game_t gs;
   map_t map;
@@ -11,6 +15,9 @@ struct {
   .map = NULL,
   .scene.destroy = NULL
 };
+
+static void web_update();
+static void client_update();
 
 int main(int argc, char *argv[])
 {
@@ -23,12 +30,13 @@ int main(int argc, char *argv[])
   int prev_time = window_get_time();
   int lag_time = 0;  
   
+#ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop(web_update, 0, 1);
+#else
   while (window_poll()) {
     if (lag_time > 0) {
       lag_time -= 15;
-      game_update(&client.gs, input_get_usercmd());
-      client.scene.update();
-      renderer_render(&client.gs);
+      client_update();
       window_swap();
     }
     
@@ -37,13 +45,27 @@ int main(int argc, char *argv[])
     prev_time = now_time;
   }
   
-  
   client.scene.destroy();
   renderer_deinit();
   window_deinit();
   map_destroy(client.map);
-  
+#endif
+
   return 0;
+}
+
+void web_update()
+{
+  window_poll();
+  client_update();
+  window_swap();
+}
+
+void client_update()
+{
+  game_update(&client.gs, input_get_usercmd());
+  client.scene.update();
+  renderer_render(&client.gs);
 }
 
 void client_load_scene(client_scene_t scene)
