@@ -19,6 +19,9 @@ struct {
 static void web_update();
 static void client_update();
 
+static int prev_time;
+static int lag_time;
+
 int main(int argc, char *argv[])
 {
   window_init();
@@ -27,22 +30,14 @@ int main(int argc, char *argv[])
   
   client_load_scene(client_scene1);
   
-  int prev_time = window_get_time();
-  int lag_time = 0;  
+  prev_time = window_get_time();
+  lag_time = 0;
   
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(web_update, 0, 1);
 #else
   while (window_poll()) {
-    if (lag_time > 0) {
-      lag_time -= 15;
-      client_update();
-      window_swap();
-    }
-    
-    int now_time = window_get_time();
-    lag_time += now_time - prev_time;
-    prev_time = now_time;
+    client_update();
   }
   
   client.scene.destroy();
@@ -63,9 +58,17 @@ void web_update()
 
 void client_update()
 {
-  game_update(&client.gs, input_get_usercmd());
-  client.scene.update();
-  renderer_render(&client.gs);
+  if (lag_time > 0) {
+    lag_time -= 15;
+    game_update(&client.gs, input_get_usercmd());
+    client.scene.update();
+    renderer_render(&client.gs);
+    window_swap();
+  }
+  
+  int now_time = window_get_time();
+  lag_time += now_time - prev_time;
+  prev_time = now_time;
 }
 
 void client_load_scene(client_scene_t scene)

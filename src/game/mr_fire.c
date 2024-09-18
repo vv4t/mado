@@ -58,7 +58,7 @@ void mr_fire_invoke(game_t *gs, entity_t e, event_t ev)
   case EV_ACT:
     switch (ev.act.name) {
     case ACT0:
-      float theta = cos(a->action[ev.act.name].count * M_PI / 3.0) * 0.7;
+      float theta = cos(a->action[ev.act.name].count * M_PI / 2.0) * 0.7;
       shoot_linear(gs, &mr_fire_shooter, 1.5, t->position, mdotv(rotate_z(theta), forward));
       break;
     case ACT1:

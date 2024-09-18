@@ -76,7 +76,7 @@ void mr_mage_invoke(game_t *gs, entity_t e, event_t ev)
         for (int i = -4; i <= 4; i++) {
           float theta = i / 4.0 * M_PI;
           vector forward3 = vaddv(forward2, mdotv(rotate_z(M_PI - theta), fdotv(0.25, forward2)));
-          shoot_wave(gs, &mr_mage_shooter, 3.0, t->position, forward3, 1.0, 2.0, 0.0);
+          shoot_wave(gs, &mr_mage_shooter, 3.0, t->position, forward3, 1.0, 2.5, 0.0);
         }
       }
       break;
